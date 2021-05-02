@@ -1,0 +1,7 @@
+FROM {{ config.get("os.name") }}:{{ config.get("os.version") }} as prod-base
+
+FROM prod-base as tooling
+
+FROM tooling as builder
+
+FROM prod-base as prod-final

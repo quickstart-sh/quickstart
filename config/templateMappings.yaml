@@ -1,0 +1,4 @@
+parameters:
+  app.templateMappings:
+    "Dockerfile.twig":
+      target: "docker/Dockerfile"
