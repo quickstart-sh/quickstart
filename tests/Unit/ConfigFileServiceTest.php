@@ -477,8 +477,6 @@ class ConfigFileServiceTest extends TestCase {
      * @throws \Exception
      */
     public function testSingleSelect(array $startConfig, array $expectedConfig, array $question, array $input, string $expectedOutput) {
-        static $counter;
-        echo "At testcase " . $counter++ . "\n";
         $this->setupIO($input);
         $config = new Config($startConfig);
         ConfigFileService::ask($config, "test", $question, $this->input, $this->output);
@@ -904,8 +902,6 @@ class ConfigFileServiceTest extends TestCase {
      * @throws \Exception
      */
     public function testMultiSelect(array $startConfig, array $expectedConfig, array $question, array $input, string $expectedOutput) {
-        static $counter;
-        echo "At testcase " . $counter++ . "\n";
         $this->setupIO($input);
         $config = new Config($startConfig);
         ConfigFileService::ask($config, "test", $question, $this->input, $this->output);
