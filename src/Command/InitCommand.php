@@ -39,7 +39,6 @@ class InitCommand extends Command {
         if (is_file($cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE))
             throw new \Exception(ConfigFileService::CONFIG_FILE . " already exists here. Use " . ReconfigureCommand::getDefaultName() . " to re-configure.");
         $this->configFileService->initialize($cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE);
-        $command = $this->getApplication()->find(ReconfigureCommand::getDefaultName());
-        return $command->execute($input, $output);
+        return self::SUCCESS;
     }
 }
