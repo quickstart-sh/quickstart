@@ -1,5 +1,9 @@
 parameters:
   app.tree.ci:
+    welcome:
+      type: banner
+      description: |-
+        Please configure the Continuous Integration service your project uses.
     ci.system:
       type: select_single
       description: 'the CI environment used'

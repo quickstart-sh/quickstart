@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Yaml\Yaml;
 
 class ConfigFileService {
@@ -67,6 +68,11 @@ class ConfigFileService {
         }
 
         switch ($optionConfig["type"]) {
+            case "banner":
+                $io = new SymfonyStyle($input, $output);
+
+                $io->title($optionConfig["description"]);
+                return;
             case "string":
                 $prompt = "Please enter " . $optionConfig["description"] . "";
                 $promptAdditions = [];

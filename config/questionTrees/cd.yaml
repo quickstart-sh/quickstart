@@ -1,2 +1,7 @@
 parameters:
-  app.tree.cd: { }
+  app.tree.cd:
+    welcome:
+      type: banner
+      description: |-
+        Please configure the Continuous Deployment settings for your project.
+        Quickstart supports different deployment targets for each trigger.

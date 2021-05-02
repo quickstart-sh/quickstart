@@ -1,5 +1,10 @@
 parameters:
   app.tree.vcs:
+    welcome:
+      type: banner
+      description: |-
+        Please configure the version control system your project uses.
+        This will also determine the choice of available CI/CD options.
     vcs.hoster:
       type: select_single
       description: "the (D)VCS hoster"

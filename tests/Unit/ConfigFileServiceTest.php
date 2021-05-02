@@ -1317,4 +1317,25 @@ class ConfigFileServiceTest extends TestCase {
             "test2" => "foo",
         ], $config->getAll());
     }
+
+    /**
+     * Test banner prompt
+     *
+     * Expect: Input is accepted and stored in the override
+     * @throws \Exception
+     */
+    public function testBanner() {
+        $this->setupIO(["foo"]);
+        $config = new Config([
+        ]);
+        ConfigFileService::ask($config, "test", [
+            "type" => "banner",
+            "description" => "DESCRIPTION",
+        ], $this->input, $this->output);
+        $output = $this->getOutput();
+        $this->assertEquals("\nDESCRIPTION\n===========\n\n", $output);
+        $this->assertEquals([
+            "version" => Config::DEFAULT_VERSION,
+        ], $config->getAll());
+    }
 }

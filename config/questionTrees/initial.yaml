@@ -1,5 +1,10 @@
 parameters:
   app.tree.initial:
+    welcome:
+      type: banner
+      description: |-
+        Please configure the base details of your project (type, software stack).
+        Except the type, everything can be changed later on.
     type:
       type: select_single
       description: 'the project type'
