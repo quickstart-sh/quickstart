@@ -724,6 +724,172 @@ class ConfigFileServiceTest extends TestCase {
             [""],
             "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quuux\n  [3] None (default)\n > \n",
         ];
+        //mandatory, no current value, valid input, side effects. expect: choice persisted, side effects honored
+        $cases[11] = [
+            [],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test" => "foo",
+                "minions"=>"banana",
+            ],
+            [
+                "type" => "select_single",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "mandatory" => true,
+                "optionsConfiguration"=>[
+                    "foo"=>[
+                        "set"=>[
+                            "minions"=>"banana"
+                        ]
+                    ]
+                ]
+            ],
+            ["0"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n > 0[K\n",
+        ];
+        //mandatory, no current value, valid input, side effects for other option. expect: choice persisted, no side effects
+        $cases[12] = [
+            [],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test" => "baz",
+            ],
+            [
+                "type" => "select_single",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "mandatory" => true,
+                "optionsConfiguration"=>[
+                    "foo"=>[
+                        "set"=>[
+                            "minions"=>"banana"
+                        ]
+                    ]
+                ]
+            ],
+            ["1"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n > 1[K\n",
+        ];
+        //mandatory, no current value, valid input, side effects. expect: choice persisted, side effects honored (unset)
+        $cases[13] = [
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "minions"=>"banana",
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test" => "foo",
+            ],
+            [
+                "type" => "select_single",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "mandatory" => true,
+                "optionsConfiguration"=>[
+                    "foo"=>[
+                        "set"=>[
+                            "minions"=>null
+                        ]
+                    ]
+                ]
+            ],
+            ["0"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n > 0[K\n",
+        ];
+        //mandatory, no current value, valid input, side effects for other option. expect: choice persisted, no side effects (not unset)
+        $cases[14] = [
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "minions"=>"banana",
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test" => "baz",
+                "minions"=>"banana",
+            ],
+            [
+                "type" => "select_single",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "mandatory" => true,
+                "optionsConfiguration"=>[
+                    "foo"=>[
+                        "set"=>[
+                            "minions"=>null
+                        ]
+                    ]
+                ]
+            ],
+            ["1"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n > 1[K\n",
+        ];
+        //mandatory, no current value, valid input, option hidden by side effect. expect: choice persisted, hidden option hidden
+        $cases[15] = [
+            [],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test" => "quux",
+            ],
+            [
+                "type" => "select_single",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "mandatory" => true,
+                "optionsConfiguration"=>[
+                    "foo"=>[
+                        "if"=>"false",
+                    ]
+                ]
+            ],
+            ["1"],
+            "Please select DESCRIPTION: \n  [0] qux\n  [1] quux\n > 1[K\n",
+        ];
+        //mandatory, no current value, valid input, option shown by side effect. expect: choice persisted, hidden option shown
+        $cases[16] = [
+            [],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test" => "baz",
+            ],
+            [
+                "type" => "select_single",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "mandatory" => true,
+                "optionsConfiguration"=>[
+                    "foo"=>[
+                        "if"=>"true",
+                    ]
+                ]
+            ],
+            ["1"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n > 1[K\n",
+        ];
         return $cases;
     }
 
