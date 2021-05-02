@@ -16,36 +16,40 @@ parameters:
         debian: Debian
         alpine: Alpine
       default: ubuntu
+      mandatory: true
 
     os.ubuntu_version:
       type: select_single
       if: '#os.name# === ''ubuntu'''
-      pathOverride: version
+      pathOverride: 'os.version'
       description: 'the Ubuntu version for the Docker images'
       options:
         '18.04': '18.04 LTS'
         '20.04': '20.04 LTS'
       default: '20.04'
+      mandatory: true
 
     os.debian_version:
       type: select_single
       if: '#os.name# === ''debian'''
-      pathOverride: version
+      pathOverride: 'os.version'
       description: 'the Debian version for the Docker images'
       options:
         buster: 'buster / stable'
         bullseye: 'bullseye / testing'
       default: buster
+      mandatory: true
 
     os.alpine_version:
       type: select_single
       if: '#os.name# === ''alpine'''
-      pathOverride: version
+      pathOverride: 'os.version'
       description: 'the Alpine version for the Docker images'
       options:
         '3.12': '3.12 (2020-05)'
         '3.13': '3.13 (2021-01)'
       default: '3.13'
+      mandatory: true
 
     type:
       type: select_single
@@ -106,6 +110,8 @@ parameters:
           set:
             webserver.enabled: true
       final: true
+      mandatory: true
+
     webserver.software:
       type: select_single
       description: 'the web server'
