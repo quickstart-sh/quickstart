@@ -1,0 +1,17 @@
+parameters:
+  app.tree.ci:
+    ci.system:
+      type: select_single
+      description: 'the CI environment used'
+      options:
+        github_actions: "GitHub Actions"
+        gitlab_runner: "GitLab CI runner"
+        bamboo: "Atlassian Bamboo"
+        teamcity: "JetBrains TeamCity"
+        jenkins: "Jenkins"
+        circleci: "CircleCI"
+      optionsConfiguration:
+        github_actions:
+          if: '#vcs.hoster# == ''github'''
+        gitlab_runner:
+          if: '#vcs.hoster# == ''gitlab_com'' || #vcs.hoster# == ''gitlab_onprem'''

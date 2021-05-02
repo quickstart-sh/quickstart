@@ -1,0 +1,24 @@
+parameters:
+  app.tree.vcs:
+    vcs.hoster:
+      type: select_single
+      description: "the (D)VCS hoster"
+      options:
+        github: "GitHub.com"
+        gitlab_com: "GitLab.com"
+        gitlab_onprem: "GitLab (on premises/self-hosted)"
+        bitbucket_org: "Atlassian Bitbucket.org"
+        bitbucket_onprem: "Atlassian Bitbucket (on premises/self-hosted)"
+        sourceforge: "SourceForge.net"
+        gitea_onprem: "Gitea (on premises/self-hosted)"
+        launchpad: "Canonical launchpad.net"
+        launchpad_onprem: "launchpad (on premises/self-hosted)"
+        other: "Other"
+    vcs.workflow:
+      type: select_single
+      description: "the branching workflow"
+      options:
+        gitflow: "Git Flow (master + develop + feature branches)"
+        githubflow: "GitHub Flow (master + feature branches)"
+        gitlabflow: "GitLab Flow (master + feature branches, tagged releases)"
+        custom: "Custom"
