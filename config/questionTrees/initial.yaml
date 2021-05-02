@@ -11,7 +11,10 @@ parameters:
     os.name:
       type: select_single
       description: 'the base OS for the Docker images'
-      options: { ubuntu: Ubuntu, debian: Debian, alpine: Alpine }
+      options:
+        ubuntu: Ubuntu
+        debian: Debian
+        alpine: Alpine
       default: ubuntu
 
     os.ubuntu_version:
@@ -19,7 +22,9 @@ parameters:
       if: '#os.name# === ''ubuntu'''
       pathOverride: version
       description: 'the Ubuntu version for the Docker images'
-      options: { '18.04': '18.04 LTS', '20.04': '20.04 LTS' }
+      options:
+        '18.04': '18.04 LTS'
+        '20.04': '20.04 LTS'
       default: '20.04'
 
     os.debian_version:
@@ -27,7 +32,9 @@ parameters:
       if: '#os.name# === ''debian'''
       pathOverride: version
       description: 'the Debian version for the Docker images'
-      options: { buster: 'buster / stable', bullseye: 'bullseye / testing' }
+      options:
+        buster: 'buster / stable'
+        bullseye: 'bullseye / testing'
       default: buster
 
     os.alpine_version:
@@ -35,60 +42,184 @@ parameters:
       if: '#os.name# === ''alpine'''
       pathOverride: version
       description: 'the Alpine version for the Docker images'
-      options: { '3.12': '3.12 (2020-05)', '3.13': '3.13 (2021-01)' }
+      options:
+        '3.12': '3.12 (2020-05)'
+        '3.13': '3.13 (2021-01)'
       default: '3.13'
 
     type:
       type: select_single
       description: 'the project type'
-      options: { symfony: 'Symfony web/console app', drupal: 'Drupal site', wordpress: 'Wordpress site', reactjs: 'ReactJS app', gatsby: 'Gatsby app', generic_nodejs_web: 'Other NodeJS web app (nuxt, jekyll, ...)', generic_nodejs_server: 'NodeJS server app', generic_static_web: 'Generic static Web content', generic_php_web: 'Generic PHP Web content', generic_php_cli: 'Generic PHP CLI application' }
-      optionsConfiguration: { symfony: { set: { php.enabled: true, externalServices.enabled: true } }, drupal: { set: { php.enabled: true, webserver.enabled: true, externalServices.enabled: true } }, wordpress: { set: { php.enabled: true, webserver.enabled: true, externalServices.enabled: true } }, generic_php_web: { set: { php.enabled: true, webserver.enabled: true, externalServices.enabled: true } }, generic_php_cli: { set: { php.enabled: true, webserver.enabled: true, externalServices.enabled: true } }, reactjs: { set: { nodejs.enabled: true, webserver.enabled: true } }, gatsby: { set: { nodejs.enabled: true, webserver.enabled: true } }, generic_nodejs_web: { set: { nodejs.enabled: true, webserver.enabled: true } }, generic_nodejs_server: { set: { nodejs.enabled: true, externalServices.enabled: true } }, generic_static_web: { set: { webserver.enabled: true } } }
-
+      options:
+        symfony: 'Symfony web/console app'
+        drupal: 'Drupal site'
+        wordpress: 'Wordpress site'
+        reactjs: 'ReactJS app'
+        gatsby: 'Gatsby app'
+        generic_nodejs_web: 'Other NodeJS web app (nuxt, jekyll, ...)'
+        generic_nodejs_server: 'NodeJS server app'
+        generic_static_web: 'Generic static Web content'
+        generic_php_web: 'Generic PHP Web content'
+        generic_php_cli: 'Generic PHP CLI application'
+      optionsConfiguration:
+        symfony:
+          set:
+            php.enabled: true
+            externalServices.enabled: true
+        drupal:
+          set:
+            php.enabled: true
+            webserver.enabled: true
+            externalServices.enabled: true
+        wordpress:
+          set:
+            php.enabled: true
+            webserver.enabled: true
+            externalServices.enabled: true
+        generic_php_web:
+          set:
+            php.enabled: true
+            webserver.enabled: true
+            externalServices.enabled: true
+        generic_php_cli:
+          set:
+            php.enabled: true
+            webserver.enabled: true
+            externalServices.enabled: true
+        reactjs:
+          set:
+            nodejs.enabled: true
+            webserver.enabled: true
+        gatsby:
+          set:
+            nodejs.enabled: true
+            webserver.enabled: true
+        generic_nodejs_web:
+          set:
+            nodejs.enabled: true
+            webserver.enabled: true
+        generic_nodejs_server:
+          set:
+            nodejs.enabled: true
+            externalServices.enabled: true
+        generic_static_web:
+          set:
+            webserver.enabled: true
       final: true
     webserver.software:
       type: select_single
       description: 'the web server'
       if: '#webserver.enabled# === true'
-      options: { apache: Apache, nginx: Nginx, lighttpd: lighttpd }
+      options:
+        apache: Apache
+        nginx: Nginx
+        lighttpd: lighttpd
       default: apache
 
     php.webserverIntegrationType:
       type: select_single
       description: 'the PHP integration'
       if: '#webserver.enabled# === true && #php.enabled# === true'
-      options: { mod_php: mod_php, php_fpm: PHP-FPM }
-      default: { mod_php: '#webserver.software# === ''apache''', php_fpm: '#webserver.software# !== ''apache''' }
-      optionsConfiguration: { mod_php: { if: '#webserver.software# === ''apache''' } }
+      options:
+        mod_php: mod_php
+        php_fpm: PHP-FPM
+      default:
+        mod_php: '#webserver.software# === ''apache'''
+        php_fpm: '#webserver.software# !== ''apache'''
+      optionsConfiguration:
+        mod_php:
+          if: '#webserver.software# === ''apache'''
 
     externalServices.types:
       type: select_multi
       description: 'additional services'
       if: '#externalServices.enabled# === true'
-      options: { mariadb: MariaDB, mysql: MySQL, postgres: PostgreSQL, mongodb: MongoDB, sqlite: SQLite, mail: 'Mailcatcher (dummy SMTP server)', redis: 'Redis Cache', elasticsearch: ElasticSearch, memcached: Memcached, ldap: 'OpenLDAP + phpldapadmin', solr: Solr }
+      options:
+        mariadb: MariaDB
+        mysql: MySQL
+        postgres: PostgreSQL
+        mongodb: MongoDB
+        sqlite: SQLite
+        mail: 'Mailcatcher (dummy SMTP server)'
+        redis: 'Redis Cache'
+        elasticsearch: ElasticSearch
+        memcached: Memcached
+        ldap: 'OpenLDAP + phpldapadmin'
+        solr: Solr
 
     php.version:
       type: select_single
       description: 'the PHP version'
       if: '#php.enabled# === true && in_array(#os.name#,[''ubuntu''])'
-      options: { php7.3: 'PHP 7.3', php7.4: 'PHP 7.4', php8.0: 'PHP 8.0' }
+      options:
+        php7.3: 'PHP 7.3'
+        php7.4: 'PHP 7.4'
+        php8.0: 'PHP 8.0'
       default: php7.4
 
     symfony.modules:
       type: select_multi
       description: 'Symfony bundles and packs'
       if: '#type# == ''symfony'''
-      options: { symfony/console: Console, symfony/ldap: LDAP, symfony/form: Forms, symfony/twig-pack: Twig, symfony/maker-bundle: 'Maker bundle', doctrine/doctrine-bundle: 'Doctrine Base', orm-fixtures: 'Doctrine Fixtures', doctrine/doctrine-migrations-bundle: 'Doctrine Migrations', symfony/monolog-bundle: 'Monolog Logger', symfony/apache-pack: 'Apache integration', symfony/cache: Cache, symfony/profiler-pack: 'Profiler pack', symfony/mailer: Mailer, symfony/phpunit-bridge: 'PHPUnit bridge', symfony/security-bundle: Security, symfony/serializer: Serializer, symfony/translation: Translation, symfony/webpack-encore-bundle: 'Webpack / Encore bundle' }
+      options:
+        symfony/console: Console
+        symfony/ldap: LDAP
+        symfony/form: Forms
+        symfony/twig-pack: Twig
+        symfony/maker-bundle: 'Maker bundle'
+        doctrine/doctrine-bundle: 'Doctrine Base'
+        orm-fixtures: 'Doctrine Fixtures'
+        doctrine/doctrine-migrations-bundle: 'Doctrine Migrations'
+        symfony/monolog-bundle: 'Monolog Logger'
+        symfony/apache-pack: 'Apache integration'
+        symfony/cache: Cache
+        symfony/profiler-pack: 'Profiler pack'
+        symfony/mailer: Mailer
+        symfony/phpunit-bridge: 'PHPUnit bridge'
+        symfony/security-bundle: Security
+        symfony/serializer: Serializer
+        symfony/translation: Translation
+        symfony/webpack-encore-bundle: 'Webpack / Encore bundle'
 
     php.modules:
       type: select_multi
       description: 'the PHP modules'
       if: '#php.enabled# === true'
-      options: { amqp: AMQP, apcu: APCu, gmagick: GraphicsMagick, gnupg: GnuPG, imagick: php-imagick, memcache: memcache, memcached: 'memcache (using libmemcached)', ssh2: SSH, uploadprogress: 'upload progress', uuid: UUID, xdebug: XDebug, grpc: gRPC, imap: IMAP, inotify: inotify, intl: Internationalization, ldap: ldap, mbstring: mbstring, mcrypt: libmcrypt, opcache: opcache, protobuf: protobuf, radius: RADIUS, redis: Redis, snmp: SNMP, soap: XML-SOAP, xml: XML, gd: 'GD graphics library', gettext: 'GNU gettext' }
+      options:
+        amqp: AMQP
+        apcu: APCu
+        gmagick: GraphicsMagick
+        gnupg: GnuPG
+        imagick: php-imagick
+        memcache: memcache
+        memcached: 'memcache (using libmemcached)'
+        ssh2: SSH
+        uploadprogress: 'upload progress'
+        uuid: UUID
+        xdebug: XDebug
+        grpc: gRPC
+        imap: IMAP
+        inotify: inotify
+        intl: Internationalization
+        ldap: ldap
+        mbstring: mbstring
+        mcrypt: libmcrypt
+        opcache: opcache
+        protobuf: protobuf
+        radius: RADIUS
+        redis: Redis
+        snmp: SNMP
+        soap: XML-SOAP
+        xml: XML
+        gd: 'GD graphics library'
+        gettext: 'GNU gettext'
 
     nodejs.version:
       type: select_single
       description: 'the NodeJS version'
       if: '#nodejs.enabled# === true'
-      options: { dubnium: 'v10 LTS (dubnium)', erbium: 'v12 LTS (erbium)', fermium: 'v14 LTS (fermium)' }
+      options:
+        dubnium: 'v10 LTS (dubnium)'
+        erbium: 'v12 LTS (erbium)'
+        fermium: 'v14 LTS (fermium)'
       default: fermium
-      
