@@ -61,6 +61,10 @@ class ConfigFileService {
         }
         //Get the default value(s)
         $default = array_key_exists("default", $optionConfig) ? $optionConfig["default"] : null;
+        //Support dynamic evaluation of default parameters
+        if ($default != null && array_key_exists("defaultEval", $optionConfig) && $optionConfig["defaultEval"]) {
+            $default = eval("return ($default);");
+        }
 
         switch ($optionConfig["type"]) {
             case "string":
