@@ -438,6 +438,508 @@ class ConfigFileServiceTest extends TestCase {
         ], $config->getAll());
     }
 
+    /**
+     * Test single select based upon the test fixtures
+     * @dataProvider singleSelectDataProvider
+     * @param array $startConfig
+     * @param array $expectedConfig
+     * @param array $question
+     * @param array $input
+     * @param string $expectedOutput
+     * @throws \Exception
+     */
+    public function testSingleSelect(array $startConfig, array $expectedConfig, array $question, array $input, string $expectedOutput) {
+        static $counter;
+        echo "At testcase ".$counter++."\n";
+        $this->setupIO($input);
+        $config = new Config($startConfig);
+        ConfigFileService::ask($config, "test",$question, $this->input, $this->output);
+        $output = $this->getOutput();
+        $this->assertEquals($expectedOutput, $output);
+        $this->assertEquals($expectedConfig, $config->getAll());
+    }
+
+    /**
+     * @return array
+     */
+    public function singleSelectDataProvider(): array {
+        $cases=[];
+        //Not mandatory, no current value, no input, no default, expect: no change
+        $cases[0]=[
+            [],
+            [
+                "version" => Config::DEFAULT_VERSION,
+            ],
+            [
+                "type"=>"select_single",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quux",
+                ]
+            ],
+            [""],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n  [3] None (default)\n > \n",
+        ];
+        //mandatory, no current value, valid input, no default, expect: choice persisted
+        $cases[1]=[
+            [],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test"=>"baz",
+            ],
+            [
+                "type"=>"select_single",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quux",
+                ],
+                "mandatory"=>true,
+            ],
+            ["1"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n > 1[K\n",
+        ];
+        //mandatory, no current value, invalid then valid input, no default, expect: choice persisted
+        $cases[2]=[
+            [],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test"=>"baz",
+            ],
+            [
+                "type"=>"select_single",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quuux",
+                ],
+                "mandatory"=>true,
+            ],
+            ["","1"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quuux\n > ".
+            "\nValue \"\" is invalid\nPlease select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quuux\n > 1[K\n",
+        ];
+        //mandatory, current value, valid input, no default, expect: choice persisted
+        $cases[3]=[
+            [
+                "test"=>"quux"
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test"=>"baz",
+            ],
+            [
+                "type"=>"select_single",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quuux",
+                ],
+                "mandatory"=>true,
+            ],
+            ["1"],
+            "Please select DESCRIPTION (current: quuux): \n  [0] bar\n  [1] qux\n  [2] quuux\n > 1[K\n",
+        ];
+        //mandatory, current value, valid input equals current, no default, expect: choice persisted
+        $cases[4]=[
+            [
+                "test"=>"quux"
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test"=>"quux",
+            ],
+            [
+                "type"=>"select_single",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quuux",
+                ],
+                "mandatory"=>true,
+            ],
+            ["2"],
+            "Please select DESCRIPTION (current: quuux): \n  [0] bar\n  [1] qux\n  [2] quuux\n > 2[K\n",
+        ];
+        //mandatory, current value that doesn't exist (anymore), valid input, no default, expect: choice persisted
+        $cases[5]=[
+            [
+                "test"=>"banana"
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test"=>"quux",
+            ],
+            [
+                "type"=>"select_single",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quuux",
+                ],
+                "mandatory"=>true,
+            ],
+            ["2"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quuux\n > 2[K\n",
+        ];
+        //not mandatory, current value that doesn't exist (anymore), valid input, no default, expect: choice persisted
+        $cases[6]=[
+            [
+                "test"=>"banana"
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test"=>"quux",
+            ],
+            [
+                "type"=>"select_single",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quuux",
+                ],
+            ],
+            ["2"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quuux\n  [3] None (default)\n > 2[K\n",
+        ];
+        //not mandatory, current value that doesn't exist (anymore), valid input, default equals input, expect: choice persisted
+        $cases[7]=[
+            [
+                "test"=>"banana"
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test"=>"foo",
+            ],
+            [
+                "type"=>"select_single",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quuux",
+                ],
+                "default"=>"foo",
+            ],
+            ["0"],
+            "Please select DESCRIPTION (current: bar): \n  [0] bar (default)\n  [1] qux\n  [2] quuux\n  [3] None\n > 0[K\n",
+        ];
+        //not mandatory, current value that doesn't exist (anymore), valid input, default not equals input, expect: choice persisted
+        $cases[8]=[
+            [
+                "test"=>"banana"
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test"=>"foo",
+            ],
+            [
+                "type"=>"select_single",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quuux",
+                ],
+                "default"=>"quux",
+            ],
+            ["0"],
+            "Please select DESCRIPTION (current: quuux): \n  [0] bar\n  [1] qux\n  [2] quuux (default)\n  [3] None\n > 0[K\n",
+        ];
+        //not mandatory, current value that doesn't exist (anymore), no input, default, expect: choice persisted
+        $cases[9]=[
+            [
+                "test"=>"banana"
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test"=>"foo"
+            ],
+            [
+                "type"=>"select_single",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quuux",
+                ],
+                "default"=>"foo",
+            ],
+            [""],
+            "Please select DESCRIPTION (current: bar): \n  [0] bar (default)\n  [1] qux\n  [2] quuux\n  [3] None\n > \n",
+        ];
+        //not mandatory, current value that doesn't exist (anymore), no input, no default, expect: choice persisted
+        $cases[10]=[
+            [
+                "test"=>"banana"
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+            ],
+            [
+                "type"=>"select_single",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quuux",
+                ],
+            ],
+            [""],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quuux\n  [3] None (default)\n > \n",
+        ];
+        return $cases;
+    }
+    /**
+     * Test multi select based upon the test fixtures
+     * @dataProvider multiSelectDataProvider
+     * @param array $startConfig
+     * @param array $expectedConfig
+     * @param array $question
+     * @param array $input
+     * @param string $expectedOutput
+     * @throws \Exception
+     */
+    public function testMultiSelect(array $startConfig, array $expectedConfig, array $question, array $input, string $expectedOutput) {
+        static $counter;
+        echo "At testcase ".$counter++."\n";
+        $this->setupIO($input);
+        $config = new Config($startConfig);
+        ConfigFileService::ask($config, "test",$question, $this->input, $this->output);
+        $output = $this->getOutput();
+        $this->assertEquals($expectedOutput, $output);
+        $this->assertEquals($expectedConfig, $config->getAll());
+    }
+
+    /**
+     * @return array
+     */
+    public function multiSelectDataProvider(): array {
+        $cases=[];
+        //Not mandatory, no current value, no input, expect: no change
+        $cases[0]=[
+            [],
+            [
+                "version" => Config::DEFAULT_VERSION,
+            ],
+            [
+                "type"=>"select_multi",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quux",
+                ]
+            ],
+            [""],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n  [3] None (default)\n > \n",
+        ];
+        //mandatory, no current value, valid input (single), expect: choice persisted
+        $cases[1]=[
+            [],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test"=>["baz"],
+            ],
+            [
+                "type"=>"select_multi",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quux",
+                ],
+                "mandatory"=>true,
+            ],
+            ["1"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n > 1[K\n",
+        ];
+        //mandatory, no current value, valid input (multi), expect: choice persisted
+        $cases[2]=[
+            [],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test"=>["foo","quux"],
+            ],
+            [
+                "type"=>"select_multi",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quux",
+                ],
+                "mandatory"=>true,
+            ],
+            ["0,2"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n > 0[K,[K2[K\n",
+        ];
+
+        //mandatory, no current value, invalid (empty) then valid input, expect: choice persisted
+        $cases[3]=[
+            [],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test"=>["baz"],
+            ],
+            [
+                "type"=>"select_multi",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quuux",
+                ],
+                "mandatory"=>true,
+            ],
+            ["","1"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quuux\n > ".
+            "\nValue \"\" is invalid\nPlease select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quuux\n > 1[K\n",
+        ];
+        //mandatory, no current value, invalid (not-existing) then valid input, expect: choice persisted
+        $cases[4]=[
+            [],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test"=>["baz"],
+            ],
+            [
+                "type"=>"select_multi",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quuux",
+                ],
+                "mandatory"=>true,
+            ],
+            ["THISWILLBARF","1"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quuux\n > T[KH[KI[KS[KW[KI[KL[KL[KB[KA[KR[KF[K".
+            "\nValue \"THISWILLBARF\" is invalid\nPlease select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quuux\n > 1[K\n",
+        ];
+
+        //mandatory, current value, valid input, expect: choice persisted
+        $cases[5]=[
+            [
+                "test"=>["quux"]
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test"=>["quux","baz"],
+            ],
+            [
+                "type"=>"select_multi",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quuux",
+                ],
+                "mandatory"=>true,
+            ],
+            ["1"],
+            "Please select DESCRIPTION (current: quuux): \n  [0] bar\n  [1] qux\n  [2] None (default)\n > 1[K\n",
+        ];
+        //mandatory, current value, none input, expect: no change
+        $cases[6]=[
+            [
+                "test"=>["quux"]
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test"=>["quux"],
+            ],
+            [
+                "type"=>"select_multi",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quuux",
+                ],
+                "mandatory"=>true,
+            ],
+            ["2"],
+            "Please select DESCRIPTION (current: quuux): \n  [0] bar\n  [1] qux\n  [2] None (default)\n > 2[K\n",
+        ];
+
+        //mandatory, current value that doesn't exist (anymore), valid input, expect: choice persisted
+        $cases[7]=[
+            [
+                "test"=>["banana"]
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test"=>["quux"],
+            ],
+            [
+                "type"=>"select_multi",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quuux",
+                ],
+                "mandatory"=>true,
+            ],
+            ["2"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quuux\n > 2[K\n",
+        ];
+
+        //not mandatory, current value that doesn't exist (anymore), valid input, expect: choice persisted
+        $cases[8]=[
+            [
+                "test"=>["banana"]
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test"=>["quux"],
+            ],
+            [
+                "type"=>"select_multi",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quuux",
+                ],
+            ],
+            ["2"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quuux\n  [3] None (default)\n > 2[K\n",
+        ];
+
+        //not mandatory, current value that doesn't exist (anymore), none input, expect: empty?
+        $cases[9]=[
+            [
+                "test"=>["banana"]
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test"=>[],
+            ],
+            [
+                "type"=>"select_multi",
+                "description"=>"DESCRIPTION",
+                "options"=>[
+                    "foo"=>"bar",
+                    "baz"=>"qux",
+                    "quux"=>"quuux",
+                ],
+            ],
+            ["3"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quuux\n  [3] None (default)\n > 3[K\n",
+        ];
+        return $cases;
+    }
+
 
     /**
      * Test path override

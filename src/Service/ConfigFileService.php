@@ -13,27 +13,50 @@ use Symfony\Component\Yaml\Yaml;
 class ConfigFileService {
     public const CONFIG_FILE = ".quickstart.yml";
 
+    /**
+     * Development aid - turn on echo on all major code paths
+     */
+    private const DEBUG_ME = false;
+
     public static function ask(Config $config, string $path, array $optionConfig, InputInterface $input, OutputInterface $output) {
         $helper = new QuestionHelper();
         //Check if we are allowed to ask the question
         if (array_key_exists("if", $optionConfig) && ConditionEvaluatorService::evaluate($optionConfig["if"], $config) === false) {
-            //$output->writeln("Question $path, passing as condition ".$optionConfig["if"]." returned false");
+            //@codeCoverageIgnoreStart
+            if (self::DEBUG_ME) echo("Question $path, passing as condition " . $optionConfig["if"] . " returned false");
+            //@codeCoverageIgnoreEnd
             return;
         }
         //Is an answer to this question mandatory?
         $mandatory = (array_key_exists("mandatory", $optionConfig) && $optionConfig["mandatory"] === true);
-        //$output->writeln("Question $path, mandatory: ".($mandatory?"true":"false"));
+        //@codeCoverageIgnoreStart
+        if (self::DEBUG_ME) echo("Question $path, mandatory: " . ($mandatory ? "true" : "false") . "\n");
+        //@codeCoverageIgnoreEnd
         //Check if the path has an override set (e.g. OS versions)
         if (array_key_exists("pathOverride", $optionConfig)) {
-            //$output->writeln("Question $path, overriding path with ".$optionConfig["pathOverride"]);
+            //@codeCoverageIgnoreStart
+            if (self::DEBUG_ME) echo("Question $path, overriding path with " . $optionConfig["pathOverride"]);
+            //@codeCoverageIgnoreEnd
             $path = $optionConfig["pathOverride"];
         }
         //Get the current value in the config (null, if the key is not present)
         $currentValue = $config->get($path);
+        //@codeCoverageIgnoreStart
+        if (self::DEBUG_ME) {
+            if ($currentValue == null)
+                echo "Question $path, current value is null\n";
+            elseif (is_string($currentValue))
+                echo "Question $path, current value is " . $currentValue . "\n";
+            elseif (is_array($currentValue))
+                echo "Question $path, current value is [" . implode(", ", $currentValue) . "]\n";
+        }
+        //@codeCoverageIgnoreEnd
         //Is this question final (if a value already exists, it can not be modified again)?
         $final = (array_key_exists("final", $optionConfig) && $optionConfig["final"] === true);
         if ($final === true && $currentValue !== null) {
-            //$output->writeln("Question $path, passing as it's final and a value");
+            //@codeCoverageIgnoreStart
+            if (self::DEBUG_ME) echo("Question $path, passing as it's final and a value");
+            //@codeCoverageIgnoreEnd
             return;
         }
         //Get the default value(s)
@@ -67,7 +90,7 @@ class ConfigFileService {
                          */
                         //@codeCoverageIgnoreStart
                         return;
-                        //codeCoverageIgnoreEnd
+                        //@codeCoverageIgnoreEnd
                     } elseif (
                         ($currentValue !== null && $newValue !== null) ||
                         ($currentValue === null && $newValue !== null)
@@ -77,7 +100,147 @@ class ConfigFileService {
                     }
                 }
                 break;
+            case "select_single":
+                //@codeCoverageIgnoreStart
+                if (self::DEBUG_ME) echo "\n";
+                //@codeCoverageIgnoreEnd
+                $options = $optionConfig["options"];
+                $prompt = "Please select " . $optionConfig["description"];
+                if ($currentValue !== null) {
+                    //Check if the current value is still present in the set of options
+                    //A case that might happen is e.g. an OS version being dropped
+                    if (!array_key_exists($currentValue, $options)) {
+                        //@codeCoverageIgnoreStart
+                        if (self::DEBUG_ME) echo("Old value " . $currentValue . " does not exist any more, replace with null\n");
+                        //@codeCoverageIgnoreEnd
+                        $currentValue = null;
+                    }
+                }
+                if ($currentValue === null && array_key_exists("default", $optionConfig)) {
+                    $currentValue = $optionConfig["default"];
+                    //@codeCoverageIgnoreStart
+                    if (self::DEBUG_ME) echo("Replaced empty value with " . $currentValue);
+                    //@codeCoverageIgnoreEnd
+                }
+                if ($currentValue != null && $currentValue != "" && $currentValue != "_none")
+                    $prompt .= " (current: " . $optionConfig["options"][$currentValue] . ")";
+                $prompt .= ": ";
+                if ($mandatory === false) {
+                    //@codeCoverageIgnoreStart
+                    if (self::DEBUG_ME) echo("Add none option");
+                    //@codeCoverageIgnoreEnd
+                    if ($currentValue === null) {
+                        $options["_none"] = "None (default)";
+                        $currentValue = "_none";
+                    } else {
+                        $options["_none"] = "None";
+                    }
+                }
+                if ($default !== null) {
+                    foreach ($options as $k => $v) {
+                        if ($k == $default)
+                            $options[$k] = $v . " (default)";
+                    }
+                }
 
+                $questionDefault = $currentValue == "" ? null : array_search($currentValue, array_keys($options));
+                $questionOptions = array_values($options);
+                //@codeCoverageIgnoreStart
+                if (self::DEBUG_ME) {
+                    echo "default is " . $questionDefault . "\n";
+                    echo "options are [";
+                    foreach ($questionOptions as $k => $v) {
+                        echo "$k => $v,";
+                    }
+                    echo "]\n";
+                }
+                //@codeCoverageIgnoreEnd
+                $answer = $helper->ask(
+                    $input,
+                    $output,
+                    new ChoiceQuestion(
+                        $prompt,
+                        $questionOptions,
+                        $questionDefault
+                    )
+                );
+
+                $newValue = array_search(
+                    $answer,
+                    $options
+                );
+                if ($newValue == "_none")
+                    $newValue = null;
+                break;
+            case "select_multi":
+                //@codeCoverageIgnoreStart
+                if (self::DEBUG_ME) echo "\n";
+                //@codeCoverageIgnoreEnd
+                $options = $optionConfig["options"];
+                $prompt = "Please select " . $optionConfig["description"];
+                if (is_array($currentValue) && sizeof($currentValue) > 0) {
+                    //Check if the current values are still present in the set of options
+                    //A case that might happen is e.g. PHP modules being dropped
+                    foreach ($currentValue as $i => $currentKey) {
+                        if (!array_key_exists($currentKey, $options)) {
+                            //@codeCoverageIgnoreStart
+                            if (self::DEBUG_ME) echo("Old value " . $currentKey . " does not exist any more, removing it\n");
+                            //@codeCoverageIgnoreEnd
+                            unset($currentValue[$i]);
+                        }
+                    }
+                    $currentValue = array_values($currentValue);
+                }
+                if (is_array($currentValue) && sizeof($currentValue) > 0) {
+                    $currentValueLabels = [];
+                    foreach ($currentValue as $key)
+                        $currentValueLabels[] = $options[$key];
+                    $prompt .= " (current: " . implode(",", $currentValueLabels) . ")";
+                }
+                $prompt .= ": ";
+                //Remove all currently set options from offer
+                foreach ($options as $k => $v) {
+                    if (is_array($currentValue) && in_array($k, $currentValue)) {
+                        //@codeCoverageIgnoreStart
+                        if (self::DEBUG_ME) echo "discarding $k as it is currently set\n";
+                        //@codeCoverageIgnoreEnd
+                        unset($options[$k]);
+                    }
+                }
+                if ($mandatory === false || (is_array($currentValue) && sizeof($currentValue) > 0)) {
+                    //@codeCoverageIgnoreStart
+                    if (self::DEBUG_ME) echo("Add none option\n");
+                    //@codeCoverageIgnoreEnd
+                    $options["_none"] = "None (default)";
+                }
+                $questionOptions = array_values($options);
+                $questionDefaultString = $mandatory ? "" : (sizeof($questionOptions) - 1);
+                //@codeCoverageIgnoreStart
+                if (self::DEBUG_ME) {
+                    echo "options are [";
+                    foreach ($questionOptions as $k => $v) {
+                        echo "$k => $v,";
+                    }
+                    echo "]\n";
+                    echo "default is $questionDefaultString\n";
+                }
+                //@codeCoverageIgnoreEnd
+                $answer = $helper->ask(
+                    $input,
+                    $output,
+                    (new ChoiceQuestion(
+                        $prompt,
+                        $questionOptions,
+                        $questionDefaultString
+                    ))->setMultiselect(true)
+                );
+                $newValue = $currentValue;
+                foreach ($answer as $answerLabel) {
+                    $key = array_search($answerLabel, $options);
+                    if ($key !== "_none")
+                        $newValue[] = $key;
+                }
+                break;
             default:
                 throw new \Exception("Type undefined");
         }
