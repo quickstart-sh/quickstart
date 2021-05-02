@@ -43,16 +43,16 @@ class ConfigTest extends TestCase {
     public function testSetAll() {
         $config = new Config();
         $config->setAll([
-            "foo"=>"bar",
-            "bar"=>[
+            "foo" => "bar",
+            "bar" => [
                 "baz",
                 "qux",
             ],
         ]);
         $this->assertEquals([
             "version" => Config::DEFAULT_VERSION,
-            "foo"=>"bar",
-            "bar"=>[
+            "foo" => "bar",
+            "bar" => [
                 "baz",
                 "qux",
             ],
@@ -209,6 +209,7 @@ class ConfigTest extends TestCase {
         $this->assertTrue($config->has("baz.[quux]"));
         $this->assertFalse($config->has("baz.[bar]"));
     }
+
     public function testArrayHasNumericKey() {
         $config = new Config();
         $config->set("baz.[]", "qux");
@@ -217,13 +218,15 @@ class ConfigTest extends TestCase {
         $this->assertTrue($config->has("baz.1"));
         $this->assertFalse($config->has("baz.3"));
     }
+
     public function testArrayGetNumericKey() {
         $config = new Config();
         $config->set("baz.[]", "qux");
         $config->set("baz.[]", "quux");
         $config->set("baz.[]", "quuux");
-        $this->assertEquals("quux",$config->get("baz.1"));
+        $this->assertEquals("quux", $config->get("baz.1"));
     }
+
     public function testArraySetNumericKey() {
         $config = new Config([
             "baz" => [
