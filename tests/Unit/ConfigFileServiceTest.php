@@ -728,7 +728,7 @@ class ConfigFileServiceTest extends TestCase {
             [
                 "version" => Config::DEFAULT_VERSION,
                 "test" => "foo",
-                "minions"=>"banana",
+                "minions" => "banana",
             ],
             [
                 "type" => "select_single",
@@ -739,10 +739,10 @@ class ConfigFileServiceTest extends TestCase {
                     "quux" => "quux",
                 ],
                 "mandatory" => true,
-                "optionsConfiguration"=>[
-                    "foo"=>[
-                        "set"=>[
-                            "minions"=>"banana"
+                "optionsConfiguration" => [
+                    "foo" => [
+                        "set" => [
+                            "minions" => "banana"
                         ]
                     ]
                 ]
@@ -766,10 +766,10 @@ class ConfigFileServiceTest extends TestCase {
                     "quux" => "quux",
                 ],
                 "mandatory" => true,
-                "optionsConfiguration"=>[
-                    "foo"=>[
-                        "set"=>[
-                            "minions"=>"banana"
+                "optionsConfiguration" => [
+                    "foo" => [
+                        "set" => [
+                            "minions" => "banana"
                         ]
                     ]
                 ]
@@ -781,7 +781,7 @@ class ConfigFileServiceTest extends TestCase {
         $cases[13] = [
             [
                 "version" => Config::DEFAULT_VERSION,
-                "minions"=>"banana",
+                "minions" => "banana",
             ],
             [
                 "version" => Config::DEFAULT_VERSION,
@@ -796,10 +796,10 @@ class ConfigFileServiceTest extends TestCase {
                     "quux" => "quux",
                 ],
                 "mandatory" => true,
-                "optionsConfiguration"=>[
-                    "foo"=>[
-                        "set"=>[
-                            "minions"=>null
+                "optionsConfiguration" => [
+                    "foo" => [
+                        "set" => [
+                            "minions" => null
                         ]
                     ]
                 ]
@@ -811,12 +811,12 @@ class ConfigFileServiceTest extends TestCase {
         $cases[14] = [
             [
                 "version" => Config::DEFAULT_VERSION,
-                "minions"=>"banana",
+                "minions" => "banana",
             ],
             [
                 "version" => Config::DEFAULT_VERSION,
                 "test" => "baz",
-                "minions"=>"banana",
+                "minions" => "banana",
             ],
             [
                 "type" => "select_single",
@@ -827,10 +827,10 @@ class ConfigFileServiceTest extends TestCase {
                     "quux" => "quux",
                 ],
                 "mandatory" => true,
-                "optionsConfiguration"=>[
-                    "foo"=>[
-                        "set"=>[
-                            "minions"=>null
+                "optionsConfiguration" => [
+                    "foo" => [
+                        "set" => [
+                            "minions" => null
                         ]
                     ]
                 ]
@@ -854,9 +854,9 @@ class ConfigFileServiceTest extends TestCase {
                     "quux" => "quux",
                 ],
                 "mandatory" => true,
-                "optionsConfiguration"=>[
-                    "foo"=>[
-                        "if"=>"false",
+                "optionsConfiguration" => [
+                    "foo" => [
+                        "if" => "false",
                     ]
                 ]
             ],
@@ -879,9 +879,9 @@ class ConfigFileServiceTest extends TestCase {
                     "quux" => "quux",
                 ],
                 "mandatory" => true,
-                "optionsConfiguration"=>[
-                    "foo"=>[
-                        "if"=>"true",
+                "optionsConfiguration" => [
+                    "foo" => [
+                        "if" => "true",
                     ]
                 ]
             ],
@@ -1127,6 +1127,168 @@ class ConfigFileServiceTest extends TestCase {
             ],
             ["3"],
             "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quuux\n  [3] None (default)\n > 3[K\n",
+        ];
+        //mandatory, no current value, valid input (single), expect: choice persisted, side effects honored
+        $cases[10] = [
+            [],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test" => ["baz"],
+                "minions" => "banana",
+            ],
+            [
+                "type" => "select_multi",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "mandatory" => true,
+                "optionsConfiguration" => [
+                    "baz" => [
+                        "set" => [
+                            "minions" => "banana"
+                        ]
+                    ]
+                ],
+            ],
+            ["1"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n > 1[K\n",
+        ];
+        //mandatory, no current value, valid input (single), expect: choice persisted, no side effects
+        $cases[11] = [
+            [],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test" => ["foo"],
+            ],
+            [
+                "type" => "select_multi",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "mandatory" => true,
+                "optionsConfiguration" => [
+                    "baz" => [
+                        "set" => [
+                            "minions" => "banana"
+                        ]
+                    ]
+                ],
+            ],
+            ["0"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n > 0[K\n",
+        ];
+        //mandatory, no current value, valid input (single), expect: choice persisted, side effects honored (unset)
+        $cases[12] = [
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "minions" => "banana",
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test" => ["baz"],
+            ],
+            [
+                "type" => "select_multi",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "mandatory" => true,
+                "optionsConfiguration" => [
+                    "baz" => [
+                        "set" => [
+                            "minions" => null
+                        ]
+                    ]
+                ],
+            ],
+            ["1"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n > 1[K\n",
+        ];
+        //mandatory, no current value, valid input (single), expect: choice persisted, no side effects (unset)
+        $cases[13] = [
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "minions" => "banana",
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test" => ["foo"],
+                "minions" => "banana",
+            ],
+            [
+                "type" => "select_multi",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "mandatory" => true,
+                "optionsConfiguration" => [
+                    "baz" => [
+                        "set" => [
+                            "minions" => null
+                        ]
+                    ]
+                ],
+            ],
+            ["0"],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n > 0[K\n",
+        ];
+        //Not mandatory, no current value, no input, expect: no change, hidden option shown
+        $cases[14] = [
+            [],
+            [
+                "version" => Config::DEFAULT_VERSION,
+            ],
+            [
+                "type" => "select_multi",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "optionsConfiguration" => [
+                    "baz" => [
+                        "if" => "true"
+                    ]
+                ],
+            ],
+            [""],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n  [3] None (default)\n > \n",
+        ];
+        //Not mandatory, no current value, no input, expect: no change, hidden option hidden
+        $cases[15] = [
+            [],
+            [
+                "version" => Config::DEFAULT_VERSION,
+            ],
+            [
+                "type" => "select_multi",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "optionsConfiguration" => [
+                    "baz" => [
+                        "if" => "false"
+                    ]
+                ],
+            ],
+            [""],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] quux\n  [2] None (default)\n > \n",
         ];
         return $cases;
     }

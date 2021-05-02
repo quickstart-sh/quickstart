@@ -124,6 +124,16 @@ class ConfigFileService {
                                 unset($options[$specificOption]);
                             }
                         }
+                        if (is_array($specificConfiguration) && array_key_exists("default_if", $specificConfiguration)) {
+                            $evaluatorResult = ConditionEvaluatorService::evaluate($specificConfiguration["default_if"], $config);
+                            if ($evaluatorResult === true) {
+                                //@codeCoverageIgnoreStart
+                                if (self::DEBUG_ME) echo "Setting option $specificOption as new default\n";
+                                //@codeCoverageIgnoreEnd
+                                $default = $specificOption;
+                                $optionConfig["default"] = $default;
+                            }
+                        }
                     }
                 }
                 $prompt = "Please select " . $optionConfig["description"];
@@ -143,8 +153,9 @@ class ConfigFileService {
                     if (self::DEBUG_ME) echo("Replaced empty value with " . $currentValue);
                     //@codeCoverageIgnoreEnd
                 }
-                if ($currentValue != null && $currentValue != "" && $currentValue != "_none")
+                if ($currentValue != null && $currentValue != "" && $currentValue != "_none") {
                     $prompt .= " (current: " . $optionConfig["options"][$currentValue] . ")";
+                }
                 $prompt .= ": ";
                 if ($mandatory === false) {
                     //@codeCoverageIgnoreStart
@@ -223,6 +234,23 @@ class ConfigFileService {
                 if (self::DEBUG_ME) echo "\n";
                 //@codeCoverageIgnoreEnd
                 $options = $optionConfig["options"];
+                //Check if we have configurations for individual options (e.g. hide depending on config)
+                if (array_key_exists("optionsConfiguration", $optionConfig) && is_array($optionConfig["optionsConfiguration"])) {
+                    //@codeCoverageIgnoreStart
+                    if (self::DEBUG_ME) echo "Have option-specific configurations\n";
+                    //@codeCoverageIgnoreEnd
+                    foreach ($optionConfig["optionsConfiguration"] as $specificOption => $specificConfiguration) {
+                        if (is_array($specificConfiguration) && array_key_exists("if", $specificConfiguration)) {
+                            $evaluatorResult = ConditionEvaluatorService::evaluate($specificConfiguration["if"], $config);
+                            if ($evaluatorResult === false && array_key_exists($specificOption, $options)) {
+                                //@codeCoverageIgnoreStart
+                                if (self::DEBUG_ME) echo "Removing option $specificOption due to failed condition\n";
+                                //@codeCoverageIgnoreEnd
+                                unset($options[$specificOption]);
+                            }
+                        }
+                    }
+                }
                 $prompt = "Please select " . $optionConfig["description"];
                 if (is_array($currentValue) && sizeof($currentValue) > 0) {
                     //Check if the current values are still present in the set of options
@@ -283,8 +311,32 @@ class ConfigFileService {
                 $newValue = $currentValue;
                 foreach ($answer as $answerLabel) {
                     $key = array_search($answerLabel, $options);
-                    if ($key !== "_none")
-                        $newValue[] = $key;
+                    if ($key === "_none")
+                        continue;
+                    $newValue[] = $key;
+                    //Check if we have configurations for individual options (e.g. set other config keys)
+                    if (array_key_exists("optionsConfiguration", $optionConfig) && is_array($optionConfig["optionsConfiguration"]) && array_key_exists($key, $optionConfig["optionsConfiguration"])) {
+                        //@codeCoverageIgnoreStart
+                        if (self::DEBUG_ME) echo "Have option-specific configurations\n";
+                        //@codeCoverageIgnoreEnd
+                        $specificConfiguration = $optionConfig["optionsConfiguration"][$key];
+                        if (is_array($specificConfiguration) && array_key_exists("set", $specificConfiguration)) {
+                            foreach ($specificConfiguration["set"] as $effectKey => $effect) {
+                                if ($effect === null) {
+                                    //@codeCoverageIgnoreStart
+                                    if (self::DEBUG_ME) echo "Unsetting config key $effectKey due to side effect of $key\n";
+                                    //@codeCoverageIgnoreEnd
+                                    $config->unset($effectKey);
+                                } else {
+                                    //@codeCoverageIgnoreStart
+                                    if (self::DEBUG_ME) echo "Setting config key $effectKey due to side effect of $key\n";
+                                    //@codeCoverageIgnoreEnd
+                                    $config->set($effectKey, $effect);
+                                }
+                            }
+                        }
+
+                    }
                 }
                 break;
             default:
