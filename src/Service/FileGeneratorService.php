@@ -16,6 +16,11 @@ class FileGeneratorService {
      */
     private Environment $twig;
 
+    /**
+     * FileGeneratorService constructor.
+     * @param Environment $twig
+     * @codeCoverageIgnore
+     */
     public function __construct(Environment $twig) {
         $this->twig = $twig;
     }
@@ -58,6 +63,6 @@ class FileGeneratorService {
             "config" => $config,
         ]);
         if (@file_put_contents($targetPath, $content) === false)
-            throw new \Exception("Failed to persist " . $targetPath);
+            throw new \RuntimeException("Failed to persist " . $targetPath);
     }
 }

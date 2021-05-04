@@ -26,7 +26,7 @@ class ConfigFileServiceTest extends TestCase {
     /**
      * @var vfsStreamDirectory
      */
-    private $vfsRoot;
+    private vfsStreamDirectory $vfsRoot;
 
     /**
      * Set up memory input and output streams
