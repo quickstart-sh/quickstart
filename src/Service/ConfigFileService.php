@@ -183,8 +183,8 @@ class ConfigFileService {
                     if (self::DEBUG_ME) echo("Replaced empty value with " . $currentValue);
                     //@codeCoverageIgnoreEnd
                 }
-                if ($currentValue != null && $currentValue != "" && $currentValue != "_none") {
-                    $prompt .= " (current: " . $optionConfig["options"][$currentValue] . ")";
+                if ($currentValue != null && $currentValue != "" && $currentValue != "_none" && array_key_exists($currentValue, $options)) {
+                    $prompt .= " (current: " . $options[$currentValue] . ")";
                 }
                 $prompt .= ": ";
                 if ($mandatory === false) {
@@ -303,8 +303,10 @@ class ConfigFileService {
                 }
                 if (is_array($currentValue) && sizeof($currentValue) > 0) {
                     $currentValueLabels = [];
-                    foreach ($currentValue as $key)
-                        $currentValueLabels[] = $options[$key];
+                    foreach ($currentValue as $key) {
+                        if (array_key_exists($key, $options))
+                            $currentValueLabels[] = $options[$key];
+                    }
                     $prompt .= " (current: " . implode(",", $currentValueLabels) . ")";
                 }
                 $prompt .= ": ";
