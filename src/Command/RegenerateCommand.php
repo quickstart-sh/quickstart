@@ -43,7 +43,7 @@ class RegenerateCommand extends Command {
         $config = $this->configFileService->load($cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE);
 
         foreach ($this->params->get("app.templateMappings") as $sourcePath => $templateConfig) {
-            $output->writeln("Writing $sourcePath");
+            $output->writeln("Writing $sourcePath to " . $templateConfig["target"]);
             $this->fileGeneratorService->writeFile($sourcePath, $templateConfig, $config, $cwd);
         }
 
