@@ -208,6 +208,34 @@ parameters:
         memcached: Memcached
         ldap: 'OpenLDAP + phpldapadmin'
         solr: Solr
+      optionsConfiguration:
+        mariadb:
+          set:
+            'php.extensions.[]': mysql
+        mysql:
+          set:
+            'php.extensions.[]': mysql
+        postgres:
+          set:
+            'php.extensions.[]': pgsql
+        mongodb:
+          set:
+            'php.extensions.[]': mongodb
+        sqlite:
+          set:
+            'php.extensions.[]': sqlite3
+        redis:
+          set:
+            'php.extensions.[]': redis
+        memcached:
+          set:
+            'php.extensions.[]': memcache
+        ldap:
+          set:
+            'php.extensions.[]': ldap
+        solr:
+          set:
+            'php.extensions.[]': solr
 
     php.version:
       type: select_single

@@ -133,6 +133,12 @@ class ConfigFileService {
                 if (self::DEBUG_ME) echo "\n";
                 //@codeCoverageIgnoreEnd
                 $options = $optionConfig["options"];
+                //Check if options is a string - which means this is a dynamic list from a shared yaml (php modules)
+                if (is_string($options)) {
+                    $options = [];
+                    foreach ($this->params->get($optionConfig["options"]) as $key => $data)
+                        $options[$key] = $data["name"];
+                }
                 //Check if we have configurations for individual options (e.g. hide depending on config)
                 if (array_key_exists("optionsConfiguration", $optionConfig) && is_array($optionConfig["optionsConfiguration"])) {
                     //@codeCoverageIgnoreStart
@@ -258,6 +264,12 @@ class ConfigFileService {
                 if (self::DEBUG_ME) echo "\n";
                 //@codeCoverageIgnoreEnd
                 $options = $optionConfig["options"];
+                //Check if options is a string - which means this is a dynamic list from a shared yaml (php modules)
+                if (is_string($options)) {
+                    $options = [];
+                    foreach ($this->params->get($optionConfig["options"]) as $key => $data)
+                        $options[$key] = $data["name"];
+                }
                 //Check if we have configurations for individual options (e.g. hide depending on config)
                 if (array_key_exists("optionsConfiguration", $optionConfig) && is_array($optionConfig["optionsConfiguration"])) {
                     //@codeCoverageIgnoreStart
