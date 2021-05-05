@@ -47,12 +47,15 @@ class ReconfigureCommand extends Command {
         $startStage = $input->getArgument("stage");
         if (!in_array($startStage, $stages))
             throw new \InvalidArgumentException("Invalid stage");
+
+        $this->configFileService->setInput($input);
+        $this->configFileService->setOutput($output);
         for ($i = array_search($startStage, $stages); $i < sizeof($stages); $i++) {
             $stage = $stages[$i];
             //$output->writeln("At stage $stage");
             foreach ($this->params->get("app.tree.$stage") as $path => $optionConfig) {
                 //$output->writeln("Asking $path");
-                ConfigFileService::ask($config, $path, $optionConfig, $input, $output);
+                $this->configFileService->ask($config, $path, $optionConfig);
             }
         }
 

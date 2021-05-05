@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Yaml\Yaml;
 
 class ConfigFileService {
@@ -18,8 +19,25 @@ class ConfigFileService {
      * Development aid - turn on echo on all major code paths
      */
     private const DEBUG_ME = false;
+    /**
+     * @var ParameterBagInterface
+     */
+    private ParameterBagInterface $params;
+    /**
+     * @var InputInterface
+     */
+    private InputInterface $input;
+    /**
+     * @var OutputInterface
+     */
+    private OutputInterface $output;
 
-    public static function ask(Config $config, string $path, array $optionConfig, InputInterface $input, OutputInterface $output) {
+
+    public function __construct(ParameterBagInterface $params) {
+        $this->params = $params;
+    }
+
+    public function ask(Config $config, string $path, array $optionConfig) {
         $helper = new QuestionHelper();
         //Check if we are allowed to ask the question
         if (array_key_exists("if", $optionConfig) && ConditionEvaluatorService::evaluate($optionConfig["if"], $config) === false) {
@@ -69,7 +87,7 @@ class ConfigFileService {
 
         switch ($optionConfig["type"]) {
             case "banner":
-                $io = new SymfonyStyle($input, $output);
+                $io = new SymfonyStyle($this->input, $this->output);
 
                 $io->title($optionConfig["description"]);
                 return;
@@ -85,11 +103,11 @@ class ConfigFileService {
                 $prompt .= ": ";
                 while (true) {
                     $questionDefault = $mandatory ? (($currentValue === null) ? $default : $currentValue) : null;
-                    $newValue = $helper->ask($input, $output, new Question($prompt, $questionDefault));
+                    $newValue = $helper->ask($this->input, $this->output, new Question($prompt, $questionDefault));
                     if (!$mandatory) //Not mandatory? Use whatever we got in return, including null (which will unset the config value)
                         break;
                     if ($currentValue === null && $newValue === null) {
-                        $output->writeln("Invalid answer " . $newValue . ", please try again");
+                        $this->output->writeln("Invalid answer " . $newValue . ", please try again");
                     } elseif ($currentValue !== null && $newValue === null) {
                         /*
                          * Unreachable. Since we're here,
@@ -194,8 +212,8 @@ class ConfigFileService {
                 }
                 //@codeCoverageIgnoreEnd
                 $answer = $helper->ask(
-                    $input,
-                    $output,
+                    $this->input,
+                    $this->output,
                     new ChoiceQuestion(
                         $prompt,
                         $questionOptions,
@@ -306,8 +324,8 @@ class ConfigFileService {
                 }
                 //@codeCoverageIgnoreEnd
                 $answer = $helper->ask(
-                    $input,
-                    $output,
+                    $this->input,
+                    $this->output,
                     (new ChoiceQuestion(
                         $prompt,
                         $questionOptions,
@@ -373,4 +391,19 @@ class ConfigFileService {
         if (@file_put_contents($fileName, $payload) === false)
             throw new \Exception("Failed to persist config to " . $fileName);
     }
+
+    /**
+     * @param InputInterface $input
+     */
+    public function setInput(InputInterface $input): void {
+        $this->input = $input;
+    }
+
+    /**
+     * @param OutputInterface $output
+     */
+    public function setOutput(OutputInterface $output): void {
+        $this->output = $output;
+    }
+
 }
