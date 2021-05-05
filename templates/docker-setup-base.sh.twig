@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+# -e: fail script on a failed command / pipeline
+# -u: fail script on unset variables
+set -eu
+
+#TODO add proxy credential read / export here
+
+# Update the base image packages and repositories
+{% if config.get("os.name")=="ubuntu" %}
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get upgrade -yf
+{% elseif config.get("os.name")=="alpine" %}
+apk update
+apk upgrade
+{% endif %}
+
+{% set osPackages=[] %}
+{# Core Linux packages #}
+{% set osPackages=[]|merge([
+    "supervisor",
+    "curl",
+    "locales",
+    "tzdata",
+]) %}
+
+{% if config.get("php.enabled") %}
+    {% if config.get("os.name")=="ubuntu" %}
+# Add the PHP repository of Ondřej Surý
+apt-get install -yf software-properties-common
+add-apt-repository ppa:ondrej/php
+
+        {% set osPackages=osPackages|merge(["php" ~ config.get("php.version") ~ "-cli"]) %}
+
+        {% if config.get("php.webserverIntegrationType")=="php_fpm" %}
+            {% set osPackages=osPackages|merge(["php" ~ config.get("php.version") ~ "-fpm"]) %}
+        {% elseif config.get("php.webserverIntegrationType")=="mod_php" %}
+            {% set osPackages=osPackages|merge(["libapache2-mod-php" ~ config.get("php.version")]) %}
+        {% endif %}
+
+    {% elseif config.get("os.name")=="alpine" %}
+    {% endif %}
+{% endif %}
+
+# Install packages
+{% if config.get("os.name")=="ubuntu" %}
+# Update cache, in case one of the dependencies has pulled in a custom repository
+apt-get update
+apt-get install -yf \
+    {{ osPackages | join(" \\\n    ") }}
+
+# Save space from artifacts (can be regenerated, if needed, with apt-get update)
+apt-get clean
+rm -rf /var/lib/apt/lists/*
+{% elseif config.get("os.name")=="alpine" %}
+{% endif %}

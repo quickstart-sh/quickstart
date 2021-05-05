@@ -5,7 +5,17 @@ parameters:
       description: |-
         Please configure the base details of your project (type, software stack).
         Except the type, everything can be changed later on.
-    type:
+
+    project.name:
+      type: string
+      description: 'the name of the project'
+      defaultDescription: 'name of current directory'
+      mandatory: true
+      default: 'basename(getcwd())'
+      defaultEval: true
+
+
+    project.type:
       type: select_single
       description: 'the project type'
       options:
@@ -24,26 +34,33 @@ parameters:
           set:
             php.enabled: true
             externalServices.enabled: true
+            os.workDirectory: '/var/www'
+            os.documentRoot: '/var/www/public'
         drupal:
           set:
             php.enabled: true
             webserver.enabled: true
             externalServices.enabled: true
+            os.workDirectory: '/var/www'
+            os.documentRoot: '/var/www/web'
         wordpress:
           set:
             php.enabled: true
             webserver.enabled: true
             externalServices.enabled: true
+            os.workDirectory: '/var/www'
         generic_php_web:
           set:
             php.enabled: true
             webserver.enabled: true
             externalServices.enabled: true
+            os.workDirectory: '/var/www'
         generic_php_cli:
           set:
             php.enabled: true
             webserver.enabled: true
             externalServices.enabled: true
+            os.workDirectory: '/opt/app'
         reactjs:
           set:
             nodejs.enabled: true
@@ -63,16 +80,9 @@ parameters:
         generic_static_web:
           set:
             webserver.enabled: true
+            os.workDirectory: '/var/www'
       final: true
       mandatory: true
-
-    name:
-      type: string
-      description: 'the name of the project'
-      defaultDescription: 'name of current directory'
-      mandatory: true
-      default: 'basename(getcwd())'
-      defaultEval: true
 
     os.name:
       type: select_single
@@ -117,10 +127,33 @@ parameters:
       default: '3.13'
       mandatory: true
 
+    os.locale:
+      type: select_single
+      description: 'the default locale for the Docker images'
+      default: 'C.UTF-8'
+      mandatory: true
+      options:
+        #TODO need a way to avoid typing down 364 locale definitions from /usr/share/i18n/locales
+        #keep those I need (C, en-US, de-DE) and do this later
+        'C': 'C (ANSI, English)'
+        'C.UTF-8': 'C (UTF-8, English)'
+        'en_US.UTF-8': 'en_US (UTF-8)'
+        'de_DE.UTF-8': 'de_DE (UTF-8)'
+
+    os.timezone:
+      type: select_single
+      description: 'the default timezone for the Docker images'
+      default: 'Etc/UTC'
+      mandatory: true
+      options:
+        #TODO need a way to avoid typing down 629 TZ definitions from /usr/share/zoneinfo/posix/
+        'Etc/UTC': 'UTC'
+        'Europe/Berlin': 'Europe/Berlin'
+
     symfony.type:
       type: select_single
       description: 'Symfony project type'
-      if: '#type# == ''symfony'''
+      if: '#project.type# == ''symfony'''
       mandatory: true
       options:
         web: 'Web (enables web server)'
@@ -181,16 +214,16 @@ parameters:
       description: 'the PHP version'
       if: '#php.enabled# === true && in_array(#os.name#,[''ubuntu''])'
       options:
-        php7.3: 'PHP 7.3'
-        php7.4: 'PHP 7.4'
-        php8.0: 'PHP 8.0'
-      default: php7.4
+        '7.3': 'PHP 7.3'
+        '7.4': 'PHP 7.4'
+        '8.0': 'PHP 8.0'
+      default: '7.4'
       mandatory: true
 
     symfony.modules:
       type: select_multi
       description: 'Symfony bundles and packs'
-      if: '#type# == ''symfony'''
+      if: '#project.type# == ''symfony'''
       options:
         symfony/console: Console
         symfony/ldap: LDAP
@@ -211,38 +244,11 @@ parameters:
         symfony/translation: Translation
         symfony/webpack-encore-bundle: 'Webpack / Encore bundle'
 
-    php.modules:
+    php.extensions:
       type: select_multi
-      description: 'the PHP modules'
+      description: 'the PHP extensions'
       if: '#php.enabled# === true'
-      options:
-        amqp: AMQP
-        apcu: APCu
-        gmagick: GraphicsMagick
-        gnupg: GnuPG
-        imagick: php-imagick
-        memcache: memcache
-        memcached: 'memcache (using libmemcached)'
-        ssh2: SSH
-        uploadprogress: 'upload progress'
-        uuid: UUID
-        xdebug: XDebug
-        grpc: gRPC
-        imap: IMAP
-        inotify: inotify
-        intl: Internationalization
-        ldap: ldap
-        mbstring: mbstring
-        mcrypt: libmcrypt
-        opcache: opcache
-        protobuf: protobuf
-        radius: RADIUS
-        redis: Redis
-        snmp: SNMP
-        soap: XML-SOAP
-        xml: XML
-        gd: 'GD graphics library'
-        gettext: 'GNU gettext'
+      options: 'app.phpExtensions'
 
     nodejs.version:
       type: select_single
@@ -253,3 +259,14 @@ parameters:
         erbium: 'v12 LTS (erbium)'
         fermium: 'v14 LTS (fermium)'
       default: fermium
+
+    os.workDirectory:
+      type: string
+      mandatory: true
+      description: 'the Docker image''s working directory (WORKDIR directive)'
+      if: '#os.workDirectory# === null'
+    os.documentRoot:
+      type: string
+      mandatory: true
+      description: 'the Docker image''s web server document root'
+      if: '#os.documentRoot# === null && #webserver.enabled# === true'

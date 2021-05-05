@@ -1,5 +1,12 @@
 FROM {{ config.get("os.name") }}:{{ config.get("os.version") }} as prod-base
 
+WORKDIR "{{ config.get("os.workDirectory") }}"
+CMD ["/usr/bin/supervisord","-c","/etc/supervisor/supervisord.conf"]
+ENV LC_ALL={{ config.get("os.locale") }}
+
+ADD docker/docker-setup-base.sh /docker-setup-base.sh
+RUN /docker-setup-base.sh
+
 FROM prod-base as tooling
 
 FROM tooling as builder
