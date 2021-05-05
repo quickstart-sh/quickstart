@@ -59,10 +59,21 @@ class FileGeneratorService {
                 throw new \RuntimeException("Failed to create $parentDirectory");
             }
         }
+
         $content = $this->twig->render($sourcePath, [
             "config" => $config,
         ]);
+
         if (@file_put_contents($targetPath, $content) === false)
             throw new \RuntimeException("Failed to persist " . $targetPath);
+
+        if (array_key_exists("chmod", $templateConfig)) {
+            //@codeCoverageIgnoreStart
+            if (self::DEBUG_ME) echo("File $sourcePath, setting chmod to " . decoct($templateConfig["chmod"]));
+            //@codeCoverageIgnoreEnd
+            if (@chmod($targetPath, $templateConfig["chmod"]) === false) {
+                throw new \RuntimeException("Failed to chmod $targetPath");
+            }
+        }
     }
 }
