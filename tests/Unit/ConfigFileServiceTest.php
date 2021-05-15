@@ -1339,7 +1339,66 @@ class ConfigFileServiceTest extends TestCase {
         return $cases;
     }
 
-
+    /**
+     * Test single select with dynamic parameter list
+     * @throws \Exception
+     */
+    public function testSingleSelectDynamicParameterList() {
+        //mandatory, no current value, valid input, no default, expect: choice persisted
+        $this->setupIO(["1"]);
+        $config = new Config([]);
+        $service = new ConfigFileService(new ParameterBag([
+            "app.test"=>[
+                "foo"=>["name"=>"bar"],
+                "baz"=>["name"=>"qux"],
+                "quux"=>["name"=>"quux"],
+            ],
+        ]));
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
+        $service->ask($config, "test", [
+            "type" => "select_single",
+            "description" => "DESCRIPTION",
+            "options" => "app.test",
+            "mandatory" => true,
+        ]);
+        $output = $this->getOutput();
+        $this->assertEquals("Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n > 1[K\n", $output);
+        $this->assertEquals([
+            "version" => Config::DEFAULT_VERSION,
+            "test" => "baz",
+        ], $config->getAll());
+    }
+    /**
+     * Test single select with dynamic parameter list
+     * @throws \Exception
+     */
+    public function testMultiSelectDynamicParameterList() {
+        //mandatory, no current value, valid input, no default, expect: choice persisted
+        $this->setupIO(["1"]);
+        $config = new Config([]);
+        $service = new ConfigFileService(new ParameterBag([
+            "app.test"=>[
+                "foo"=>["name"=>"bar"],
+                "baz"=>["name"=>"qux"],
+                "quux"=>["name"=>"quux"],
+            ],
+        ]));
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
+        $service->ask($config, "test", [
+            "type" => "select_multi",
+            "description" => "DESCRIPTION",
+            "options" => "app.test",
+            "mandatory" => true,
+        ]);
+        $output = $this->getOutput();
+        $this->assertEquals("Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n > 1[K\n", $output);
+        $this->assertEquals([
+            "version" => Config::DEFAULT_VERSION,
+            "test" => ["baz"],
+        ], $config->getAll());
+    }
     /**
      * Test path override
      *
