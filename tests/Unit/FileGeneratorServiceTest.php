@@ -6,7 +6,6 @@ use App\Entity\Config;
 use App\Service\FileGeneratorService;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
-use org\bovigo\vfs\visitor\vfsStreamPrintVisitor;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class FileGeneratorServiceTest extends KernelTestCase {

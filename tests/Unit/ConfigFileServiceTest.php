@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Tester\TesterTrait;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 class ConfigFileServiceTest extends TestCase {
     /**
@@ -93,7 +94,7 @@ class ConfigFileServiceTest extends TestCase {
      */
     public function testInitialize() {
         $this->setupFS();
-        $service = new ConfigFileService();
+        $service = new ConfigFileService(new ParameterBag());
         $service->initialize($this->vfsRoot->url() . "/" . ConfigFileService::CONFIG_FILE);
         $this->assertTrue($this->vfsRoot->hasChild(ConfigFileService::CONFIG_FILE));
         $this->assertEquals(
@@ -113,7 +114,7 @@ class ConfigFileServiceTest extends TestCase {
             ->withContent('notoverwritten')
             ->at($this->vfsRoot);
         $config = new Config();
-        $service = new ConfigFileService();
+        $service = new ConfigFileService(new ParameterBag());
         $this->expectException(\Exception::class);
         $service->persist($this->vfsRoot->url() . "/" . ConfigFileService::CONFIG_FILE, $config);
     }
@@ -130,7 +131,7 @@ class ConfigFileServiceTest extends TestCase {
                 "quux",
             ]
         ]);
-        $service = new ConfigFileService();
+        $service = new ConfigFileService(new ParameterBag());
         $service->persist($this->vfsRoot->url() . "/" . ConfigFileService::CONFIG_FILE, $config);
         //If this breaks, always check for indentation... Symfony at this time uses four whitespaces
         $this->assertEquals(
@@ -146,7 +147,7 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupFS([
             ConfigFileService::CONFIG_FILE => "version: 1\nfoo: bar\nbaz:\n  - qux\n  - quux\n"
         ]);
-        $service = new ConfigFileService();
+        $service = new ConfigFileService(new ParameterBag());
         $config = $service->load($this->vfsRoot->url() . "/" . ConfigFileService::CONFIG_FILE);
         $this->assertEquals([
             "version" => Config::DEFAULT_VERSION,
@@ -165,7 +166,7 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupFS([
             ConfigFileService::CONFIG_FILE => "version: 1\nfoo: bar\nbaz:\n  - qux\n  - quux\n"
         ]);
-        $service = new ConfigFileService();
+        $service = new ConfigFileService(new ParameterBag());
         $this->expectException(\Exception::class);
         $service->load($this->vfsRoot->url() . "/THISWILLBARF");
     }
@@ -177,7 +178,7 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupFS([
             ConfigFileService::CONFIG_FILE => "THISWILLBARF"
         ]);
-        $service = new ConfigFileService();
+        $service = new ConfigFileService(new ParameterBag());
         $this->expectException(\Exception::class);
         $service->load($this->vfsRoot->url() . "/" . ConfigFileService::CONFIG_FILE);
     }
@@ -189,9 +190,12 @@ class ConfigFileServiceTest extends TestCase {
     public function testIfFalse() {
         $this->setupIO([]);
         $config = new Config();
-        ConfigFileService::ask($config, "test", [
+        $service = new ConfigFileService(new ParameterBag());
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
+        $service->ask($config, "test", [
             "if" => "false",
-        ], $this->input, $this->output);
+        ]);
         $output = $this->getOutput();
         $this->assertEmpty($output);
         $this->assertEquals([
@@ -208,9 +212,12 @@ class ConfigFileServiceTest extends TestCase {
         $config = new Config([
             "foo" => "bar",
         ]);
-        ConfigFileService::ask($config, "foo", [
+        $service = new ConfigFileService(new ParameterBag());
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
+        $service->ask($config, "foo", [
             "final" => true,
-        ], $this->input, $this->output);
+        ]);
         $output = $this->getOutput();
         $this->assertEmpty($output);
         $this->assertEquals([
@@ -226,10 +233,13 @@ class ConfigFileServiceTest extends TestCase {
     public function testUnknownTypeError() {
         $this->setupIO([]);
         $config = new Config();
+        $service = new ConfigFileService(new ParameterBag());
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
         $this->expectException(\Exception::class);
-        ConfigFileService::ask($config, "test", [
+        $service->ask($config, "test", [
             "type" => "THISWILLBARF",
-        ], $this->input, $this->output);
+        ]);
     }
 
     /**
@@ -241,10 +251,13 @@ class ConfigFileServiceTest extends TestCase {
     public function testString1() {
         $this->setupIO([""]);
         $config = new Config();
-        ConfigFileService::ask($config, "test", [
+        $service = new ConfigFileService(new ParameterBag());
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
+        $service->ask($config, "test", [
             "type" => "string",
             "description" => "DESCRIPTION",
-        ], $this->input, $this->output);
+        ]);
         $output = $this->getOutput();
         $this->assertEquals("Please enter DESCRIPTION: ", $output);
         $this->assertEquals([
@@ -263,10 +276,13 @@ class ConfigFileServiceTest extends TestCase {
         $config = new Config([
             "test" => "foo",
         ]);
-        ConfigFileService::ask($config, "test", [
+        $service = new ConfigFileService(new ParameterBag());
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
+        $service->ask($config, "test", [
             "type" => "string",
             "description" => "DESCRIPTION",
-        ], $this->input, $this->output);
+        ]);
         $output = $this->getOutput();
         $this->assertEquals("Please enter DESCRIPTION (current: foo): ", $output);
         $this->assertEquals([
@@ -285,11 +301,14 @@ class ConfigFileServiceTest extends TestCase {
         $config = new Config([
             "test" => "foo",
         ]);
-        ConfigFileService::ask($config, "test", [
+        $service = new ConfigFileService(new ParameterBag());
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
+        $service->ask($config, "test", [
             "type" => "string",
             "description" => "DESCRIPTION",
             "defaultDescription" => "DEFAULT DESCRIPTION",
-        ], $this->input, $this->output);
+        ]);
         $output = $this->getOutput();
         $this->assertEquals("Please enter DESCRIPTION (default: DEFAULT DESCRIPTION, current: foo): ", $output);
         $this->assertEquals([
@@ -307,11 +326,14 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupIO([""]);
         $config = new Config([
         ]);
-        ConfigFileService::ask($config, "test", [
+        $service = new ConfigFileService(new ParameterBag());
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
+        $service->ask($config, "test", [
             "type" => "string",
             "description" => "DESCRIPTION",
             "defaultDescription" => "DEFAULT DESCRIPTION",
-        ], $this->input, $this->output);
+        ]);
         $output = $this->getOutput();
         $this->assertEquals("Please enter DESCRIPTION (default: DEFAULT DESCRIPTION): ", $output);
         $this->assertEquals([
@@ -329,14 +351,17 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupIO([""]);
         $config = new Config([
         ]);
-        ConfigFileService::ask($config, "test", [
+        $service = new ConfigFileService(new ParameterBag());
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
+        $service->ask($config, "test", [
             "type" => "string",
             "description" => "DESCRIPTION",
             "defaultDescription" => "DEFAULT DESCRIPTION",
             "default" => "'foo' . 'bar'",
             "defaultEval" => true,
             "mandatory" => true,
-        ], $this->input, $this->output);
+        ]);
         $output = $this->getOutput();
         $this->assertEquals("Please enter DESCRIPTION (default: DEFAULT DESCRIPTION): ", $output);
         $this->assertEquals([
@@ -356,11 +381,14 @@ class ConfigFileServiceTest extends TestCase {
         $config = new Config([
             "test" => "foo",
         ]);
-        ConfigFileService::ask($config, "test", [
+        $service = new ConfigFileService(new ParameterBag());
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
+        $service->ask($config, "test", [
             "type" => "string",
             "description" => "DESCRIPTION",
             "mandatory" => true,
-        ], $this->input, $this->output);
+        ]);
         $output = $this->getOutput();
         $this->assertEquals("Please enter DESCRIPTION (current: foo): ", $output);
         $this->assertEquals([
@@ -379,11 +407,14 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupIO(["", "foo"]);
         $config = new Config([
         ]);
-        ConfigFileService::ask($config, "test", [
+        $service = new ConfigFileService(new ParameterBag());
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
+        $service->ask($config, "test", [
             "type" => "string",
             "description" => "DESCRIPTION",
             "mandatory" => true,
-        ], $this->input, $this->output);
+        ]);
         $output = $this->getOutput();
         $this->assertEquals(
             "Please enter DESCRIPTION: Invalid answer , please try again\n" .
@@ -404,13 +435,16 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupIO([""]);
         $config = new Config([
         ]);
-        ConfigFileService::ask($config, "test", [
+        $service = new ConfigFileService(new ParameterBag());
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
+        $service->ask($config, "test", [
             "type" => "string",
             "description" => "DESCRIPTION",
             "defaultDescription" => "DEFAULT DESCRIPTION",
             "default" => "foo",
             "mandatory" => true,
-        ], $this->input, $this->output);
+        ]);
         $output = $this->getOutput();
         $this->assertEquals("Please enter DESCRIPTION (default: DEFAULT DESCRIPTION): ", $output);
         $this->assertEquals([
@@ -430,11 +464,14 @@ class ConfigFileServiceTest extends TestCase {
         $config = new Config([
             "test" => "foo",
         ]);
-        ConfigFileService::ask($config, "test", [
+        $service = new ConfigFileService(new ParameterBag());
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
+        $service->ask($config, "test", [
             "type" => "string",
             "description" => "DESCRIPTION",
             "mandatory" => true,
-        ], $this->input, $this->output);
+        ]);
         $output = $this->getOutput();
         $this->assertEquals("Please enter DESCRIPTION (current: foo): ", $output);
         $this->assertEquals([
@@ -453,12 +490,15 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupIO([""]);
         $config = new Config([
         ]);
-        ConfigFileService::ask($config, "test", [
+        $service = new ConfigFileService(new ParameterBag());
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
+        $service->ask($config, "test", [
             "type" => "string",
             "description" => "DESCRIPTION",
             "defaultDescription" => "DEFAULT DESCRIPTION",
             "default" => "foo",
-        ], $this->input, $this->output);
+        ]);
         $output = $this->getOutput();
         $this->assertEquals("Please enter DESCRIPTION (default: DEFAULT DESCRIPTION): ", $output);
         $this->assertEquals([
@@ -479,7 +519,10 @@ class ConfigFileServiceTest extends TestCase {
     public function testSingleSelect(array $startConfig, array $expectedConfig, array $question, array $input, string $expectedOutput) {
         $this->setupIO($input);
         $config = new Config($startConfig);
-        ConfigFileService::ask($config, "test", $question, $this->input, $this->output);
+        $service = new ConfigFileService(new ParameterBag());
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
+        $service->ask($config, "test", $question);
         $output = $this->getOutput();
         $this->assertEquals($expectedOutput, $output);
         $this->assertEquals($expectedConfig, $config->getAll());
@@ -904,7 +947,10 @@ class ConfigFileServiceTest extends TestCase {
     public function testMultiSelect(array $startConfig, array $expectedConfig, array $question, array $input, string $expectedOutput) {
         $this->setupIO($input);
         $config = new Config($startConfig);
-        ConfigFileService::ask($config, "test", $question, $this->input, $this->output);
+        $service = new ConfigFileService(new ParameterBag());
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
+        $service->ask($config, "test", $question);
         $output = $this->getOutput();
         $this->assertEquals($expectedOutput, $output);
         $this->assertEquals($expectedConfig, $config->getAll());
@@ -1304,11 +1350,14 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupIO(["foo"]);
         $config = new Config([
         ]);
-        ConfigFileService::ask($config, "test", [
+        $service = new ConfigFileService(new ParameterBag());
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
+        $service->ask($config, "test", [
             "type" => "string",
             "description" => "DESCRIPTION",
             "pathOverride" => "test2"
-        ], $this->input, $this->output);
+        ]);
         $output = $this->getOutput();
         $this->assertEquals(
             "Please enter DESCRIPTION: ", $output);
@@ -1328,10 +1377,13 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupIO(["foo"]);
         $config = new Config([
         ]);
-        ConfigFileService::ask($config, "test", [
+        $service = new ConfigFileService(new ParameterBag());
+        $service->setInput($this->input);
+        $service->setOutput($this->output);
+        $service->ask($config, "test", [
             "type" => "banner",
             "description" => "DESCRIPTION",
-        ], $this->input, $this->output);
+        ]);
         $output = $this->getOutput();
         $this->assertEquals("\nDESCRIPTION\n===========\n\n", $output);
         $this->assertEquals([
