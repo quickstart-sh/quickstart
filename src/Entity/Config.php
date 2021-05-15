@@ -40,6 +40,10 @@ class Config {
         $current =& $this->config;
         //echo "before:\n";
         //var_dump($this->config);
+        //This is set to true in case the .[] syntax is used to force an array.
+        $append = false;
+        //Back reference for adding multiple things to array
+        $parent = null;
         foreach ($parts as $index => $part) {
             //echo "at $part, index $index, size ".sizeof($parts)."\n";
             if (is_numeric($part))
@@ -49,10 +53,12 @@ class Config {
             }
             if (!array_key_exists($part, $current)) {
                 if ($index == sizeof($parts) - 1) { //last element in path, create it (with default null)
-                    if ($part == "[]")
+                    if ($part == "[]") {
                         $part = sizeof($current);
-                    else
+                        $append = true;
+                    } else {
                         $current[$part] = null;
+                    }
                 } else {
                     if ($part == "[]") {
                         throw new \Exception("[] must only be the last element of the path");
@@ -60,9 +66,17 @@ class Config {
                     $current[$part] = [];
                 }
             }
+            $parent =& $current;
             $current =& $current[$part];
         }
-        $current = $value;
+        //Now, if there is an array, we can supply either a single thing or an array
+        //if it's an array, merge it (=ensure that there is one and exactly one member of that value)
+        if ($append && is_array($value)) {
+            unset($parent[$part]); //undo the set-to-null from before
+            $parent = array_values(array_unique(array_merge($parent, $value)));
+        } else {
+            $current = $value;
+        }
         //echo "after:\n";
         //var_dump($this->config);
     }

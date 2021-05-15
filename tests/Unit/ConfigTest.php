@@ -201,6 +201,48 @@ class ConfigTest extends TestCase {
         ], $config->getAll());
     }
 
+    public function testSetImplicitArrayMergePreexistingArray() {
+        $config = new Config();
+        //Implicit array create, explicit push of array
+        $config->set("baz.[]", "qux");
+        $config->set("baz.[]", ["quux", "quuux"]);
+        $this->assertEquals([
+            "version" => Config::DEFAULT_VERSION,
+            "baz" => [
+                "qux",
+                "quux",
+                "quuux",
+            ],
+        ], $config->getAll());
+    }
+
+    public function testSetImplicitArrayMergePreexistingArrayUnique() {
+        $config = new Config();
+        //Implicit array create, explicit push of array
+        $config->set("baz.[]", "qux");
+        $config->set("baz.[]", ["qux", "quux"]);
+        $this->assertEquals([
+            "version" => Config::DEFAULT_VERSION,
+            "baz" => [
+                "qux",
+                "quux",
+            ],
+        ], $config->getAll());
+    }
+
+    public function testSetImplicitArrayMergeImmediateArray() {
+        $config = new Config();
+        //Implicit array and push of array
+        $config->set("baz.[]", ["qux", "quux"]);
+        $this->assertEquals([
+            "version" => Config::DEFAULT_VERSION,
+            "baz" => [
+                "qux",
+                "quux",
+            ],
+        ], $config->getAll());
+    }
+
     public function testHasArray() {
         $config = new Config();
         $config->set("baz.[]", "qux");
