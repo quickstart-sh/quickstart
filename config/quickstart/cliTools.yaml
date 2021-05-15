@@ -1,0 +1,30 @@
+parameters:
+  app.cli_tools:
+    joe:
+      name: 'joe (text editor)'
+      package:
+        'ubuntu-20.04': 'joe'
+    rsync:
+      name: 'rsync'
+      package:
+        'ubuntu-20.04': 'rsync'
+    nano:
+      name: 'nano (text editor)'
+      package:
+        'ubuntu-20.04': 'nano'
+    git:
+      name: 'git'
+      package:
+        'ubuntu-20.04': 'git'
+    unzip:
+      name: 'unzip'
+      package:
+        'ubuntu-20.04': 'unzip'
+    cron:
+      name: 'cron'
+      package:
+        'ubuntu-20.04': 'cron'
+    rsyslog:
+      name: 'rsyslog'
+      package:
+        'ubuntu-20.04': 'rsyslog'

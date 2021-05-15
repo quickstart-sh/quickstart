@@ -180,7 +180,7 @@ class ConfigFileService {
                 if ($currentValue === null && array_key_exists("default", $optionConfig)) {
                     $currentValue = $optionConfig["default"];
                     //@codeCoverageIgnoreStart
-                    if (self::DEBUG_ME) echo("Replaced empty value with " . $currentValue);
+                    if (self::DEBUG_ME) echo("Replaced empty value with " . $currentValue . "\n");
                     //@codeCoverageIgnoreEnd
                 }
                 if ($currentValue != null && $currentValue != "" && $currentValue != "_none" && array_key_exists($currentValue, $options)) {

@@ -24,8 +24,8 @@ parameters:
         wordpress: 'Wordpress site'
         reactjs: 'ReactJS app'
         gatsby: 'Gatsby app'
-        generic_nodejs_web: 'Other NodeJS web app (nuxt, jekyll, ...)'
-        generic_nodejs_server: 'NodeJS server app'
+        generic_nodejs_web: 'Other NodeJS static-compiled web app (nuxt, jekyll, ...)'
+        generic_nodejs_server: 'NodeJS server app or web app with dynamic NodeJS backend (react dom-server, ...)'
         generic_static_web: 'Generic static Web content'
         generic_php_web: 'Generic PHP Web content'
         generic_php_cli: 'Generic PHP CLI application'
@@ -36,6 +36,9 @@ parameters:
             externalServices.enabled: true
             os.workDirectory: '/var/www'
             os.documentRoot: '/var/www/public'
+            'os.cliTools.develop.[]':
+              - unzip #composer
+              - git #composer
         drupal:
           set:
             php.enabled: true
@@ -43,40 +46,63 @@ parameters:
             externalServices.enabled: true
             os.workDirectory: '/var/www'
             os.documentRoot: '/var/www/web'
+            'os.cliTools.develop.[]':
+              - unzip
+              - git
+            'os.cliTools.base.[]':
+              - cron #drush cron
         wordpress:
           set:
             php.enabled: true
             webserver.enabled: true
             externalServices.enabled: true
             os.workDirectory: '/var/www'
+            'os.cliTools.develop.[]':
+              - unzip
+              - git
+            'os.cliTools.base.[]':
+              - cron #wp cron
         generic_php_web:
           set:
             php.enabled: true
             webserver.enabled: true
             externalServices.enabled: true
             os.workDirectory: '/var/www'
+            'os.cliTools.develop.[]':
+              - unzip
+              - git
         generic_php_cli:
           set:
             php.enabled: true
-            webserver.enabled: true
             externalServices.enabled: true
             os.workDirectory: '/opt/app'
+            'os.cliTools.develop.[]':
+              - unzip
+              - git
         reactjs:
           set:
             nodejs.enabled: true
             webserver.enabled: true
+            nodejs.target: develop
+            os.workDirectory: '/opt/app'
         gatsby:
           set:
             nodejs.enabled: true
             webserver.enabled: true
+            nodejs.target: develop
+            os.workDirectory: '/opt/app'
         generic_nodejs_web:
           set:
             nodejs.enabled: true
             webserver.enabled: true
+            nodejs.target: develop
+            os.workDirectory: '/opt/app'
         generic_nodejs_server:
           set:
             nodejs.enabled: true
             externalServices.enabled: true
+            nodejs.target: base
+            os.workDirectory: '/opt/app'
         generic_static_web:
           set:
             webserver.enabled: true
@@ -298,3 +324,12 @@ parameters:
       mandatory: true
       description: 'the Docker image''s web server document root'
       if: '#os.documentRoot# === null && #webserver.enabled# === true'
+
+    os.cliTools.base:
+      type: select_multi
+      description: 'additional CLI tools in base image'
+      options: 'app.cli_tools'
+    os.cliTools.develop:
+      type: select_multi
+      description: 'additional CLI tools in develop image'
+      options: 'app.cli_tools'
