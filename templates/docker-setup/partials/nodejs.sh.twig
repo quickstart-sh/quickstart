@@ -1,0 +1,21 @@
+# Install nvm
+mkdir -p $NVM_DIR
+curl -o - https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | METHOD=script bash
+source $NVM_DIR/nvm.sh
+
+# Install the specified NodeJS version and its latest supported npm
+nvm install {{ config.get("nodejs.version") }}
+nvm install-latest-npm
+
+{% if config.get("nodejs.packageManager")=="yarn" %}
+# Install yarn
+npm install --global yarn
+{% endif %}
+
+# Create the proper symlink in $NVM_DIR/versions/node/latest so that PATH in Dockerfile always works
+if [[ $(cat $NVM_DIR/alias/default) == v* ]]; then
+  ln -s $NVM_DIR/versions/node/$(cat $NVM_DIR/alias/default) $NVM_DIR/versions/node/latest
+else
+  # LTS aliases hide behind a second layer of indirection
+  ln -s $NVM_DIR/versions/node/$(cat $NVM_DIR/alias/$(cat $NVM_DIR/alias/default)) $NVM_DIR/versions/node/latest
+fi

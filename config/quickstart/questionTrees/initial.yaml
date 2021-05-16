@@ -36,7 +36,7 @@ parameters:
             externalServices.enabled: true
             os.workDirectory: '/var/www'
             os.documentRoot: '/var/www/public'
-            'os.cliTools.develop.[]':
+            'os.cliTools.tooling.[]':
               - unzip #composer
               - git #composer
         drupal:
@@ -46,7 +46,7 @@ parameters:
             externalServices.enabled: true
             os.workDirectory: '/var/www'
             os.documentRoot: '/var/www/web'
-            'os.cliTools.develop.[]':
+            'os.cliTools.tooling.[]':
               - unzip
               - git
             'os.cliTools.base.[]':
@@ -57,7 +57,7 @@ parameters:
             webserver.enabled: true
             externalServices.enabled: true
             os.workDirectory: '/var/www'
-            'os.cliTools.develop.[]':
+            'os.cliTools.tooling.[]':
               - unzip
               - git
             'os.cliTools.base.[]':
@@ -68,7 +68,7 @@ parameters:
             webserver.enabled: true
             externalServices.enabled: true
             os.workDirectory: '/var/www'
-            'os.cliTools.develop.[]':
+            'os.cliTools.tooling.[]':
               - unzip
               - git
         generic_php_cli:
@@ -76,27 +76,30 @@ parameters:
             php.enabled: true
             externalServices.enabled: true
             os.workDirectory: '/opt/app'
-            'os.cliTools.develop.[]':
+            'os.cliTools.tooling.[]':
               - unzip
               - git
         reactjs:
           set:
             nodejs.enabled: true
             webserver.enabled: true
-            nodejs.target: develop
+            nodejs.target: tooling
             os.workDirectory: '/opt/app'
+            os.documentRoot: '/opt/app/public'
         gatsby:
           set:
             nodejs.enabled: true
             webserver.enabled: true
-            nodejs.target: develop
+            nodejs.target: tooling
             os.workDirectory: '/opt/app'
+            os.documentRoot: '/opt/app/public'
         generic_nodejs_web:
           set:
             nodejs.enabled: true
             webserver.enabled: true
-            nodejs.target: develop
+            nodejs.target: tooling
             os.workDirectory: '/opt/app'
+            os.documentRoot: '/opt/app/public'
         generic_nodejs_server:
           set:
             nodejs.enabled: true
@@ -107,6 +110,7 @@ parameters:
           set:
             webserver.enabled: true
             os.workDirectory: '/var/www'
+            os.documentRoot: '/var/www'
       final: true
       mandatory: true
 
@@ -309,10 +313,21 @@ parameters:
       description: 'the NodeJS version'
       if: '#nodejs.enabled# === true'
       options:
-        dubnium: 'v10 LTS (dubnium)'
-        erbium: 'v12 LTS (erbium)'
-        fermium: 'v14 LTS (fermium)'
-      default: fermium
+        'lts/dubnium': 'v10 LTS (dubnium)'
+        'lts/erbium': 'v12 LTS (erbium)'
+        'lts/fermium': 'v14 LTS (fermium)'
+      default: 'lts/fermium'
+      mandatory: true
+
+    nodejs.packageManager:
+      type: select_single
+      description: 'the NodeJS package manager'
+      if: '#nodejs.enabled# === true'
+      options:
+        npm: 'npm'
+        yarn: 'yarn'
+      default: yarn
+      mandatory: true
 
     os.workDirectory:
       type: string
@@ -329,7 +344,7 @@ parameters:
       type: select_multi
       description: 'additional CLI tools in base image'
       options: 'app.cli_tools'
-    os.cliTools.develop:
+    os.cliTools.tooling:
       type: select_multi
-      description: 'additional CLI tools in develop image'
+      description: 'additional CLI tools in tooling image'
       options: 'app.cli_tools'

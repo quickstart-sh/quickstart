@@ -1,8 +1,10 @@
 parameters:
   app.templateMappings:
-    "Dockerfile.twig":
+    "Dockerfile/Dockerfile.twig":
       target: "docker/Dockerfile"
-    "docker-setup-base.sh.twig":
+    "docker-setup/base.sh.twig":
       target: "docker/docker-setup-base.sh"
       chmod: 0775
-
+    "docker-setup/tooling.sh.twig":
+      target: "docker/docker-setup-tooling.sh"
+      chmod: 0775

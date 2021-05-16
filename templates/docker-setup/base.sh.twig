@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+
+# -e: fail script on a failed command / pipeline
+# -u: fail script on unset variables
+set -eu
+
+{% include "docker-setup/partials/import-proxy.sh.twig" %}
+
+# Update the base image packages and repositories
+{% if config.get("os.name")=="ubuntu" %}
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get upgrade -yf
+{% elseif config.get("os.name")=="alpine" %}
+apk update
+apk upgrade
+{% endif %}
+
+{%- set osPackages=[] -%}
+{# Core Linux packages #}
+{%- set osPackages=[]|merge([
+    "supervisor",
+    "curl",
+    "locales",
+    "tzdata",
+]) -%}
+
+{# Step 1: Gather all the OS packages we need #}
+
+{% if config.get("php.enabled") %}
+    {%- if config.get("os.name")=="ubuntu" %}
+# Add the PHP repository of Ondřej Surý
+apt-get install -yf software-properties-common
+add-apt-repository ppa:ondrej/php
+
+        {%- set osPackages=osPackages|merge(["php" ~ config.get("php.version") ~ "-cli"]) -%}
+
+        {%- if config.get("webserver.enabled") -%}
+            {%- if config.get("php.webserverIntegrationType")=="php_fpm" -%}
+                {%- set osPackages=osPackages|merge(["php" ~ config.get("php.version") ~ "-fpm"]) -%}
+            {%- elseif config.get("php.webserverIntegrationType")=="mod_php" -%}
+                {%- set osPackages=osPackages|merge(["libapache2-mod-php" ~ config.get("php.version")]) -%}
+            {%- endif -%}
+        {%- endif -%}
+
+    {%- elseif config.get("os.name")=="alpine" -%}
+    {%- endif -%}
+
+    {# Add the PHP extension packages #}
+    {%- set allExtData=app_parameters.get("app.phpExtensions") -%}
+    {%- for ext in config.get("php.extensions") -%}
+        {%- set extData=attribute(allExtData,ext).package -%}
+        {%- if attribute(extData,config.get("os.name") ~ "-" ~ config.get("os.version") ~ "-" ~ config.get("php.version")) is defined -%}
+            {%- set extPackageName=attribute(extData,config.get("os.name") ~ "-" ~ config.get("os.version") ~ "-" ~ config.get("php.version")) -%}
+            {%- set osPackages=osPackages|merge([extPackageName]) -%}
+        {%- endif -%}
+    {%- endfor -%}
+
+{% endif %}
+
+{%- if config.get("webserver.enabled") -%}
+    {%- if config.get("os.name")=="ubuntu" -%}
+        {%- set osPackages=osPackages|merge(["apache2"]) -%}
+    {%- elseif config.get("os.name")=="alpine" -%}
+    {%- endif -%}
+{%- endif -%}
+
+{%- set allToolData=app_parameters.get("app.cli_tools") -%}
+{%- for tool in config.get("os.cliTools.base") -%}
+    {%- set toolData=attribute(allToolData,tool).package -%}
+    {%- if attribute(toolData,config.get("os.name") ~ "-" ~ config.get("os.version")) is defined -%}
+        {%- set toolPackageName=attribute(toolData,config.get("os.name") ~ "-" ~ config.get("os.version")) -%}
+        {%- set osPackages=osPackages|merge([toolPackageName]) -%}
+    {%- endif -%}
+{%- endfor -%}
+
+{# Step 2: Install the OS packages #}
+
+# Install packages
+{% if config.get("os.name")=="ubuntu" %}
+# Update cache, in case one of the dependencies has pulled in a custom repository
+apt-get update
+apt-get install -yf \
+    {{ osPackages | sort | join(" \\\n    ") }}
+
+# Save space from artifacts (can be regenerated, if needed, with apt-get update)
+apt-get clean
+rm -rf /var/lib/apt/lists/*
+{% elseif config.get("os.name")=="alpine" %}
+{% endif %}
+
+{# Step 3: Configure the OS packages #}
+
+# Configure timezone
+{% if config.get("os.name")=="ubuntu" %}
+rm -f /etc/localtime /etc/timezone
+echo {{ config.get("os.timezone") }} > /etc/timezone
+dpkg-reconfigure tzdata
+{% elseif config.get("os.name")=="alpine" %}
+{% endif %}
+
+{% if config.has("os.cliTools.base.[rsyslog]") %}
+# Configure rsyslog
+    {%- if config.get("os.name")=="ubuntu" -%}
+touch /var/log/syslog
+chown syslog:adm /var/log/syslog
+# disable kmsg support (we're in Docker, so don't have access to this)
+sed -i '/^kern/d' /etc/rsyslog.d/50-default.conf
+sed -i '/imklog/d' /etc/rsyslog.conf
+    {%- elseif config.get("os.name")=="alpine" -%}
+    {%- endif -%}
+{% endif %}
+
+# Configure bash prompt
+echo PS1=\''\u:\w# '\' >> /root/.bashrc
+
+{% if config.get("php.enabled") %}
+# Install PHP Composer
+curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+{% endif %}
+
+{% if config.get("project.type") == "drupal" %}
+# Install Drupal's drush
+# Note the path adjustments to make sure drush and its dependencies are globally readable, not just stuck in /root where www-data can't see it
+COMPOSER_HOME=/opt/composer-global-home COMPOSER_BIN_DIR=/usr/local/bin COMPOSER_VENDOR_DIR=/opt/drush composer global require drush/drush
+# Install completion support
+drush init
+{% endif %}
+
+{% if config.get("os.name")=="ubuntu" %}
+{% elseif config.get("os.name")=="alpine" %}
+{% endif %}
+
+{% if config.get("nodejs.enabled") and config.get("nodejs.target")=="base" %}
+    {%- include "docker-setup/partials/nodejs.sh.twig" %}
+{% endif %}
+
+{% include "docker-setup/partials/remove-proxy.sh.twig" %}
