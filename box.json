@@ -1,0 +1,12 @@
+{
+    "main": "bin/console",
+    "output": "target/quickstart.phar",
+    "chmod": "0755",
+    "files-bin": [
+        ".env",
+        ".env.local.php"
+    ],
+    "directories-bin": [
+        "config"
+    ]
+}

@@ -37,4 +37,12 @@ class Kernel extends BaseKernel {
             (require $path)($routes->withPath($path), $this);
         }
     }
+
+    /**
+     * @see https://github.com/box-project/box/blob/master/doc/symfony.md
+     * @return string
+     */
+    public function getProjectDir(): string {
+        return __DIR__.'/../';
+    }
 }
