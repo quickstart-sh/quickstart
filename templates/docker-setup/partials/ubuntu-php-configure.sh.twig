@@ -1,0 +1,46 @@
+# Custom PHP settings
+{% if config.get("php.webserverIntegrationType")=="mod_php" %}
+{%- set webSapi="apache2" -%}
+{% elseif config.get("php.webserverIntegrationType")=="php_fpm" %}
+{%- set webSapi="fpm" -%}
+{% endif %}
+cat << EOF > /etc/php/{{ config.get("php.version") }}/mods-available/web.ini
+; priority=30
+post_max_size = 0
+upload_max_filesize = 1024M
+max_execution_time = 60
+memory_limit = 512M
+EOF
+cat << EOF > /etc/php/{{ config.get("php.version") }}/mods-available/cli.ini
+; priority=30
+max_execution_time = 0
+memory_limit = -1
+EOF
+
+{% if config.get("php.webserverIntegrationType")=="php_fpm" %}
+cat << EOF > /etc/php/{{ config.get("php.version") }}/fpm/pool.d/www_custom.conf
+; Pass environment variables through to PHP
+[www]
+clear_env = no
+EOF
+a2enmod proxy_fcgi setenvif
+a2enconf php{{ config.get("php.version") }}-fpm
+# See /usr/lib/tmpfiles.d/php*-fpm.conf
+# PHP won't start without these
+mkdir -p -m 0755 /run/php
+chown -R www-data:www-data /run/php
+{% endif %}
+
+phpenmod -v {{ config.get("php.version") }} -s {{ webSapi }} web
+phpenmod -v {{ config.get("php.version") }} -s cli cli
+
+# Install PHP Composer
+curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+{% if config.get("project.type") == "drupal" %}
+# Install Drupal's drush
+# Note the path adjustments to make sure drush and its dependencies are globally readable, not just stuck in /root where www-data can't see it
+COMPOSER_HOME=/opt/composer-global-home COMPOSER_BIN_DIR=/usr/local/bin COMPOSER_VENDOR_DIR=/opt/drush composer global require drush/drush
+# Install completion support
+drush init
+{% endif %}

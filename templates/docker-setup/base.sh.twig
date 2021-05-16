@@ -32,39 +32,15 @@ apk upgrade
 # Add the PHP repository of Ondřej Surý
 apt-get install -yf software-properties-common
 add-apt-repository ppa:ondrej/php
-
-        {%- set osPackages=osPackages|merge(["php" ~ config.get("php.version") ~ "-cli"]) -%}
-
-        {%- if config.get("webserver.enabled") -%}
-            {%- if config.get("php.webserverIntegrationType")=="php_fpm" -%}
-                {%- set osPackages=osPackages|merge(["php" ~ config.get("php.version") ~ "-fpm"]) -%}
-            {%- elseif config.get("php.webserverIntegrationType")=="mod_php" -%}
-                {%- set osPackages=osPackages|merge(["libapache2-mod-php" ~ config.get("php.version")]) -%}
-            {%- endif -%}
-        {%- endif -%}
-
     {%- elseif config.get("os.name")=="alpine" -%}
     {%- endif -%}
-
-    {# Add the PHP extension packages #}
-    {%- set allExtData=app_parameters.get("app.phpExtensions") -%}
-    {%- for ext in config.get("php.extensions") -%}
-        {%- set extData=attribute(allExtData,ext).package -%}
-        {%- if attribute(extData,config.get("os.name") ~ "-" ~ config.get("os.version") ~ "-" ~ config.get("php.version")) is defined -%}
-            {%- set extPackageName=attribute(extData,config.get("os.name") ~ "-" ~ config.get("os.version") ~ "-" ~ config.get("php.version")) -%}
-            {%- set osPackages=osPackages|merge([extPackageName]) -%}
-        {%- endif -%}
-    {%- endfor -%}
-
+    {%- set newPackages=include("docker-setup/partials/" ~ config.get("os.name") ~ "-php-gather.sh.twig")|split(",") -%}
+    {%- set osPackages=osPackages|merge(newPackages) -%}
 {% endif %}
 
 {%- if config.get("webserver.enabled") -%}
-    {%- if config.get("os.name")=="ubuntu" -%}
-        {%- if config.get("webserver.software")=="apache" -%}
-            {%- set osPackages=osPackages|merge(["apache2"]) -%}
-        {%- endif -%}
-    {%- elseif config.get("os.name")=="alpine" -%}
-    {%- endif -%}
+    {%- set newPackages=include("docker-setup/partials/" ~ config.get("os.name") ~ "-" ~ config.get("webserver.software") ~ "-gather.sh.twig")|split(",") -%}
+    {%- set osPackages=osPackages|merge(newPackages) -%}
 {%- endif -%}
 
 {%- set allToolData=app_parameters.get("app.cli_tools") -%}
@@ -102,34 +78,7 @@ dpkg-reconfigure tzdata
 {% endif %}
 
 {%- if config.get("webserver.enabled") -%}
-    {%- if config.get("os.name")=="ubuntu" -%}
-        {%- if config.get("webserver.software")=="apache" -%}
-
-# Enable mod_rewrite. Virtually every piece of software wants it anyway
-a2enmod rewrite
-
-# Clear any OS-provided default config, replace it with our own
-rm -rf /etc/apache2/sites-enabled/* /var/www/*
-cat << EOF > /etc/apache2/sites-enabled/00-default.conf
-<VirtualHost *:80>
-    ServerName localhost
-    ServerAdmin webmaster@localhost
-    DocumentRoot {{ config.get("os.documentRoot") }}
-    ErrorLog \${APACHE_LOG_DIR}/error.log
-    CustomLog \${APACHE_LOG_DIR}/access.log combined
-    <Directory {{ config.get("os.workDirectory") }}>
-        AllowOverride All
-    </Directory>
-</VirtualHost>
-EOF
-
-# These two are normally created by /usr/sbin/apachectl.
-# Since we're invoking apache2 manually, create them here
-mkdir -p /var/run/apache2 /var/lock/apache2
-chown www-data:www-data /var/lock/apache2
-        {%- endif -%}
-    {%- elseif config.get("os.name")=="alpine" -%}
-    {%- endif -%}
+    {%- include "docker-setup/partials/" ~ config.get("os.name") ~ "-" ~ config.get("webserver.software") ~ "-configure.sh.twig" -%}
 {%- endif -%}
 
 {% if config.has("os.cliTools.base.[rsyslog]") %}
@@ -148,20 +97,7 @@ sed -i '/imklog/d' /etc/rsyslog.conf
 echo PS1=\''\u:\w# '\' >> /root/.bashrc
 
 {% if config.get("php.enabled") %}
-# Install PHP Composer
-curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-{% endif %}
-
-{% if config.get("project.type") == "drupal" %}
-# Install Drupal's drush
-# Note the path adjustments to make sure drush and its dependencies are globally readable, not just stuck in /root where www-data can't see it
-COMPOSER_HOME=/opt/composer-global-home COMPOSER_BIN_DIR=/usr/local/bin COMPOSER_VENDOR_DIR=/opt/drush composer global require drush/drush
-# Install completion support
-drush init
-{% endif %}
-
-{% if config.get("os.name")=="ubuntu" %}
-{% elseif config.get("os.name")=="alpine" %}
+    {%- include "docker-setup/partials/" ~ config.get("os.name") ~ "-php-configure.sh.twig" -%}
 {% endif %}
 
 {% if config.get("nodejs.enabled") and config.get("nodejs.target")=="base" %}

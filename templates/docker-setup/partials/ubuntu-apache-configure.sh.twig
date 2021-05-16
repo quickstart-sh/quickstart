@@ -1,0 +1,22 @@
+# Enable mod_rewrite. Virtually every piece of software wants it anyway
+a2enmod rewrite
+
+# Clear any OS-provided default config, replace it with our own
+rm -rf /etc/apache2/sites-enabled/* /var/www/*
+cat << EOF > /etc/apache2/sites-enabled/00-default.conf
+<VirtualHost *:80>
+    ServerName localhost
+    ServerAdmin webmaster@localhost
+    DocumentRoot {{ config.get("os.documentRoot") }}
+    ErrorLog \${APACHE_LOG_DIR}/error.log
+    CustomLog \${APACHE_LOG_DIR}/access.log combined
+    <Directory {{ config.get("os.workDirectory") }}>
+        AllowOverride All
+    </Directory>
+</VirtualHost>
+EOF
+
+# These two are normally created by /usr/sbin/apachectl.
+# Since we're invoking apache2 manually, create them here
+mkdir -p /var/run/apache2 /var/lock/apache2
+chown www-data:www-data /var/lock/apache2

@@ -9,9 +9,11 @@ ENV LC_ALL={{ config.get("os.locale") }}
     {%- if config.get("webserver.software")=="apache" -%}
         {%- set supervisorFiles=supervisorFiles|merge(["docker/supervisord/01_apache.conf"]) -%}
     {%- endif -%}
+    {%- if config.get("php.enabled") and config.get("php.webserverIntegrationType")=="php_fpm" -%}
+        {%- set supervisorFiles=supervisorFiles|merge(["docker/supervisord/01_php_fpm.conf"]) -%}
+    {%- endif -%}
 {%- endif -%}
 COPY ["{{ supervisorFiles|join('", "')|raw }}", "/etc/supervisor/conf.d/"]
-
 
 {% if config.get("nodejs.enabled") and config.get("nodejs.target")=="base" %}
     {%- include "Dockerfile/partials/nvm.Dockerfile.twig" -%}
