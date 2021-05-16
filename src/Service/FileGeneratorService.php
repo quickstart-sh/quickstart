@@ -64,6 +64,8 @@ class FileGeneratorService {
             "config" => $config,
         ]);
 
+        $content=preg_replace('/[\n]{3,}/',"\n",$content);
+
         if (@file_put_contents($targetPath, $content) === false)
             throw new \RuntimeException("Failed to persist " . $targetPath);
 
