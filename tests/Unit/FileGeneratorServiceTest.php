@@ -46,6 +46,46 @@ class FileGeneratorServiceTest extends KernelTestCase {
     }
 
     /**
+     * Test generation of a simple file with chmod
+     */
+    public function testFileGenerateChmod() {
+        $this->setupFS();
+        self::bootKernel();
+        $container = self::$container;
+        $service = $container->get(FileGeneratorService::class);
+        $service->writeFile("test.twig", [
+            "target" => "testFile",
+            "chmod" => 0777
+        ], new Config([
+            "test" => "value"
+        ]), $this->vfsRoot->url());
+        $service->writeFile("test.twig", [
+            "target" => "testFile2",
+            "chmod" => 0000
+        ], new Config([
+            "test" => "value"
+        ]), $this->vfsRoot->url());
+        $this->assertTrue($this->vfsRoot->hasChild("testFile"));
+        $this->assertTrue($this->vfsRoot->hasChild("testFile2"));
+        $this->assertEquals(
+            2,
+            sizeof($this->vfsRoot->getChildren())
+        );
+        $this->assertEquals(
+            0777,
+            $this->vfsRoot->getChild("testFile")->getPermissions()
+        );
+        $this->assertEquals(
+            0000,
+            $this->vfsRoot->getChild("testFile2")->getPermissions()
+        );
+        $this->assertEquals(
+            "value",
+            $this->vfsRoot->getChild("testFile")->getContent()
+        );
+    }
+
+    /**
      * Test generation of a simple file
      */
     public function testFileGenerateOverwrite() {
@@ -165,6 +205,35 @@ class FileGeneratorServiceTest extends KernelTestCase {
      */
     public function testFileGenerateWithDirectory() {
         $this->setupFS();
+        self::bootKernel();
+        $container = self::$container;
+        $service = $container->get(FileGeneratorService::class);
+        $service->writeFile("test.twig", [
+            "target" => "folder/testFile",
+        ], new Config([
+            "test" => "value"
+        ]), $this->vfsRoot->url());
+        $this->assertTrue($this->vfsRoot->hasChild("folder/testFile"));
+        $this->assertEquals(
+            1,
+            sizeof($this->vfsRoot->getChildren())
+        );
+        $this->assertEquals(
+            1,
+            sizeof($this->vfsRoot->getChild("folder")->getChildren())
+        );
+        $this->assertEquals(
+            "value",
+            $this->vfsRoot->getChild("folder/testFile")->getContent()
+        );
+    }
+
+    /**
+     * Test generation of a file in a directory
+     */
+    public function testFileGenerateWithExistingDirectory() {
+        $this->setupFS();
+        VfsStream::newDirectory("folder")->at($this->vfsRoot);
         self::bootKernel();
         $container = self::$container;
         $service = $container->get(FileGeneratorService::class);

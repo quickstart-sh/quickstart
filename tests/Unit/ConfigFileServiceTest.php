@@ -1348,10 +1348,10 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupIO(["1"]);
         $config = new Config([]);
         $service = new ConfigFileService(new ParameterBag([
-            "app.test"=>[
-                "foo"=>["name"=>"bar"],
-                "baz"=>["name"=>"qux"],
-                "quux"=>["name"=>"quux"],
+            "app.test" => [
+                "foo" => ["name" => "bar"],
+                "baz" => ["name" => "qux"],
+                "quux" => ["name" => "quux"],
             ],
         ]));
         $service->setInput($this->input);
@@ -1369,6 +1369,7 @@ class ConfigFileServiceTest extends TestCase {
             "test" => "baz",
         ], $config->getAll());
     }
+
     /**
      * Test single select with dynamic parameter list
      * @throws \Exception
@@ -1378,10 +1379,10 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupIO(["1"]);
         $config = new Config([]);
         $service = new ConfigFileService(new ParameterBag([
-            "app.test"=>[
-                "foo"=>["name"=>"bar"],
-                "baz"=>["name"=>"qux"],
-                "quux"=>["name"=>"quux"],
+            "app.test" => [
+                "foo" => ["name" => "bar"],
+                "baz" => ["name" => "qux"],
+                "quux" => ["name" => "quux"],
             ],
         ]));
         $service->setInput($this->input);
@@ -1399,6 +1400,7 @@ class ConfigFileServiceTest extends TestCase {
             "test" => ["baz"],
         ], $config->getAll());
     }
+
     /**
      * Test path override
      *

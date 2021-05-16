@@ -64,7 +64,7 @@ class FileGeneratorService {
             "config" => $config,
         ]);
 
-        $content=preg_replace('/[\n]{3,}/',"\n",$content);
+        $content = preg_replace('/[\n]{3,}/', "\n", $content);
 
         if (@file_put_contents($targetPath, $content) === false)
             throw new \RuntimeException("Failed to persist " . $targetPath);
@@ -73,9 +73,13 @@ class FileGeneratorService {
             //@codeCoverageIgnoreStart
             if (self::DEBUG_ME) echo("File $sourcePath, setting chmod to " . decoct($templateConfig["chmod"]));
             //@codeCoverageIgnoreEnd
+            //Note: vfsStreamAbstractContent's chmod() can't be provoked to error out...
             if (@chmod($targetPath, $templateConfig["chmod"]) === false) {
+                //@codeCoverageIgnoreStart
                 throw new \RuntimeException("Failed to chmod $targetPath");
+                //@codeCoverageIgnoreEnd
             }
+
         }
     }
 }
