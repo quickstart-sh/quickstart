@@ -1,0 +1,7 @@
+{%- set osPackages=[]|merge([
+    "supervisor",
+    "curl",
+    "locales",
+    "tzdata",
+]) -%}
+{{ osPackages|join(",") }}

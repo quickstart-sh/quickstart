@@ -1,0 +1,5 @@
+touch /var/log/syslog
+chown syslog:adm /var/log/syslog
+# disable kmsg support (we're in Docker, so don't have access to this)
+sed -i '/^kern/d' /etc/rsyslog.d/50-default.conf
+sed -i '/imklog/d' /etc/rsyslog.conf

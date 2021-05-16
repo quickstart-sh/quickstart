@@ -1,0 +1,10 @@
+{%- set osPackages=[] -%}
+{%- set allToolData=app_parameters.get("app.cli_tools") -%}
+{%- for tool in config.get("os.cliTools." ~ stage) -%}
+    {%- set toolData=attribute(allToolData,tool).package -%}
+    {%- if attribute(toolData,config.get("os.name") ~ "-" ~ config.get("os.version")) is defined -%}
+        {%- set toolPackageName=attribute(toolData,config.get("os.name") ~ "-" ~ config.get("os.version")) -%}
+        {%- set osPackages=osPackages|merge([toolPackageName]) -%}
+    {%- endif -%}
+{%- endfor -%}
+{{ osPackages|join(",") }}

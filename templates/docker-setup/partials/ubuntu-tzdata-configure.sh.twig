@@ -1,0 +1,3 @@
+rm -f /etc/localtime /etc/timezone
+echo {{ config.get("os.timezone") }} > /etc/timezone
+dpkg-reconfigure tzdata

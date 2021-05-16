@@ -14,24 +14,10 @@ set -eu
 
 {% if osPackages|length > 0 %}
 # Install packages
-    {%- if config.get("os.name")=="ubuntu" -%}
-# Update cache, in case one of the dependencies has pulled in a custom repository
-apt-get update
-apt-get install -yf \
-    {{ osPackages | sort | join(" \\\n    ") }}
-
-# Save space from artifacts (can be regenerated, if needed, with apt-get update)
-apt-get clean
-rm -rf /var/lib/apt/lists/*
-    {%- elseif config.get("os.name")=="alpine" %}
-    {%- endif -%}
+    {%~ include "docker-setup/partials/" ~ config.get("os.name") ~ "-packages-install.sh.twig" %}
 {% endif %}
 
 {# Step 3: Configure the OS packages #}
-
-{% if config.get("os.name")=="ubuntu" %}
-{% elseif config.get("os.name")=="alpine" %}
-{% endif %}
 
 {% if config.get("nodejs.enabled") and config.get("nodejs.target")=="tooling" %}
     {%- include "docker-setup/partials/nodejs.sh.twig" %}

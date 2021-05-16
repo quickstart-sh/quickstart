@@ -1,0 +1,8 @@
+# Update cache, in case one of the dependencies has pulled in a custom repository
+apt-get update
+apt-get install -yf \
+    {{ osPackages | sort | join(" \\\n    ") }}
+
+# Save space from artifacts (can be regenerated, if needed, with apt-get update)
+apt-get clean
+rm -rf /var/lib/apt/lists/*

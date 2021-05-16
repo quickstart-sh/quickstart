@@ -17,13 +17,10 @@ apk upgrade
 {% endif %}
 
 {%- set osPackages=[] -%}
+
 {# Core Linux packages #}
-{%- set osPackages=[]|merge([
-    "supervisor",
-    "curl",
-    "locales",
-    "tzdata",
-]) -%}
+{%- set newPackages=include("docker-setup/partials/" ~ config.get("os.name") ~ "-packages-gather.twig")|split(",") -%}
+{%- set osPackages=osPackages|merge(newPackages) -%}
 
 {# Step 1: Gather all the OS packages we need #}
 
@@ -34,74 +31,49 @@ apt-get install -yf software-properties-common
 add-apt-repository ppa:ondrej/php
     {%- elseif config.get("os.name")=="alpine" -%}
     {%- endif -%}
-    {%- set newPackages=include("docker-setup/partials/" ~ config.get("os.name") ~ "-php-gather.sh.twig")|split(",") -%}
+    {%- set newPackages=include("docker-setup/partials/" ~ config.get("os.name") ~ "-php-gather.twig")|split(",") -%}
     {%- set osPackages=osPackages|merge(newPackages) -%}
 {% endif %}
 
 {%- if config.get("webserver.enabled") -%}
-    {%- set newPackages=include("docker-setup/partials/" ~ config.get("os.name") ~ "-" ~ config.get("webserver.software") ~ "-gather.sh.twig")|split(",") -%}
+    {%- set newPackages=include("docker-setup/partials/" ~ config.get("os.name") ~ "-" ~ config.get("webserver.software") ~ "-gather.twig")|split(",") -%}
     {%- set osPackages=osPackages|merge(newPackages) -%}
 {%- endif -%}
 
-{%- set allToolData=app_parameters.get("app.cli_tools") -%}
-{%- for tool in config.get("os.cliTools.base") -%}
-    {%- set toolData=attribute(allToolData,tool).package -%}
-    {%- if attribute(toolData,config.get("os.name") ~ "-" ~ config.get("os.version")) is defined -%}
-        {%- set toolPackageName=attribute(toolData,config.get("os.name") ~ "-" ~ config.get("os.version")) -%}
-        {%- set osPackages=osPackages|merge([toolPackageName]) -%}
-    {%- endif -%}
-{%- endfor -%}
+{%- set newPackages=include("docker-setup/partials/tools-gather.twig", {stage: 'base'})|split(",") -%}
+{%- set osPackages=osPackages|merge(newPackages) -%}
 
 {# Step 2: Install the OS packages #}
 
 # Install packages
-{% if config.get("os.name")=="ubuntu" %}
-# Update cache, in case one of the dependencies has pulled in a custom repository
-apt-get update
-apt-get install -yf \
-    {{ osPackages | sort | join(" \\\n    ") }}
-
-# Save space from artifacts (can be regenerated, if needed, with apt-get update)
-apt-get clean
-rm -rf /var/lib/apt/lists/*
-{% elseif config.get("os.name")=="alpine" %}
-{% endif %}
+{% include "docker-setup/partials/" ~ config.get("os.name") ~ "-packages-install.sh.twig" %}
 
 {# Step 3: Configure the OS packages #}
 
 # Configure timezone
-{% if config.get("os.name")=="ubuntu" %}
-rm -f /etc/localtime /etc/timezone
-echo {{ config.get("os.timezone") }} > /etc/timezone
-dpkg-reconfigure tzdata
-{% elseif config.get("os.name")=="alpine" %}
-{% endif %}
+{% include "docker-setup/partials/" ~ config.get("os.name") ~ "-tzdata-configure.sh.twig" %}
 
-{%- if config.get("webserver.enabled") -%}
-    {%- include "docker-setup/partials/" ~ config.get("os.name") ~ "-" ~ config.get("webserver.software") ~ "-configure.sh.twig" -%}
-{%- endif -%}
+{% if config.get("webserver.enabled") %}
+# Configure web server {{ config.get("webserver.software") }}
+    {%~ include "docker-setup/partials/" ~ config.get("os.name") ~ "-" ~ config.get("webserver.software") ~ "-configure.sh.twig" -%}
+{% endif %}
 
 {% if config.has("os.cliTools.base.[rsyslog]") %}
 # Configure rsyslog
-    {%- if config.get("os.name")=="ubuntu" -%}
-touch /var/log/syslog
-chown syslog:adm /var/log/syslog
-# disable kmsg support (we're in Docker, so don't have access to this)
-sed -i '/^kern/d' /etc/rsyslog.d/50-default.conf
-sed -i '/imklog/d' /etc/rsyslog.conf
-    {%- elseif config.get("os.name")=="alpine" -%}
-    {%- endif -%}
+    {~% include "docker-setup/partials/" ~ config.get("os.name") ~ "-rsyslog-configure.sh.twig" -%}
 {% endif %}
 
 # Configure bash prompt
 echo PS1=\''\u:\w# '\' >> /root/.bashrc
 
 {% if config.get("php.enabled") %}
-    {%- include "docker-setup/partials/" ~ config.get("os.name") ~ "-php-configure.sh.twig" -%}
+# Configure PHP
+    {%~ include "docker-setup/partials/" ~ config.get("os.name") ~ "-php-configure.sh.twig" -%}
 {% endif %}
 
 {% if config.get("nodejs.enabled") and config.get("nodejs.target")=="base" %}
-    {%- include "docker-setup/partials/nodejs.sh.twig" %}
+# Install and configure NodeJS
+    {%~ include "docker-setup/partials/nodejs.sh.twig" -%}
 {% endif %}
 
 {% include "docker-setup/partials/remove-proxy.sh.twig" %}
