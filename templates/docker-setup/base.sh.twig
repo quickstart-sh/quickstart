@@ -60,7 +60,9 @@ add-apt-repository ppa:ondrej/php
 
 {%- if config.get("webserver.enabled") -%}
     {%- if config.get("os.name")=="ubuntu" -%}
-        {%- set osPackages=osPackages|merge(["apache2"]) -%}
+        {%- if config.get("webserver.software")=="apache" -%}
+            {%- set osPackages=osPackages|merge(["apache2"]) -%}
+        {%- endif -%}
     {%- elseif config.get("os.name")=="alpine" -%}
     {%- endif -%}
 {%- endif -%}
@@ -98,6 +100,37 @@ echo {{ config.get("os.timezone") }} > /etc/timezone
 dpkg-reconfigure tzdata
 {% elseif config.get("os.name")=="alpine" %}
 {% endif %}
+
+{%- if config.get("webserver.enabled") -%}
+    {%- if config.get("os.name")=="ubuntu" -%}
+        {%- if config.get("webserver.software")=="apache" -%}
+
+# Enable mod_rewrite. Virtually every piece of software wants it anyway
+a2enmod rewrite
+
+# Clear any OS-provided default config, replace it with our own
+rm -rf /etc/apache2/sites-enabled/* /var/www/*
+cat << EOF > /etc/apache2/sites-enabled/00-default.conf
+<VirtualHost *:80>
+    ServerName localhost
+    ServerAdmin webmaster@localhost
+    DocumentRoot {{ config.get("os.documentRoot") }}
+    ErrorLog \${APACHE_LOG_DIR}/error.log
+    CustomLog \${APACHE_LOG_DIR}/access.log combined
+    <Directory {{ config.get("os.workDirectory") }}>
+        AllowOverride All
+    </Directory>
+</VirtualHost>
+EOF
+
+# These two are normally created by /usr/sbin/apachectl.
+# Since we're invoking apache2 manually, create them here
+mkdir -p /var/run/apache2 /var/lock/apache2
+chown www-data:www-data /var/lock/apache2
+        {%- endif -%}
+    {%- elseif config.get("os.name")=="alpine" -%}
+    {%- endif -%}
+{%- endif -%}
 
 {% if config.has("os.cliTools.base.[rsyslog]") %}
 # Configure rsyslog

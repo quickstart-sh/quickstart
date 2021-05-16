@@ -1,0 +1,20 @@
+{%- set exposedPorts=[] -%}
+{%- if config.get("webserver.enabled") -%}
+    {%- set exposedPorts=exposedPorts|merge([80]) -%}
+{%- endif -%}
+version: "3.4"
+services:
+    app:
+        build:
+            target: tooling
+            context: ../
+            dockerfile: docker/Dockerfile
+{% if exposedPorts|length > 0 %}
+        ports:
+{% for port in exposedPorts %}
+            - {{ 8080+loop.index0 }}:{{ port }}
+{% endfor %}
+{% endif %}
+        volumes:
+            # :delegated is used on Windows and OS X to at least get *some* performance
+            - ../:{{ config.get("os.workDirectory") }}:delegated

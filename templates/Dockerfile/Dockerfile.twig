@@ -4,6 +4,15 @@ WORKDIR "{{ config.get("os.workDirectory") }}"
 CMD ["/usr/bin/supervisord","-c","/etc/supervisor/supervisord.conf"]
 ENV LC_ALL={{ config.get("os.locale") }}
 
+{% set supervisorFiles=["docker/supervisord/00_supervisord.conf"] %}
+{%- if config.get("webserver.enabled") -%}
+    {%- if config.get("webserver.software")=="apache" -%}
+        {%- set supervisorFiles=supervisorFiles|merge(["docker/supervisord/01_apache.conf"]) -%}
+    {%- endif -%}
+{%- endif -%}
+COPY ["{{ supervisorFiles|join('", "')|raw }}", "/etc/supervisor/conf.d/"]
+
+
 {% if config.get("nodejs.enabled") and config.get("nodejs.target")=="base" %}
     {%- include "Dockerfile/partials/nvm.Dockerfile.twig" -%}
 {% endif %}
