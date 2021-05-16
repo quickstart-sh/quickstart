@@ -51,6 +51,7 @@ parameters:
               - git
             'os.cliTools.base.[]':
               - cron #drush cron
+              - logrotate
         wordpress:
           set:
             php.enabled: true
@@ -62,6 +63,7 @@ parameters:
               - git
             'os.cliTools.base.[]':
               - cron #wp cron
+              - logrotate
         generic_php_web:
           set:
             php.enabled: true
@@ -71,6 +73,9 @@ parameters:
             'os.cliTools.tooling.[]':
               - unzip
               - git
+            'os.cliTools.base.[]':
+              - cron
+              - logrotate
         generic_php_cli:
           set:
             php.enabled: true
@@ -111,6 +116,9 @@ parameters:
             webserver.enabled: true
             os.workDirectory: '/var/www'
             os.documentRoot: '/var/www'
+            'os.cliTools.base.[]':
+              - cron
+              - logrotate
       final: true
       mandatory: true
 
@@ -192,6 +200,9 @@ parameters:
         web:
           set:
             webserver.enabled: true
+            'os.cliTools.base.[]':
+              - cron #php sessions
+              - logrotate #logs
         cli:
           set:
             webserver.enabled: null

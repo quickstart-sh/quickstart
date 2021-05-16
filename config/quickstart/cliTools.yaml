@@ -28,3 +28,7 @@ parameters:
       name: 'rsyslog'
       package:
         'ubuntu-20.04': 'rsyslog'
+    logrotate:
+      name: 'logrotate'
+      package:
+        'ubuntu-20.04': 'logrotate'
