@@ -37,11 +37,11 @@ class FileGeneratorService {
         //Check if we are allowed to write the file
         if (array_key_exists("if", $templateConfig) && ConditionEvaluatorService::evaluate($templateConfig["if"], $config) === false) {
             //@codeCoverageIgnoreStart
-            if (self::DEBUG_ME) echo("File $sourcePath, passing as condition " . $templateConfig["if"] . " returned false");
+            if (self::DEBUG_ME) echo("File $sourcePath, passing as condition " . $templateConfig["if"] . " returned false\n");
             //@codeCoverageIgnoreEnd
             if (is_file($targetPath)) {
                 //@codeCoverageIgnoreStart
-                if (self::DEBUG_ME) echo("File $sourcePath, removing existing file");
+                if (self::DEBUG_ME) echo("File $sourcePath, removing existing file\n");
                 //@codeCoverageIgnoreEnd
                 if (@unlink($targetPath) === false) {
                     throw new \RuntimeException("Failed to delete $targetPath");
@@ -53,7 +53,7 @@ class FileGeneratorService {
         $parentDirectory = dirname($targetPath);
         if (!file_exists($parentDirectory)) {
             //@codeCoverageIgnoreStart
-            if (self::DEBUG_ME) echo("File $sourcePath, creating parent directory $parentDirectory");
+            if (self::DEBUG_ME) echo("File $sourcePath, creating parent directory $parentDirectory\n");
             //@codeCoverageIgnoreEnd
             if (@mkdir($parentDirectory, 0775, true) === false) {
                 throw new \RuntimeException("Failed to create $parentDirectory");
@@ -71,7 +71,7 @@ class FileGeneratorService {
 
         if (array_key_exists("chmod", $templateConfig)) {
             //@codeCoverageIgnoreStart
-            if (self::DEBUG_ME) echo("File $sourcePath, setting chmod to " . decoct($templateConfig["chmod"]));
+            if (self::DEBUG_ME) echo("File $sourcePath, setting chmod to " . decoct($templateConfig["chmod"])."\n");
             //@codeCoverageIgnoreEnd
             //Note: vfsStreamAbstractContent's chmod() can't be provoked to error out...
             if (@chmod($targetPath, $templateConfig["chmod"]) === false) {

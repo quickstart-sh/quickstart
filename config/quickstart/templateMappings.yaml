@@ -14,5 +14,6 @@ parameters:
       target: "docker/supervisord/01_apache.conf"
     "supervisord/01_php_fpm.conf.twig":
       target: "docker/supervisord/01_php_fpm.conf"
+      if: "#php.webserverIntegrationType# === 'php_fpm'"
     "docker-compose/docker-compose.yml.twig":
       target: "docker/docker-compose.yml"
