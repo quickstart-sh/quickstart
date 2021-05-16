@@ -1,9 +1,10 @@
 # Custom PHP settings
-{% if config.get("php.webserverIntegrationType")=="mod_php" %}
-{%- set webSapi="apache2" -%}
-{% elseif config.get("php.webserverIntegrationType")=="php_fpm" %}
-{%- set webSapi="fpm" -%}
-{% endif %}
+{% if config.get("webserver.enabled") %}
+    {%- if config.get("php.webserverIntegrationType")=="mod_php" -%}
+        {%- set webSapi="apache2" -%}
+    {%- elseif config.get("php.webserverIntegrationType")=="php_fpm" -%}
+        {%- set webSapi="fpm" -%}
+    {%- endif -%}
 cat << EOF > /etc/php/{{ config.get("php.version") }}/mods-available/web.ini
 ; priority=30
 post_max_size = 0
@@ -11,27 +12,31 @@ upload_max_filesize = 1024M
 max_execution_time = 60
 memory_limit = 512M
 EOF
-cat << EOF > /etc/php/{{ config.get("php.version") }}/mods-available/cli.ini
-; priority=30
-max_execution_time = 0
-memory_limit = -1
-EOF
 
-{% if config.get("php.webserverIntegrationType")=="php_fpm" %}
+phpenmod -v {{ config.get("php.version") }} -s {{ webSapi }} web
+
+    {%~ if config.get("php.webserverIntegrationType")=="php_fpm" ~%}
 cat << EOF > /etc/php/{{ config.get("php.version") }}/fpm/pool.d/www_custom.conf
 ; Pass environment variables through to PHP
 [www]
 clear_env = no
 EOF
+
 a2enmod proxy_fcgi setenvif
 a2enconf php{{ config.get("php.version") }}-fpm
 # See /usr/lib/tmpfiles.d/php*-fpm.conf
 # PHP won't start without these
 mkdir -p -m 0755 /run/php
 chown -R www-data:www-data /run/php
+    {%~ endif ~%}
 {% endif %}
 
-phpenmod -v {{ config.get("php.version") }} -s {{ webSapi }} web
+cat << EOF > /etc/php/{{ config.get("php.version") }}/mods-available/cli.ini
+; priority=30
+max_execution_time = 0
+memory_limit = -1
+EOF
+
 phpenmod -v {{ config.get("php.version") }} -s cli cli
 
 # Install PHP Composer

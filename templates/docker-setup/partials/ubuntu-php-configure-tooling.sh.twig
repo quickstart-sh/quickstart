@@ -1,13 +1,11 @@
 # Custom PHP settings for tooling image
+{% if config.get("webserver.enabled") %}
+    {%- if config.get("php.webserverIntegrationType")=="mod_php" -%}
+        {%- set webSapi="apache2" -%}
+    {%- elseif config.get("php.webserverIntegrationType")=="php_fpm" -%}
+        {%- set webSapi="fpm" -%}
+    {%- endif -%}
 cat << EOF > /etc/php/{{ config.get("php.version") }}/mods-available/web-tooling.ini
-; priority=40
-error_reporting=E_ALL
-display_errors=On
-xdebug.mode=develop,debug,trace
-xdebug.start_with_request=yes
-xdebug.client_host=host.docker.internal
-EOF
-cat << EOF > /etc/php/{{ config.get("php.version") }}/mods-available/cli-tooling.ini
 ; priority=40
 error_reporting=E_ALL
 display_errors=On
@@ -17,5 +15,14 @@ xdebug.client_host=host.docker.internal
 EOF
 
 phpenmod -v {{ config.get("php.version") }} -s {{ webSapi }} web-tooling
-phpenmod -v {{ config.get("php.version") }} -s cli cli-tooling
+{% endif %}
+cat << EOF > /etc/php/{{ config.get("php.version") }}/mods-available/cli-tooling.ini
+; priority=40
+error_reporting=E_ALL
+display_errors=On
+xdebug.mode=develop,debug,trace
+xdebug.start_with_request=yes
+xdebug.client_host=host.docker.internal
+EOF
 
+phpenmod -v {{ config.get("php.version") }} -s cli cli-tooling

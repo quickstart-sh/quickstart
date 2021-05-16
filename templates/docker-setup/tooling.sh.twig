@@ -14,7 +14,7 @@ set -eu
 {%- set osPackages=osPackages|merge(newPackages) -%}
 
 {% if config.get("php.enabled") %}
-{%- set newPackages=include("docker-setup/partials/" ~ config.get("os.name") ~ "-php-gather.twig")|split(",") -%}
+{%- set newPackages=include("docker-setup/partials/" ~ config.get("os.name") ~ "-php-gather-tooling.twig")|split(",") -%}
 {%- set osPackages=osPackages|merge(newPackages) -%}
 {% endif %}
 
