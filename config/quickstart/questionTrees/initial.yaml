@@ -33,6 +33,7 @@ parameters:
         symfony:
           set:
             php.enabled: true
+            'php.extensions.tooling.[]': xdebug
             externalServices.enabled: true
             os.workDirectory: '/var/www'
             os.documentRoot: '/var/www/public'
@@ -42,6 +43,7 @@ parameters:
         drupal:
           set:
             php.enabled: true
+            'php.extensions.tooling.[]': xdebug
             webserver.enabled: true
             externalServices.enabled: true
             os.workDirectory: '/var/www'
@@ -55,6 +57,7 @@ parameters:
         wordpress:
           set:
             php.enabled: true
+            'php.extensions.tooling.[]': xdebug
             webserver.enabled: true
             externalServices.enabled: true
             os.workDirectory: '/var/www'
@@ -67,6 +70,7 @@ parameters:
         generic_php_web:
           set:
             php.enabled: true
+            'php.extensions.tooling.[]': xdebug
             webserver.enabled: true
             externalServices.enabled: true
             os.workDirectory: '/var/www'
@@ -79,6 +83,7 @@ parameters:
         generic_php_cli:
           set:
             php.enabled: true
+            'php.extensions.tooling.[]': xdebug
             externalServices.enabled: true
             os.workDirectory: '/opt/app'
             'os.cliTools.tooling.[]':
@@ -252,31 +257,31 @@ parameters:
       optionsConfiguration:
         mariadb:
           set:
-            'php.extensions.[]': mysql
+            'php.extensions.tooling.[]': mysql
         mysql:
           set:
-            'php.extensions.[]': mysql
+            'php.extensions.tooling.[]': mysql
         postgres:
           set:
-            'php.extensions.[]': pgsql
+            'php.extensions.tooling.[]': pgsql
         mongodb:
           set:
-            'php.extensions.[]': mongodb
+            'php.extensions.tooling.[]': mongodb
         sqlite:
           set:
-            'php.extensions.[]': sqlite3
+            'php.extensions.tooling.[]': sqlite3
         redis:
           set:
-            'php.extensions.[]': redis
+            'php.extensions.tooling.[]': redis
         memcached:
           set:
-            'php.extensions.[]': memcache
+            'php.extensions.tooling.[]': memcache
         ldap:
           set:
-            'php.extensions.[]': ldap
+            'php.extensions.tooling.[]': ldap
         solr:
           set:
-            'php.extensions.[]': solr
+            'php.extensions.tooling.[]': solr
 
     php.version:
       type: select_single
