@@ -10,6 +10,14 @@ set -eu
 
 {# Step 1: Gather all the OS packages we need #}
 
+{%- set newPackages=include("docker-setup/partials/tools-gather.twig", {stage: 'tooling'})|split(",") -%}
+{%- set osPackages=osPackages|merge(newPackages) -%}
+
+{% if config.get("php.enabled") %}
+{%- set newPackages=include("docker-setup/partials/" ~ config.get("os.name") ~ "-php-gather.twig")|split(",") -%}
+{%- set osPackages=osPackages|merge(newPackages) -%}
+{% endif %}
+
 {# Step 2: Install the OS packages #}
 
 {% if osPackages|length > 0 %}
@@ -19,8 +27,14 @@ set -eu
 
 {# Step 3: Configure the OS packages #}
 
+{% if config.get("php.enabled") %}
+# Configure PHP
+    {%~ include "docker-setup/partials/" ~ config.get("os.name") ~ "-php-configure-tooling.sh.twig" -%}
+{% endif %}
+
 {% if config.get("nodejs.enabled") and config.get("nodejs.target")=="tooling" %}
-    {%- include "docker-setup/partials/nodejs.sh.twig" %}
+# Install and configure NodeJS
+    {%~ include "docker-setup/partials/nodejs.sh.twig" -%}
 {% endif %}
 
 {% include "docker-setup/partials/remove-proxy.sh.twig" %}

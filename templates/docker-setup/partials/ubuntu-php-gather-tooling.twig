@@ -1,16 +1,8 @@
-{%- set osPackages=[]|merge(["php" ~ config.get("php.version") ~ "-cli"]) -%}
-
-{%- if config.get("webserver.enabled") -%}
-    {%- if config.get("php.webserverIntegrationType")=="php_fpm" -%}
-        {%- set osPackages=osPackages|merge(["php" ~ config.get("php.version") ~ "-fpm"]) -%}
-    {%- elseif config.get("php.webserverIntegrationType")=="mod_php" -%}
-        {%- set osPackages=osPackages|merge(["libapache2-mod-php" ~ config.get("php.version")]) -%}
-    {%- endif -%}
-{%- endif -%}
+{%- set osPackages=[] -%}
 
 {# Add the PHP extension packages #}
 {%- set allExtData=app_parameters.get("app.phpExtensions") -%}
-{%- for ext in config.get("php.extensions.base") -%}
+{%- for ext in config.get("php.extensions.tooling") -%}
     {%- set extData=attribute(allExtData,ext).package -%}
     {%- if attribute(extData,config.get("os.name") ~ "-" ~ config.get("os.version") ~ "-" ~ config.get("php.version")) is defined -%}
         {%- set extPackageName=attribute(extData,config.get("os.name") ~ "-" ~ config.get("os.version") ~ "-" ~ config.get("php.version")) -%}

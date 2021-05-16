@@ -313,11 +313,19 @@ parameters:
         symfony/translation: Translation
         symfony/webpack-encore-bundle: 'Webpack / Encore bundle'
 
-    php.extensions:
+    php.extensions.base:
       type: select_multi
-      description: 'the PHP extensions'
+      description: 'the PHP extensions to install in the base image'
       if: '#php.enabled# === true'
       options: 'app.phpExtensions'
+
+    php.extensions.tooling:
+      type: select_multi
+      description: 'additional PHP extensions to install in the tooling image'
+      if: '#php.enabled# === true'
+      options: 'app.phpExtensions'
+      default:
+        - xdebug
 
     nodejs.version:
       type: select_single
