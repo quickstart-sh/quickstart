@@ -3,6 +3,7 @@
 
 imports:
     - { resource: 'quickstart/questionTrees/*.yaml' }
+    - { resource: 'quickstart/installScripts/*.yaml' }
     - { resource: 'quickstart/templateMappings.yaml' }
     - { resource: 'quickstart/phpExtensions.yaml' }
     - { resource: 'quickstart/cliTools.yaml' }

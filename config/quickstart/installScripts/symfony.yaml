@@ -1,0 +1,46 @@
+parameters:
+  app.installScripts.symfony:
+    # always remove the temp directory so that e.g. retries after a network failure don't barf
+    - command:
+        - rm
+        - '-rf'
+        - '/tmp/scaffold'
+      inContainer: true
+    # install either the CLI flex skeleton or the website skeleton
+    # See https://symfony.com/doc/current/setup.html
+    # Don't install packages though, only do that afterwards
+    - command:
+        - composer
+        - create-project
+        - symfony/skeleton
+        - '/tmp/scaffold'
+        - '--no-install'
+      inContainer: true
+      if: '#symfony.type# == ''cli'''
+    - command:
+        - composer
+        - create-project
+        - symfony/website-skeleton
+        - '/tmp/scaffold'
+        - '--no-install'
+      inContainer: true
+      if: '#symfony.type# == ''web'''
+    # Move the content to the target directory
+    - command:
+        - mv
+        - '/tmp/scaffold/*'
+        - '#os.workDirectory#'
+      inContainer: true
+      inShell: true
+    # Set the composer project name. TODO: Ask for the namespace... need to find a way that works for php, nodejs and java
+    - command:
+        - composer
+        - config
+        - name
+        - 'example/#project.name#'
+      inContainer: true
+    # Now, install the packages
+    - command:
+        - composer
+        - install
+      inContainer: true
