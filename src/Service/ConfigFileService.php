@@ -287,6 +287,16 @@ class ConfigFileService {
                                 unset($options[$specificOption]);
                             }
                         }
+                        if (is_array($specificConfiguration) && array_key_exists("default_if", $specificConfiguration)) {
+                            $evaluatorResult = ConditionEvaluatorService::evaluate($specificConfiguration["default_if"], $config);
+                            if ($evaluatorResult === true) {
+                                //@codeCoverageIgnoreStart
+                                if (self::DEBUG_ME) echo "Adding option $specificOption as current value\n";
+                                //@codeCoverageIgnoreEnd
+                                if (!in_array($specificOption, $currentValue))
+                                    $currentValue[] = $specificOption;
+                            }
+                        }
                     }
                 }
                 $prompt = "Please select " . $optionConfig["description"];
