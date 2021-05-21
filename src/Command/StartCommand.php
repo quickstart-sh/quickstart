@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Service\ConfigFileService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
@@ -23,7 +24,8 @@ class StartCommand extends Command {
     protected function configure() {
         $this
             ->setDescription("Starts all containers required by the project")
-            ->setHelp("This command creates and starts the containers.");
+            ->setHelp("This command creates and starts the containers.")
+            ->addOption("rebuild", "r", InputOption::VALUE_NONE, "Rebuild application image");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
@@ -40,6 +42,9 @@ class StartCommand extends Command {
             "up",
             "-d",
         ];
+
+        if ($input->getOption("rebuild"))
+            $command[] = "--build";
 
         $process = new Process($command);
         $process->mustRun(function ($type, $buffer) use ($output) {
