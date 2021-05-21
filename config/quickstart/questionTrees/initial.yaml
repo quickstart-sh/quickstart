@@ -14,7 +14,6 @@ parameters:
       default: 'basename(getcwd())'
       defaultEval: true
 
-
     project.type:
       type: select_single
       description: 'the project type'
@@ -33,7 +32,6 @@ parameters:
         symfony:
           set:
             php.enabled: true
-            'php.extensions.tooling.[]': xdebug
             externalServices.enabled: true
             os.workDirectory: '/var/www'
             os.documentRoot: '/var/www/public'
@@ -43,7 +41,6 @@ parameters:
         drupal:
           set:
             php.enabled: true
-            'php.extensions.tooling.[]': xdebug
             webserver.enabled: true
             externalServices.enabled: true
             os.workDirectory: '/var/www'
@@ -57,7 +54,6 @@ parameters:
         wordpress:
           set:
             php.enabled: true
-            'php.extensions.tooling.[]': xdebug
             webserver.enabled: true
             externalServices.enabled: true
             os.workDirectory: '/var/www'
@@ -70,7 +66,6 @@ parameters:
         generic_php_web:
           set:
             php.enabled: true
-            'php.extensions.tooling.[]': xdebug
             webserver.enabled: true
             externalServices.enabled: true
             os.workDirectory: '/var/www'
@@ -83,7 +78,6 @@ parameters:
         generic_php_cli:
           set:
             php.enabled: true
-            'php.extensions.tooling.[]': xdebug
             externalServices.enabled: true
             os.workDirectory: '/opt/app'
             'os.cliTools.tooling.[]':
@@ -208,6 +202,8 @@ parameters:
             'os.cliTools.base.[]':
               - cron #php sessions
               - logrotate #logs
+            'php.extensions.base.[]':
+              - xml #dependency of symfony/framework-bundle
         cli:
           set:
             webserver.enabled: null
@@ -317,12 +313,18 @@ parameters:
         symfony/serializer: Serializer
         symfony/translation: Translation
         symfony/webpack-encore-bundle: 'Webpack / Encore bundle'
+      optionsConfiguration:
+        symfony/apache-pack:
+          if: '#webserver.software# === ''apache'''
+          default_if: '#webserver.software# === ''apache'''
 
     php.extensions.base:
       type: select_multi
       description: 'the PHP extensions to install in the base image'
       if: '#php.enabled# === true'
       options: 'app.phpExtensions'
+      default:
+        - curl
 
     php.extensions.tooling:
       type: select_multi
