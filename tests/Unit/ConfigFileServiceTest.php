@@ -1153,14 +1153,13 @@ class ConfigFileServiceTest extends TestCase {
             "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quuux\n  [3] None (default)\n > 2[K\n",
         ];
 
-        //not mandatory, current value that doesn't exist (anymore), none input, expect: empty?
+        //not mandatory, current value that doesn't exist (anymore), none input, expect: option gets dropped
         $cases[9] = [
             [
                 "test" => ["banana"]
             ],
             [
                 "version" => Config::DEFAULT_VERSION,
-                "test" => [],
             ],
             [
                 "type" => "select_multi",
@@ -1335,6 +1334,27 @@ class ConfigFileServiceTest extends TestCase {
             ],
             [""],
             "Please select DESCRIPTION: \n  [0] bar\n  [1] quux\n  [2] None (default)\n > \n",
+        ];
+        //not mandatory, current value one that doesn't exist (anymore) and one that does, none input, expect: not existing option gets dropped, other kept
+        $cases[9] = [
+            [
+                "test" => ["banana","foo"]
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test" => ["foo"],
+            ],
+            [
+                "type" => "select_multi",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quuux",
+                ],
+            ],
+            ["2"],
+            "Please select DESCRIPTION (current: bar): \n  [0] qux\n  [1] quuux\n  [2] None (default)\n > 2[K\n",
         ];
         return $cases;
     }

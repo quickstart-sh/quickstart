@@ -270,6 +270,8 @@ class ConfigFileService {
                     foreach ($this->params->get($optionConfig["options"]) as $key => $data)
                         $options[$key] = $data["name"];
                 }
+                if (!is_array($currentValue))
+                    $currentValue = [];
                 //Check if we have configurations for individual options (e.g. hide depending on config)
                 if (array_key_exists("optionsConfiguration", $optionConfig) && is_array($optionConfig["optionsConfiguration"])) {
                     //@codeCoverageIgnoreStart
@@ -376,6 +378,9 @@ class ConfigFileService {
 
                     }
                 }
+                $newValue = array_values(array_unique($newValue));
+                if (sizeof($newValue) == 0)
+                    $newValue = null;
                 break;
             default:
                 throw new \Exception("Type undefined");
