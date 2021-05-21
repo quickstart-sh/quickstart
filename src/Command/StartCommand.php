@@ -47,6 +47,7 @@ class StartCommand extends Command {
             $command[] = "--build";
 
         $process = new Process($command);
+        $process->setTimeout(null);
         $process->mustRun(function ($type, $buffer) use ($output) {
             $output->write($buffer);
         });
