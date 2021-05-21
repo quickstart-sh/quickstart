@@ -10,7 +10,7 @@ cat << EOF > /etc/php/{{ config.get("php.version") }}/mods-available/web-tooling
 error_reporting=E_ALL
 display_errors=On
 xdebug.mode=develop,debug,trace
-xdebug.start_with_request=yes
+xdebug.start_with_request=trigger
 xdebug.client_host=host.docker.internal
 EOF
 
@@ -21,7 +21,7 @@ cat << EOF > /etc/php/{{ config.get("php.version") }}/mods-available/cli-tooling
 error_reporting=E_ALL
 display_errors=On
 xdebug.mode=develop,debug,trace
-xdebug.start_with_request=yes
+xdebug.start_with_request=trigger
 xdebug.client_host=host.docker.internal
 EOF
 
