@@ -4,10 +4,10 @@ parameters:
       target: "docker/Dockerfile"
     "docker-setup/base.sh.twig":
       target: "docker/docker-setup-base.sh"
-      chmod: 0775
+      chmod: 0o775
     "docker-setup/tooling.sh.twig":
       target: "docker/docker-setup-tooling.sh"
-      chmod: 0775
+      chmod: 0o775
     "supervisord/00_supervisord.conf.twig":
       target: "docker/supervisord/00_supervisord.conf"
     "supervisord/01_apache.conf.twig":
