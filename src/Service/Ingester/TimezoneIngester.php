@@ -6,6 +6,12 @@ use App\Entity\Config;
 use App\Interfaces\IngesterInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Class TimezoneIngester
+ *
+ * This ingester tries to determine the current OS timezone.
+ * @package App\Service\Ingester
+ */
 class TimezoneIngester implements IngesterInterface {
     private LoggerInterface $logger;
 
