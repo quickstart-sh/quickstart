@@ -36,3 +36,9 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Service\Ingester\:
+        resource: '../src/Service/Ingester'
+        tags: ['app.ingester']
+    App\Service\IngesterService:
+        arguments:
+            - !tagged_iterator app.ingester
