@@ -20,7 +20,7 @@ class LocaleIngester implements IngesterInterface {
     }
 
     public function ingest(Config $config, string $baseDir): void {
-        $this->logger->notice("Attempting to load locale information from OS");
+        $this->logger->info("Attempting to load locale information from OS");
         $locale = "";
         switch (php_uname("s")) {
             case "Linux":
@@ -56,7 +56,7 @@ class LocaleIngester implements IngesterInterface {
         if ($locale === "") {
             $this->logger->error("Unable to determine current locale from OS, you will need to set the locale yourself.");
         } else {
-            $this->logger->warning("Determined locale from OS: $locale");
+            $this->logger->notice("Determined locale from OS: $locale");
             $config->set("os.locale", $locale);
         }
     }

@@ -20,7 +20,7 @@ class TimezoneIngester implements IngesterInterface {
     }
 
     public function ingest(Config $config, string $baseDir): void {
-        $this->logger->notice("Attempting to load timezone information from OS");
+        $this->logger->info("Attempting to load timezone information from OS");
         $tz = "";
         switch (php_uname("s")) {
             case "Linux":
@@ -102,7 +102,7 @@ class TimezoneIngester implements IngesterInterface {
         if ($tz === "") {
             $this->logger->error("Unable to determine current timezone from OS, you will need to set the timezone yourself.");
         } else {
-            $this->logger->warning("Determined timezone from OS: $tz");
+            $this->logger->notice("Determined timezone from OS: $tz");
             $config->set("os.timezone", $tz);
         }
     }
