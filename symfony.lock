@@ -1,4 +1,10 @@
 {
+    "composer/semver": {
+        "version": "3.2.4"
+    },
+    "galbar/jsonpath": {
+        "version": "1.2"
+    },
     "mikey179/vfsstream": {
         "version": "v1.6.8"
     },
