@@ -7,7 +7,7 @@ cat << EOF > /etc/apache2/sites-enabled/00-default.conf
 <VirtualHost *:80>
     ServerName localhost
     ServerAdmin webmaster@localhost
-    DocumentRoot {{ config.get("os.documentRoot") }}
+    DocumentRoot {{ config.get("os.workDirectory") }}/{{ config.get("os.documentRoot") }}
     ErrorLog \${APACHE_LOG_DIR}/error.log
     CustomLog \${APACHE_LOG_DIR}/access.log combined
     <Directory {{ config.get("os.workDirectory") }}>

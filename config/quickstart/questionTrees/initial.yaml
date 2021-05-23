@@ -34,7 +34,7 @@ parameters:
             php.enabled: true
             externalServices.enabled: true
             os.workDirectory: '/var/www'
-            os.documentRoot: '/var/www/public'
+            os.documentRoot: 'public'
             'os.cliTools.tooling.[]':
               - unzip #composer
               - git #composer
@@ -44,7 +44,7 @@ parameters:
             webserver.enabled: true
             externalServices.enabled: true
             os.workDirectory: '/var/www'
-            os.documentRoot: '/var/www/web'
+            os.documentRoot: 'web'
             'os.cliTools.tooling.[]':
               - unzip
               - git
@@ -89,21 +89,21 @@ parameters:
             webserver.enabled: true
             nodejs.target: tooling
             os.workDirectory: '/opt/app'
-            os.documentRoot: '/opt/app/public'
+            os.documentRoot: 'public'
         gatsby:
           set:
             nodejs.enabled: true
             webserver.enabled: true
             nodejs.target: tooling
             os.workDirectory: '/opt/app'
-            os.documentRoot: '/opt/app/public'
+            os.documentRoot: 'public'
         generic_nodejs_web:
           set:
             nodejs.enabled: true
             webserver.enabled: true
             nodejs.target: tooling
             os.workDirectory: '/opt/app'
-            os.documentRoot: '/opt/app/public'
+            os.documentRoot: 'public'
         generic_nodejs_server:
           set:
             nodejs.enabled: true
@@ -114,7 +114,7 @@ parameters:
           set:
             webserver.enabled: true
             os.workDirectory: '/var/www'
-            os.documentRoot: '/var/www'
+            os.documentRoot: ''
             'os.cliTools.base.[]':
               - cron
               - logrotate
@@ -363,7 +363,7 @@ parameters:
     os.documentRoot:
       type: string
       mandatory: true
-      description: 'the Docker image''s web server document root'
+      description: 'the Docker image''s web server document root, relative to the work directory'
       if: '#os.documentRoot# === null && #webserver.enabled# === true'
 
     os.cliTools.base:
