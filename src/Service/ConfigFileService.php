@@ -42,7 +42,7 @@ class ConfigFileService {
         //Check if we are allowed to ask the question
         if (array_key_exists("if", $optionConfig) && ConditionEvaluatorService::evaluate($optionConfig["if"], $config) === false) {
             //@codeCoverageIgnoreStart
-            if (self::DEBUG_ME) echo("Question $path, passing as condition " . $optionConfig["if"] . " returned false");
+            if (self::DEBUG_ME) echo("Question $path, passing as condition " . $optionConfig["if"] . " returned false\n");
             //@codeCoverageIgnoreEnd
             return;
         }
@@ -247,7 +247,8 @@ class ConfigFileService {
                                     //@codeCoverageIgnoreStart
                                     if (self::DEBUG_ME) echo "Unsetting config key $key due to side effect of $specificOption\n";
                                     //@codeCoverageIgnoreEnd
-                                    $config->unset($key);
+                                    if($config->has($key))
+                                        $config->unset($key);
                                 } else {
                                     //@codeCoverageIgnoreStart
                                     if (self::DEBUG_ME) echo "Setting config key $key due to side effect of $specificOption\n";
