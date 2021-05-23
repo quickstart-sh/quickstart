@@ -74,6 +74,9 @@ class Config {
         if ($append && is_array($value)) {
             unset($parent[$part]); //undo the set-to-null from before
             $parent = array_values(array_unique(array_merge($parent, $value)));
+        } else if ($append && !is_array($value)) {
+            $current = $value;
+            $parent = array_values(array_unique($parent));
         } else {
             $current = $value;
         }
