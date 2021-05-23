@@ -39,7 +39,7 @@ class IngestConfigFilesCommand extends Command {
         $output->writeln("Attempting to load " . $cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE);
         $config = $this->configFileService->load($cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE);
 
-        $this->ingesterService->ingest($config, $cwd);
+        $this->ingesterService->ingest($config, $cwd, $input, $output);
 
         $this->configFileService->persist($cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE, $config);
         return self::SUCCESS;
