@@ -247,7 +247,7 @@ class ConfigFileService {
                                     //@codeCoverageIgnoreStart
                                     if (self::DEBUG_ME) echo "Unsetting config key $key due to side effect of $specificOption\n";
                                     //@codeCoverageIgnoreEnd
-                                    if($config->has($key))
+                                    if ($config->has($key))
                                         $config->unset($key);
                                 } else {
                                     //@codeCoverageIgnoreStart
@@ -392,6 +392,56 @@ class ConfigFileService {
                 $newValue = array_values(array_unique($newValue));
                 if (sizeof($newValue) == 0)
                     $newValue = null;
+                break;
+            case "boolean":
+                //@codeCoverageIgnoreStart
+                if (self::DEBUG_ME) echo "\n";
+                //@codeCoverageIgnoreEnd
+                $options = [
+                    "true" => "Yes",
+                    "false" => "No",
+                ];
+                $prompt = "Please select " . $optionConfig["description"];
+                if ($currentValue === null && array_key_exists("default", $optionConfig)) {
+                    $currentValue = $optionConfig["default"];
+                    //@codeCoverageIgnoreStart
+                    if (self::DEBUG_ME) echo("Replaced empty value with " . $currentValue . "\n");
+                    //@codeCoverageIgnoreEnd
+                }
+                if (is_bool($currentValue)) {
+                    $prompt .= " (current: " . ($currentValue ? "yes" : "no") . ")";
+                }
+                $prompt .= ": ";
+                if ($default === true) {
+                    $options["true"] .= " (default)";
+                } else {
+                    $options["false"] .= " (default)";
+                }
+
+                $questionDefault = $currentValue === null ? null : array_search($currentValue ? "true" : "false", array_keys($options));
+                $questionOptions = array_values($options);
+                //@codeCoverageIgnoreStart
+                if (self::DEBUG_ME) {
+                    echo "default is " . $questionDefault . "\n";
+                    echo "options are [";
+                    foreach ($questionOptions as $k => $v) {
+                        echo "$k => $v,";
+                    }
+                    echo "]\n";
+                }
+                //@codeCoverageIgnoreEnd
+                $answer = $helper->ask(
+                    $this->input,
+                    $this->output,
+                    new ChoiceQuestion(
+                        $prompt,
+                        $questionOptions,
+                        $questionDefault
+                    )
+                );
+                $answerKey = array_keys($options)[array_search($answer, $questionOptions)];
+                $newValue = ($answerKey === "true");
+                if (self::DEBUG_ME) echo "Setting value: " . ($newValue ? "true" : "false") . "\n";
                 break;
             default:
                 throw new \Exception("Type undefined");

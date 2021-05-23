@@ -235,18 +235,15 @@ parameters:
           default_if: '#webserver.software# !== ''apache'''
 
     php.composer.enabled:
-      type: select_single
+      type: boolean
       description: 'if Composer should be used'
       if: '#php.enabled# === true'
-      options:
-        'true': yes
-        'false': no
-      mandatory: true
-      default: 'true'
+      default: true
 
     php.composer.jsonPath:
       type: string
       description: 'the relative path of the directory containing composer.json'
+      defaultDescription: 'empty (composer.json in root path)'
       if: '#php.composer.enabled# === true'
       default: ''
 
