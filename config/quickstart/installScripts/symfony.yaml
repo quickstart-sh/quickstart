@@ -39,6 +39,20 @@ parameters:
         - name
         - 'example/#project.name#'
       inContainer: true
+    - command:
+        - composer
+        - config
+        - bin-dir
+        - '#php.composer.binDir#'
+      inContainer: true
+      if: '#php.composer.binDir# !== ''bin'''
+    - command:
+        - composer
+        - config
+        - vendor-dir
+        - '#php.composer.vendorDir#'
+      inContainer: true
+      if: '#php.composer.vendorDir# !== ''vendor'''
     # Now, install the packages
     - command:
         - composer

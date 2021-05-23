@@ -39,8 +39,10 @@ EOF
 
 phpenmod -v {{ config.get("php.version") }} -s cli cli
 
+{% if config.get("php.composer.enabled") %}
 # Install PHP Composer
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+{% endif %}
 
 {% if config.get("project.type") == "drupal" %}
 # Install Drupal's drush

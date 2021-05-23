@@ -234,6 +234,36 @@ parameters:
         php_fpm:
           default_if: '#webserver.software# !== ''apache'''
 
+    php.composer.enabled:
+      type: select_single
+      description: 'if Composer should be used'
+      if: '#php.enabled# === true'
+      options:
+        'true': yes
+        'false': no
+      mandatory: true
+      default: 'true'
+
+    php.composer.jsonPath:
+      type: string
+      description: 'the relative path of the directory containing composer.json'
+      if: '#php.composer.enabled# === true'
+      default: ''
+
+    php.composer.vendorDir:
+      type: string
+      description: 'the relative path of Composer''s vendor directory'
+      if: '#php.composer.enabled# === true'
+      mandatory: true
+      default: 'vendor'
+
+    php.composer.binDir:
+      type: string
+      description: 'the relative path of Composer''s bin directory'
+      if: '#php.composer.enabled# === true'
+      mandatory: true
+      default: 'bin'
+
     externalServices.types:
       type: select_multi
       description: 'additional services'
