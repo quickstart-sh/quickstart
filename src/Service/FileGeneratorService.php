@@ -71,7 +71,7 @@ class FileGeneratorService {
 
         if (array_key_exists("chmod", $templateConfig)) {
             //@codeCoverageIgnoreStart
-            if (self::DEBUG_ME) echo("File $sourcePath, setting chmod to " . decoct($templateConfig["chmod"])."\n");
+            if (self::DEBUG_ME) echo("File $sourcePath, setting chmod to " . decoct($templateConfig["chmod"]) . "\n");
             //@codeCoverageIgnoreEnd
             //Note: vfsStreamAbstractContent's chmod() can't be provoked to error out...
             if (@chmod($targetPath, $templateConfig["chmod"]) === false) {

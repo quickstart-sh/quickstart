@@ -27,20 +27,20 @@ class LocaleIngester implements IngesterInterface {
             case "Darwin":
                 // Fortunately, OS X adheres to some sort of standard for once
                 // Reference for priority: https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
-                $language=getenv("LANGUAGE");
-                if($language!=="" && $language!==false) {
+                $language = getenv("LANGUAGE");
+                if ($language !== "" && $language !== false) {
                     // LANGUAGE may contain multiple values, with the most specific being the first one
                     // See https://www.gnu.org/software/gettext/manual/html_node/The-LANGUAGE-variable.html
-                    $languages=explode(":",$language);
-                    $locale=$language[0];
+                    $languages = explode(":", $language);
+                    $locale = $language[0];
                     $this->logger->debug("Set locale to $locale from LANGUAGE environment variable");
                 } else {
                     $this->logger->debug("Failed to determine value of LANGUAGE environment variable");
                 }
-                foreach(["LC_ALL", "LC_MESSAGES", "LANG"] as $envVariable) {
-                    $value=getenv($envVariable);
-                    if($value!=="" && $value!==false) {
-                        $locale=$value;
+                foreach (["LC_ALL", "LC_MESSAGES", "LANG"] as $envVariable) {
+                    $value = getenv($envVariable);
+                    if ($value !== "" && $value !== false) {
+                        $locale = $value;
                         $this->logger->debug("Set locale to $locale from $envVariable environment variable");
                     } else {
                         $this->logger->debug("Failed to determine value of $envVariable environment variable");
