@@ -344,6 +344,11 @@ parameters:
         symfony/apache-pack:
           if: '#webserver.software# === ''apache'''
           default_if: '#webserver.software# === ''apache'''
+        symfony/webpack-encore-bundle:
+          set:
+            nodejs.enabled: true
+            nodejs.packageManager: yarn
+            nodejs.version: lts/fermium
 
     php.extensions.base:
       type: select_multi
