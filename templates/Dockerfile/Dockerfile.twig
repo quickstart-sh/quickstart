@@ -8,6 +8,7 @@ ENV LC_ALL={{ config.get("os.locale") }}
 {%- if config.get("webserver.enabled") -%}
     {%- if config.get("webserver.software")=="apache" -%}
         {%- set supervisorFiles=supervisorFiles|merge(["docker/supervisord/01_apache.conf"]) -%}
+        {%- set supervisorFiles=supervisorFiles|merge(["docker/supervisord/03_apache_logcat.conf"]) -%}
     {%- endif -%}
     {%- if config.get("php.enabled") and config.get("php.webserverIntegrationType")=="php_fpm" -%}
         {%- set supervisorFiles=supervisorFiles|merge(["docker/supervisord/01_php_fpm.conf"]) -%}

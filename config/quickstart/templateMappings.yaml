@@ -18,6 +18,9 @@ parameters:
     "supervisord/02_nodejs_symfony.conf.twig":
       target: "docker/supervisord/02_nodejs_symfony.conf"
       if: "#project.type# === 'symfony' && in_array('symfony/webpack-encore-bundle', #symfony.modules#)"
+    "supervisord/03_apache_logcat.conf.twig":
+      target: "docker/supervisord/03_apache_logcat.conf"
+      if: "#webserver.enabled# === true && #webserver.software# === 'apache'"
     "supervisord/03_symfony_logcat.conf.twig":
       target: "docker/supervisord/03_symfony_logcat.conf"
       if: "#project.type# === 'symfony'"

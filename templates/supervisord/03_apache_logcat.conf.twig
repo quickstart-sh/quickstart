@@ -1,0 +1,7 @@
+[program:apache2-logcat]
+command=tail -F /var/log/apache2/access.log /var/log/apache2/error.log
+autorestart=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
