@@ -50,10 +50,24 @@ class InstallService {
                 $this->logger->debug("Replacing " . $matches[0] . " with " . $replacement);
                 return $replacement;
             }, $arg);
+            //Replace array parameters (e.g. a list of Composer packages)
+            if(preg_match("/^§(.*)§$/", $command[$index], $matches)===1) {
+                $replacement = $config->get($matches[1]);
+                $this->logger->debug("Replacing " . $matches[0] . " with [" . implode(",",$replacement)."]");
+                $command[$index]=$replacement;
+            }
         }
-        $this->logger->notice("Final command: " . implode(" ", $command));
+        //Flatten the parameter array, as some config parameters may return arrays
+        $finalCommand = [];
+        foreach ($command as $arg) {
+            if (is_array($arg))
+                $finalCommand = array_merge($finalCommand, $arg);
+            else
+                $finalCommand[] = $arg;
+        }
+        $this->logger->notice("Final command: " . implode(" ", $finalCommand));
 
-        $process = new Process($command);
+        $process = new Process($finalCommand);
         $process->setTimeout(null);
         $process->mustRun(function ($type, $buffer) {
             if ($this->output instanceof OutputInterface)
