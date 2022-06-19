@@ -42,6 +42,12 @@ parameters:
     - command:
         - composer
         - config
+        - extra.symfony.allow-contrib
+        - 'true'
+      inContainer: true
+    - command:
+        - composer
+        - config
         - bin-dir
         - '#php.composer.binDir#'
       inContainer: true
@@ -57,4 +63,10 @@ parameters:
     - command:
         - composer
         - install
+      inContainer: true
+    # And now, install the packs
+    - command:
+        - composer
+        - require
+        - '§symfony.modules§'
       inContainer: true
