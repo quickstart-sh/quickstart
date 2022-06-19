@@ -94,6 +94,7 @@ class Config {
     public function get(string $path) {
         $parts = explode(".", $path);
         $current =& $this->config;
+        //echo "requested: $path\n";
         //echo "before:\n";
         //var_dump($this->config);
         foreach ($parts as $index => $part) {
@@ -105,6 +106,7 @@ class Config {
             }
             $current =& $current[$part];
         }
+        //var_dump($current);
         return $current;
     }
 

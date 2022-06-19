@@ -21,6 +21,9 @@ class ConditionEvaluatorService {
      */
     public static function evaluate(string $condition, Config $config): bool {
         $condition = preg_replace('/#(.*?)#/m', '\\$config->get("$1")', $condition);
-        return eval("return ($condition);");
+        //echo "evaluating $condition\n";
+        $ret = eval("return ($condition);");
+        //var_dump($ret);
+        return $ret;
     }
 }
