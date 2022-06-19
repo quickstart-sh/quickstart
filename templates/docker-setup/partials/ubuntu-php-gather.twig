@@ -17,4 +17,7 @@
         {%- set osPackages=osPackages|merge([extPackageName]) -%}
     {%- endif -%}
 {%- endfor -%}
+{% set osPackages = osPackages|reduce(
+    (osPackages, item) => item in osPackages ? osPackages : osPackages|merge([item]), []
+) %}
 {{ osPackages|join(",") }}
