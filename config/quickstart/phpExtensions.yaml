@@ -4,223 +4,279 @@ parameters:
       name: amqp
       package:
         'ubuntu-20.04-7.4': 'php7.4-amqp'
+        'ubuntu-20.04-8.0': 'php8.0-amqp'
     apcu:
       name: APCu
       package:
         'ubuntu-20.04-7.4': 'php7.4-apcu'
+        'ubuntu-20.04-8.0': 'php8.0-apcu'
     bcmath:
       name: bcmath
       package:
         'ubuntu-20.04-7.4': 'php7.4-bcmath'
+        'ubuntu-20.04-8.0': 'php8.0-bcmath'
     bzip2:
       name: bzip2
       package:
         'ubuntu-20.04-7.4': 'php7.4-bz2'
+        'ubuntu-20.04-8.0': 'php8.0-bz2'
     ctype:
       name: ctype
       package:
         'ubuntu-20.04-7.4': 'php7.4-common'
+        'ubuntu-20.04-8.0': 'php8.0-common'
     exif:
       name: EXIF
       package:
         'ubuntu-20.04-7.4': 'php7.4-common'
+        'ubuntu-20.04-8.0': 'php8.0-common'
     fileinfo:
       name: Fileinfo
       package:
         'ubuntu-20.04-7.4': 'php7.4-common'
+        'ubuntu-20.04-8.0': 'php8.0-common'
     ffi:
       name: FFI
       package:
         'ubuntu-20.04-7.4': 'php7.4-common'
+        'ubuntu-20.04-8.0': 'php8.0-common'
     ftp:
       name: FTP
       package:
         'ubuntu-20.04-7.4': 'php7.4-common'
+        'ubuntu-20.04-8.0': 'php8.0-common'
     calendar:
       name: Calendar
       package:
         'ubuntu-20.04-7.4': 'php7.4-common'
+        'ubuntu-20.04-8.0': 'php8.0-common'
     curl:
       name: cURL
       package:
         'ubuntu-20.04-7.4': 'php7.4-curl'
+        'ubuntu-20.04-8.0': 'php8.0-curl'
     gmagick:
       name: GraphicsMagick
       package:
         'ubuntu-20.04-7.4': 'php7.4-gmagick'
+        'ubuntu-20.04-8.0': 'php8.0-gmagick'
     gnupg:
       name: GnuPG
       package:
         'ubuntu-20.04-7.4': 'php7.4-gnupg'
+        'ubuntu-20.04-8.0': 'php8.0-gnupg'
     imagick:
       name: ImageMagick
       package:
         'ubuntu-20.04-7.4': 'php7.4-imagick'
+        'ubuntu-20.04-8.0': 'php8.0-imagick'
     memcache:
       name: memcache
       package:
         'ubuntu-20.04-7.4': 'php7.4-memcache'
+        'ubuntu-20.04-8.0': 'php8.0-memcache'
     memcached:
       name: 'memcached (using libmemcached)'
       package:
         'ubuntu-20.04-7.4': 'php7.4-memcached'
+        'ubuntu-20.04-8.0': 'php8.0-memcached'
     mongodb:
       name: MongoDB
       package:
         'ubuntu-20.04-7.4': 'php7.4-mongodb'
+        'ubuntu-20.04-8.0': 'php8.0-mongodb'
     ssh2:
       name: SSH
       package:
         'ubuntu-20.04-7.4': 'php7.4-ssh2'
+        'ubuntu-20.04-8.0': 'php8.0-ssh2'
     uploadprogress:
       name: 'upload progress'
       package:
         'ubuntu-20.04-7.4': 'php7.4-uploadprogress'
+        'ubuntu-20.04-8.0': 'php8.0-uploadprogress'
     uuid:
       name: UUID
       package:
         'ubuntu-20.04-7.4': 'php7.4-uuid'
+        'ubuntu-20.04-8.0': 'php8.0-uuid'
     xdebug:
       name: XDebug
       package:
         'ubuntu-20.04-7.4': 'php7.4-xdebug'
+        'ubuntu-20.04-8.0': 'php8.0-xdebug'
     grpc:
       name: gRPC
       package:
         'ubuntu-20.04-7.4': 'php7.4-grpc'
+        'ubuntu-20.04-8.0': 'php8.0-grpc'
     imap:
       name: IMAP
       package:
         'ubuntu-20.04-7.4': 'php7.4-imap'
+        'ubuntu-20.04-8.0': 'php8.0-imap'
     inotify:
       name: inotify
       package:
         'ubuntu-20.04-7.4': 'php7.4-inotify'
+        'ubuntu-20.04-8.0': 'php8.0-inotify'
     intl:
       name: Internationalization
       package:
         'ubuntu-20.04-7.4': 'php7.4-intl'
+        'ubuntu-20.04-8.0': 'php8.0-intl'
     ldap:
       name: ldap
       package:
         'ubuntu-20.04-7.4': 'php7.4-ldap'
+        'ubuntu-20.04-8.0': 'php8.0-ldap'
     mbstring:
       name: mbstring
       package:
         'ubuntu-20.04-7.4': 'php7.4-mbstring'
+        'ubuntu-20.04-8.0': 'php8.0-mbstring'
     mcrypt:
       name: libmcrypt
       package:
         'ubuntu-20.04-7.4': 'php7.4-mcrypt'
+        'ubuntu-20.04-8.0': 'php8.0-mcrypt'
     mysql:
       name: MySQL
       package:
         'ubuntu-20.04-7.4': 'php7.4-mysql'
+        'ubuntu-20.04-8.0': 'php8.0-mysql'
     odbc:
       name: ODBC
       package:
         'ubuntu-20.04-7.4': 'php7.4-odbc'
+        'ubuntu-20.04-8.0': 'php8.0-odbc'
     protobuf:
       name: protobuf
       package:
         'ubuntu-20.04-7.4': 'php7.4-protobuf'
+        'ubuntu-20.04-8.0': 'php8.0-protobuf'
     radius:
       name: RADIUS
       package:
         'ubuntu-20.04-7.4': 'php7.4-radius'
+        'ubuntu-20.04-8.0': 'php8.0-radius'
     redis:
       name: Redis
       package:
         'ubuntu-20.04-7.4': 'php7.4-redis'
+        'ubuntu-20.04-8.0': 'php8.0-redis'
     snmp:
       name: SNMP
       package:
         'ubuntu-20.04-7.4': 'php7.4-snmp'
+        'ubuntu-20.04-8.0': 'php8.0-snmp'
     soap:
       name: XML-SOAP
       package:
         'ubuntu-20.04-7.4': 'php7.4-soap'
+        'ubuntu-20.04-8.0': 'php8.0-soap'
     xml:
       name: XML
       package:
         'ubuntu-20.04-7.4': 'php7.4-xml'
+        'ubuntu-20.04-8.0': 'php8.0-xml'
     gd:
       name: 'GD graphics library'
       package:
         'ubuntu-20.04-7.4': 'php7.4-gd'
+        'ubuntu-20.04-8.0': 'php8.0-gd'
     gettext:
       name: 'GNU gettext'
       package:
         'ubuntu-20.04-7.4': 'php7.4-common'
+        'ubuntu-20.04-8.0': 'php8.0-common'
     gmp:
       name: 'gmp'
       package:
         'ubuntu-20.04-7.4': 'php7.4-gmp'
+        'ubuntu-20.04-8.0': 'php8.0-gmp'
     json:
       name: JSON
       package:
         'ubuntu-20.04-7.4': 'php7.4-json'
+        'ubuntu-20.04-8.0': 'php8.0-cli'
     pgsql:
       name: pgSQL
       package:
         'ubuntu-20.04-7.4': 'php7.4-pgsql'
+        'ubuntu-20.04-8.0': 'php8.0-pgsql'
     readline:
       name: Readline
       package:
         'ubuntu-20.04-7.4': 'php7.4-readline'
+        'ubuntu-20.04-8.0': 'php8.0-readline'
     sqlite3:
       name: SQLite 3
       package:
         'ubuntu-20.04-7.4': 'php7.4-sqlite3'
+        'ubuntu-20.04-8.0': 'php8.0-sqlite3'
     zip:
       name: ZIP
       package:
         'ubuntu-20.04-7.4': 'php7.4-zip'
+        'ubuntu-20.04-8.0': 'php8.0-zip'
     lz4:
       name: LZ4
       package:
         'ubuntu-20.04-7.4': 'php7.4-lz4'
+        'ubuntu-20.04-8.0': 'php8.0-lz4'
     solr:
       name: Solr
       package:
         'ubuntu-20.04-7.4': 'php7.4-solr'
+        'ubuntu-20.04-8.0': 'php8.0-solr'
     iconv:
       name: iconv
       package:
         'ubuntu-20.04-7.4': 'php7.4-common'
+        'ubuntu-20.04-8.0': 'php8.0-common'
     pdo:
       name: PDO
       package:
         'ubuntu-20.04-7.4': 'php7.4-common'
+        'ubuntu-20.04-8.0': 'php8.0-common'
     phar:
       name: PHAR
       package:
         'ubuntu-20.04-7.4': 'php7.4-common'
+        'ubuntu-20.04-8.0': 'php8.0-common'
     posix:
       name: POSIX
       package:
         'ubuntu-20.04-7.4': 'php7.4-common'
+        'ubuntu-20.04-8.0': 'php8.0-common'
     shmop:
       name: shmop
       package:
         'ubuntu-20.04-7.4': 'php7.4-common'
+        'ubuntu-20.04-8.0': 'php8.0-common'
     sockets:
       name: Sockets
       package:
         'ubuntu-20.04-7.4': 'php7.4-common'
+        'ubuntu-20.04-8.0': 'php8.0-common'
     sysvmsg:
       name: sysvmsg
       package:
         'ubuntu-20.04-7.4': 'php7.4-common'
+        'ubuntu-20.04-8.0': 'php8.0-common'
     sysvsem:
       name: sysvsem
       package:
         'ubuntu-20.04-7.4': 'php7.4-common'
+        'ubuntu-20.04-8.0': 'php8.0-common'
     sysvshm:
       name: sysvshm
       package:
         'ubuntu-20.04-7.4': 'php7.4-common'
+        'ubuntu-20.04-8.0': 'php8.0-common'
     tokenizer:
       name: Tokenizer
       package:
         'ubuntu-20.04-7.4': 'php7.4-common'
+        'ubuntu-20.04-8.0': 'php8.0-common'
