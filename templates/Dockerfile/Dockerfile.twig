@@ -22,9 +22,20 @@ ADD docker/docker-setup-base.sh /docker-setup-base.sh
 RUN /docker-setup-base.sh
 
 FROM prod-base as tooling
+{% set supervisorFilesTooling=[] %}
 {% if config.get("nodejs.enabled") and config.get("nodejs.target")=="tooling" %}
     {%- include "Dockerfile/partials/nvm.Dockerfile.twig" %}
 {% endif %}
+{%- if config.get("project.type")=="symfony" and "symfony/webpack-encore-bundle" in config.get("symfony.modules") -%}
+    {%- set supervisorFilesTooling=supervisorFilesTooling|merge(["docker/supervisord/02_nodejs_symfony.conf"]) -%}
+{%- endif -%}
+{%- if config.get("project.type")=="symfony" -%}
+    {%- set supervisorFilesTooling=supervisorFilesTooling|merge(["docker/supervisord/03_symfony_logcat.conf"]) -%}
+{%- endif -%}
+{% if supervisorFilesTooling|length > 0 %}
+COPY ["{{ supervisorFilesTooling|join('", "')|raw }}", "/etc/supervisor/conf.d/"]
+{% endif %}
+
 ADD docker/docker-setup-tooling.sh /docker-setup-tooling.sh
 RUN /docker-setup-tooling.sh
 

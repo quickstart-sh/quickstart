@@ -15,5 +15,11 @@ parameters:
     "supervisord/01_php_fpm.conf.twig":
       target: "docker/supervisord/01_php_fpm.conf"
       if: "#php.webserverIntegrationType# === 'php_fpm'"
+    "supervisord/02_nodejs_symfony.conf.twig":
+      target: "docker/supervisord/02_nodejs_symfony.conf"
+      if: "#project.type# === 'symfony' && in_array('symfony/webpack-encore-bundle', #symfony.modules#)"
+    "supervisord/03_symfony_logcat.conf.twig":
+      target: "docker/supervisord/03_symfony_logcat.conf"
+      if: "#project.type# === 'symfony'"
     "docker-compose/docker-compose.yml.twig":
       target: "docker/docker-compose.yml"

@@ -1,0 +1,7 @@
+[program:nodejs]
+command=/bin/sh -c 'echo "installing npm packages" && cd /var/www && if [ -f package-lock.json ]; then npm ci; else npm install; fi && echo "starting npm watch" && npm run watch'
+autorestart=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
