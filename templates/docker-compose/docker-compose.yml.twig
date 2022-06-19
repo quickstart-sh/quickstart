@@ -18,3 +18,16 @@ services:
         volumes:
             # :delegated is used on Windows and OS X to at least get *some* performance
             - ../:{{ config.get("os.workDirectory") }}:delegated
+
+{% if config.get("externalServices.enabled") %}
+{% if "mariadb" in config.get("externalServices.types") %}
+    mariadb:
+        image: mariadb:{{ config.get("externalServices.mariadb.version") }}
+        environment:
+            MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
+{% endif %}
+{% if "mail" in config.get("externalServices.types") %}
+    mail:
+        image: schickling/mailcatcher
+{% endif %}
+{% endif %}

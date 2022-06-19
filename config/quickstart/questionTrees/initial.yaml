@@ -306,6 +306,16 @@ parameters:
           set:
             'php.extensions.tooling.[]': solr
 
+    externalServices.mariadb.version:
+      type: select_single
+      description: 'the MariaDB version'
+      if: '#externalServices.enabled# === true && in_array(''mariadb'', #externalServices.types#)'
+      options:
+        '10.8': 'MariaDB 10.8'
+        '10.7': 'MariaDB 10.7'
+      default: '10.8'
+      mandatory: true
+
     php.version:
       type: select_single
       description: 'the PHP version'
@@ -349,6 +359,10 @@ parameters:
             nodejs.enabled: true
             nodejs.packageManager: yarn
             nodejs.version: lts/fermium
+            nodejs.target: tooling
+        symfony/mailer:
+          set:
+            'externalServices.types.[]': mail
 
     php.extensions.base:
       type: select_multi
