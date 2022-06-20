@@ -41,7 +41,7 @@ class InstallService {
      * @param array $command
      * @param Config $config
      */
-    public function executeCommand(array $command, Config $config) {
+    public function executeCommand(array $command, Config $config, bool $ignoreErrors) {
         $this->logger->notice("Executing " . implode(" ", $command));
         foreach ($command as $index => $arg) {
             //Replace dynamic parameters (e.g. project name)
@@ -108,7 +108,7 @@ class InstallService {
                 ], $command["command"]);
             }
 
-            $this->executeCommand($command["command"], $config);
+            $this->executeCommand($command["command"], $config, (array_key_exists("ignoreErrors", $command) && $command["ignoreErrors"] === true));
         }
     }
 }
