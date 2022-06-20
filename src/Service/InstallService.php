@@ -102,7 +102,7 @@ class InstallService {
                     "-f", "docker/docker-compose.yml",
                     "-p", $config->get("project.name"),
                     "exec",
-                    "-u", "www-data",
+                    "-u", array_key_exists("containerUser", $command) ? $command["containerUser"] : "www-data",
                     "-T",
                     "app",
                 ], $command["command"]);
