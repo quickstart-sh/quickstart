@@ -23,11 +23,23 @@ services:
 {% if "mariadb" in config.get("externalServices.types") %}
     mariadb:
         image: mariadb:{{ config.get("externalServices.mariadb.version") }}
+        volumes:
+            -   mariadb-data:/var/lib/mysql
         environment:
             MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
+            MARIADB_DATABASE: '{{ config.get("project.name") }}'
+            MARIADB_AUTO_UPGRADE: 'yes'
+            MARIADB_DISABLE_UPGRADE_BACKUP: 'yes'
 {% endif %}
 {% if "mail" in config.get("externalServices.types") %}
     mail:
         image: schickling/mailcatcher
+        ports:
+            - 8081:1080
 {% endif %}
+{% endif %}
+
+volumes:
+{% if "mariadb" in config.get("externalServices.types") %}
+    mariadb-data:
 {% endif %}
