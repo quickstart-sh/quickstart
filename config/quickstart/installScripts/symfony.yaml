@@ -70,3 +70,45 @@ parameters:
         - require
         - '§symfony.modules§'
       inContainer: true
+    # Install nodejs packages, if we are running with the webpack bundle
+    - command:
+        - supervisorctl
+        - stop
+        - nodejs
+      inContainer: true
+      ignoreErrors: true
+      containerUser: root
+      if: 'in_array(''symfony/webpack-encore-bundle'', #symfony.modules#)'
+    - command:
+        - npm
+        - install
+      inContainer: true
+      if: 'in_array(''symfony/webpack-encore-bundle'', #symfony.modules#)'
+    - command:
+        - supervisorctl
+        - start
+        - nodejs
+      inContainer: true
+      containerUser: root
+      if: 'in_array(''symfony/webpack-encore-bundle'', #symfony.modules#)'
+    # Clean up package-generated docker-compose files
+    - command:
+        - rm
+        - '-f'
+        - docker-compose.yml
+        - docker-compose.override.yml
+    # configure the database and mailer transport
+    - command:
+        - sed
+        - '-i'
+        - 's;^DATABASE_URL.*;DATABASE_URL=mysql://root:@mariadb:3306/#project.name#;'
+        - .env
+      inContainer: true
+      if: 'in_array(''mariadb'', #externalServices.types#)'
+    - command:
+        - sed
+        - '-i'
+        - 's;^# MAILER_DSN.*$;MAILER_DSN=smtp://mail:1025;'
+        - .env
+      inContainer: true
+      if: 'in_array(''mariadb'', #externalServices.types#)'
