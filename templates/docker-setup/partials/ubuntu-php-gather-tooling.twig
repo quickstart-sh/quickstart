@@ -7,6 +7,9 @@
     {%- if attribute(extData,config.get("os.name") ~ "-" ~ config.get("os.version") ~ "-" ~ config.get("php.version")) is defined -%}
         {%- set extPackageName=attribute(extData,config.get("os.name") ~ "-" ~ config.get("os.version") ~ "-" ~ config.get("php.version")) -%}
         {%- set osPackages=osPackages|merge([extPackageName]) -%}
+    {%- elseif attribute(extData,config.get("os.name") ~ "-all-" ~ config.get("php.version")) is defined -%}
+        {%- set extPackageName=attribute(extData,config.get("os.name") ~ "-all-" ~ config.get("php.version")) -%}
+        {%- set osPackages=osPackages|merge([extPackageName]) -%}
     {%- endif -%}
 {%- endfor -%}
 {{ osPackages|join(",") }}
