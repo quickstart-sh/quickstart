@@ -132,6 +132,7 @@ parameters:
       mandatory: true
 
     os.ubuntu_version:
+      # Support matrix at https://wiki.ubuntu.com/Releases
       type: select_single
       if: '#os.name# === ''ubuntu'''
       pathOverride: 'os.version'
@@ -139,10 +140,12 @@ parameters:
       options:
         '18.04': '18.04 LTS'
         '20.04': '20.04 LTS'
+        '22.04': '22.04 LTS'
       default: '20.04'
       mandatory: true
 
     os.debian_version:
+      # Support matrix at https://www.debian.org/releases/
       type: select_single
       if: '#os.name# === ''debian'''
       pathOverride: 'os.version'
@@ -154,13 +157,16 @@ parameters:
       mandatory: true
 
     os.alpine_version:
+      # Support matrix at https://alpinelinux.org/releases/
       type: select_single
       if: '#os.name# === ''alpine'''
       pathOverride: 'os.version'
       description: 'the Alpine version for the Docker images'
       options:
-        '3.12': '3.12 (2020-05)'
         '3.13': '3.13 (2021-01)'
+        '3.14': '3.14 (2021-06)'
+        '3.15': '3.15 (2021-11)'
+        '3.16': '3.16 (2022-05)'
       default: '3.13'
       mandatory: true
 
@@ -388,6 +394,7 @@ parameters:
         'lts/dubnium': 'v10 LTS (dubnium)'
         'lts/erbium': 'v12 LTS (erbium)'
         'lts/fermium': 'v14 LTS (fermium)'
+        'lts/gallium': 'v16 LTS (gallium)'
       default: 'lts/fermium'
       mandatory: true
 
