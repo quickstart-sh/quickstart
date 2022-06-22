@@ -17,3 +17,6 @@ target/quickstart.phar
 .phpunit.result.cache
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
+
+# Box
+vendor-bin/box
