@@ -46,7 +46,11 @@
         "preferred-install": {
             "*": "dist"
         },
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "bamarni/composer-bin-plugin": true,
+            "symfony/flex": true
+        }
     },
     "autoload": {
         "psr-4": {
@@ -91,6 +95,7 @@
     },
     "require-dev": {
         "ext-xdebug": "*",
+        "bamarni/composer-bin-plugin": "^1.5",
         "mikey179/vfsstream": "^1.6",
         "symfony/phpunit-bridge": "^5.2"
     }
