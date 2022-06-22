@@ -193,26 +193,21 @@ parameters:
         'Etc/UTC': 'UTC'
         'Europe/Berlin': 'Europe/Berlin'
 
-    symfony.type:
+    php.version:
+      # Support matrix at
+      # https://www.php.net/supported-versions.php (language)
+      # https://deb.sury.org/#php-packages (Ubuntu/Debian)
+      # Note 8.1 is unsupported in Ubuntu (https://github.com/oerdnj/deb.sury.org/issues/1439)
+      # https://github.com/codecasts/php-alpine (Alpine)
       type: select_single
-      description: 'Symfony project type'
-      if: '#project.type# == ''symfony'''
-      mandatory: true
+      description: 'the PHP version'
+      if: '#php.enabled# === true && in_array(#os.name#,[''ubuntu''])'
       options:
-        web: 'Web (enables web server)'
-        cli: 'CLI/other (no web server)'
-      optionsConfiguration:
-        web:
-          set:
-            webserver.enabled: true
-            'os.cliTools.base.[]':
-              - cron #php sessions
-              - logrotate #logs
-            'php.extensions.base.[]':
-              - xml #dependency of symfony/framework-bundle
-        cli:
-          set:
-            webserver.enabled: null
+        '7.4': 'PHP 7.4'
+        '8.0': 'PHP 8.0'
+        '8.1': 'PHP 8.1'
+      default: '7.4'
+      mandatory: true
 
     webserver.software:
       type: select_single
@@ -239,6 +234,94 @@ parameters:
           default_if: '#webserver.software# === ''apache'''
         php_fpm:
           default_if: '#webserver.software# !== ''apache'''
+
+    symfony.type:
+      type: select_single
+      description: 'Symfony project type'
+      if: '#project.type# == ''symfony'''
+      mandatory: true
+      options:
+        web: 'Web (enables web server)'
+        cli: 'CLI/other (no web server)'
+      optionsConfiguration:
+        web:
+          set:
+            webserver.enabled: true
+            'os.cliTools.base.[]':
+              - cron #php sessions
+              - logrotate #logs
+            'php.extensions.base.[]':
+              # see https://symfony.com/doc/current/setup.html
+              - ctype
+              - iconv
+              - xml
+              - tokenizer
+              - curl
+              - intl
+            'php.extensions.tooling.[]':
+              - xdebug
+        cli:
+          set:
+            webserver.enabled: null
+            'php.extensions.base.[]':
+              # see https://symfony.com/doc/current/setup.html
+              - ctype
+              - iconv
+              - xml
+              - tokenizer
+              - curl
+              - intl
+            'php.extensions.tooling.[]':
+              - xdebug
+
+    symfony.modules:
+      type: select_multi
+      description: 'Symfony bundles and packs'
+      if: '#project.type# == ''symfony'''
+      options:
+        symfony/console: Console
+        symfony/ldap: LDAP
+        symfony/form: Forms
+        symfony/twig-pack: Twig
+        symfony/maker-bundle: 'Maker bundle'
+        doctrine/doctrine-bundle: 'Doctrine Base'
+        orm-fixtures: 'Doctrine Fixtures'
+        doctrine/doctrine-migrations-bundle: 'Doctrine Migrations'
+        symfony/monolog-bundle: 'Monolog Logger'
+        symfony/apache-pack: 'Apache integration'
+        symfony/cache: Cache
+        symfony/profiler-pack: 'Profiler pack'
+        symfony/mailer: Mailer
+        symfony/phpunit-bridge: 'PHPUnit bridge'
+        symfony/security-bundle: Security
+        symfony/serializer: Serializer
+        symfony/translation: Translation
+        symfony/webpack-encore-bundle: 'Webpack / Encore bundle'
+      optionsConfiguration:
+        symfony/apache-pack:
+          if: '#webserver.software# === ''apache'''
+          default_if: '#webserver.software# === ''apache'''
+        symfony/webpack-encore-bundle:
+          set:
+            nodejs.enabled: true
+            nodejs.packageManager: yarn
+            nodejs.version: lts/fermium
+            nodejs.target: tooling
+        symfony/mailer:
+          set:
+            'externalServices.types.[]': mail
+
+    php.extensions.base:
+      type: select_multi
+      description: 'the PHP extensions to install in the base image'
+      if: '#php.enabled# === true'
+      options: 'app.phpExtensions'
+
+    php.extensions.tooling:
+      type: select_multi
+      description: 'additional PHP extensions to install in the tooling image'
+      if: '#php.enabled# === true'
+      options: 'app.phpExtensions'
 
     php.composer.enabled:
       type: boolean
@@ -286,105 +369,46 @@ parameters:
       optionsConfiguration:
         mariadb:
           set:
-            'php.extensions.tooling.[]': mysql
+            'php.extensions.base.[]': mysql
         mysql:
           set:
-            'php.extensions.tooling.[]': mysql
+            'php.extensions.base.[]': mysql
         postgres:
           set:
-            'php.extensions.tooling.[]': pgsql
+            'php.extensions.base.[]': pgsql
         mongodb:
           set:
-            'php.extensions.tooling.[]': mongodb
+            'php.extensions.base.[]': mongodb
         sqlite:
           set:
-            'php.extensions.tooling.[]': sqlite3
+            'php.extensions.base.[]': sqlite3
         redis:
           set:
-            'php.extensions.tooling.[]': redis
+            'php.extensions.base.[]': redis
         memcached:
           set:
-            'php.extensions.tooling.[]': memcache
+            'php.extensions.base.[]': memcache
         ldap:
           set:
-            'php.extensions.tooling.[]': ldap
+            'php.extensions.base.[]': ldap
         solr:
           set:
-            'php.extensions.tooling.[]': solr
+            'php.extensions.base.[]': solr
 
     externalServices.mariadb.version:
+      # Support matrix at https://mariadb.com/kb/en/mariadb-server-release-dates/
       type: select_single
       description: 'the MariaDB version'
       if: '#externalServices.enabled# === true && in_array(''mariadb'', #externalServices.types#)'
       options:
-        '10.8': 'MariaDB 10.8'
+        '10.3': 'MariaDB 10.3'
+        '10.4': 'MariaDB 10.4'
+        '10.5': 'MariaDB 10.5'
+        '10.6': 'MariaDB 10.6'
         '10.7': 'MariaDB 10.7'
+        '10.8': 'MariaDB 10.8'
       default: '10.8'
       mandatory: true
-
-    php.version:
-      type: select_single
-      description: 'the PHP version'
-      if: '#php.enabled# === true && in_array(#os.name#,[''ubuntu''])'
-      options:
-        '7.3': 'PHP 7.3'
-        '7.4': 'PHP 7.4'
-        '8.0': 'PHP 8.0'
-      default: '7.4'
-      mandatory: true
-
-    symfony.modules:
-      type: select_multi
-      description: 'Symfony bundles and packs'
-      if: '#project.type# == ''symfony'''
-      options:
-        symfony/console: Console
-        symfony/ldap: LDAP
-        symfony/form: Forms
-        symfony/twig-pack: Twig
-        symfony/maker-bundle: 'Maker bundle'
-        doctrine/doctrine-bundle: 'Doctrine Base'
-        orm-fixtures: 'Doctrine Fixtures'
-        doctrine/doctrine-migrations-bundle: 'Doctrine Migrations'
-        symfony/monolog-bundle: 'Monolog Logger'
-        symfony/apache-pack: 'Apache integration'
-        symfony/cache: Cache
-        symfony/profiler-pack: 'Profiler pack'
-        symfony/mailer: Mailer
-        symfony/phpunit-bridge: 'PHPUnit bridge'
-        symfony/security-bundle: Security
-        symfony/serializer: Serializer
-        symfony/translation: Translation
-        symfony/webpack-encore-bundle: 'Webpack / Encore bundle'
-      optionsConfiguration:
-        symfony/apache-pack:
-          if: '#webserver.software# === ''apache'''
-          default_if: '#webserver.software# === ''apache'''
-        symfony/webpack-encore-bundle:
-          set:
-            nodejs.enabled: true
-            nodejs.packageManager: yarn
-            nodejs.version: lts/fermium
-            nodejs.target: tooling
-        symfony/mailer:
-          set:
-            'externalServices.types.[]': mail
-
-    php.extensions.base:
-      type: select_multi
-      description: 'the PHP extensions to install in the base image'
-      if: '#php.enabled# === true'
-      options: 'app.phpExtensions'
-      default:
-        - curl
-
-    php.extensions.tooling:
-      type: select_multi
-      description: 'additional PHP extensions to install in the tooling image'
-      if: '#php.enabled# === true'
-      options: 'app.phpExtensions'
-      default:
-        - xdebug
 
     nodejs.version:
       type: select_single
