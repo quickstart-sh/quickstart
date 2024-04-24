@@ -141,7 +141,7 @@ parameters:
         '18.04': '18.04 LTS'
         '20.04': '20.04 LTS'
         '22.04': '22.04 LTS'
-      default: '20.04'
+      default: '22.04'
       mandatory: true
 
     os.debian_version:
@@ -151,8 +151,10 @@ parameters:
       pathOverride: 'os.version'
       description: 'the Debian version for the Docker images'
       options:
-        buster: 'buster / stable'
-        bullseye: 'bullseye / testing'
+        buster: 'buster / oldoldstable'
+        bullseye: 'bullseye / oldstable'
+        bookworm: 'bookworm / stable'
+        trixie: 'trixie / testing'
       default: buster
       mandatory: true
 
@@ -167,7 +169,10 @@ parameters:
         '3.14': '3.14 (2021-06)'
         '3.15': '3.15 (2021-11)'
         '3.16': '3.16 (2022-05)'
-      default: '3.13'
+        '3.17': '3.17 (2022-11)'
+        '3.18': '3.18 (2023-05)'
+        '3.19': '3.19 (2023-11)'
+      default: '3.19'
       mandatory: true
 
     os.locale:
@@ -206,7 +211,9 @@ parameters:
         '7.4': 'PHP 7.4'
         '8.0': 'PHP 8.0'
         '8.1': 'PHP 8.1'
-      default: '7.4'
+        '8.2': 'PHP 8.2'
+        '8.3': 'PHP 8.3'
+      default: '8.3'
       mandatory: true
 
     webserver.software:
@@ -407,6 +414,15 @@ parameters:
         '10.6': 'MariaDB 10.6'
         '10.7': 'MariaDB 10.7'
         '10.8': 'MariaDB 10.8'
+        '10.9': 'MariaDB 10.9'
+        '10.10': 'MariaDB 10.10'
+        '10.11': 'MariaDB 10.11'
+        '11.0': 'MariaDB 11.0'
+        '11.1': 'MariaDB 11.1'
+        '11.2': 'MariaDB 11.2'
+        '11.3': 'MariaDB 11.3'
+        '11.4': 'MariaDB 11.4'
+        '11.5': 'MariaDB 11.5'
       default: '10.8'
       mandatory: true
 
@@ -419,7 +435,9 @@ parameters:
         'lts/erbium': 'v12 LTS (erbium)'
         'lts/fermium': 'v14 LTS (fermium)'
         'lts/gallium': 'v16 LTS (gallium)'
-      default: 'lts/fermium'
+        'lts/hydrogen': 'v18 LTS (hydrogen)'
+        'lts/iron': 'v20 LTS (iron)'
+      default: 'lts/hydrogen'
       mandatory: true
 
     nodejs.packageManager:
