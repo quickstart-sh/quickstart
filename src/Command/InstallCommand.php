@@ -4,12 +4,14 @@ namespace App\Command;
 
 use App\Service\ConfigFileService;
 use App\Service\InstallService;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-
+#[AsCommand(
+    name: 'quickstart:install'
+)]
 class InstallCommand extends Command {
-    protected static $defaultName = "quickstart:install";
     /**
      * @var ConfigFileService
      */
@@ -32,7 +34,7 @@ class InstallCommand extends Command {
             ->setHelp("This command creates the project and configures as much as possible.");
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output) {
+    protected function execute(InputInterface $input, OutputInterface $output): int {
         $cwd = getcwd();
         $output->writeln("Attempting to load " . $cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE);
         $config = $this->configFileService->load($cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE);

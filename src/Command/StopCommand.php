@@ -3,13 +3,15 @@
 namespace App\Command;
 
 use App\Service\ConfigFileService;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
-
+#[AsCommand(
+    name: 'quickstart:stop'
+)]
 class StopCommand extends Command {
-    protected static $defaultName = "quickstart:stop";
     /**
      * @var ConfigFileService
      */
@@ -26,7 +28,7 @@ class StopCommand extends Command {
             ->setHelp("This command stops all containers.");
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output) {
+    protected function execute(InputInterface $input, OutputInterface $output): int {
         $cwd = getcwd();
         $output->writeln("Attempting to load " . $cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE);
         $config = $this->configFileService->load($cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE);

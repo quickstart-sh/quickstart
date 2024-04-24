@@ -4,13 +4,15 @@ namespace App\Command;
 
 use App\Service\ConfigFileService;
 use App\Service\FileGeneratorService;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-
+#[AsCommand(
+    name: 'quickstart:regenerate'
+)]
 class RegenerateCommand extends Command {
-    protected static $defaultName = "quickstart:regenerate";
     /**
      * @var ConfigFileService
      */
@@ -37,7 +39,7 @@ class RegenerateCommand extends Command {
             ->setHelp("This command creates or updates all files under the control of Quickstart.");
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output) {
+    protected function execute(InputInterface $input, OutputInterface $output): int {
         $cwd = getcwd();
         $output->writeln("Attempting to load " . $cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE);
         $config = $this->configFileService->load($cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE);
