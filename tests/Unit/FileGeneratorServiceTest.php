@@ -27,7 +27,7 @@ class FileGeneratorServiceTest extends KernelTestCase {
     public function testFileGenerate() {
         $this->setupFS();
         self::bootKernel();
-        $container = self::$container;
+        $container = static::getContainer();
         $service = $container->get(FileGeneratorService::class);
         $service->writeFile("test.twig", [
             "target" => "testFile",
@@ -51,7 +51,7 @@ class FileGeneratorServiceTest extends KernelTestCase {
     public function testFileGenerateChmod() {
         $this->setupFS();
         self::bootKernel();
-        $container = self::$container;
+        $container = static::getContainer();
         $service = $container->get(FileGeneratorService::class);
         $service->writeFile("test.twig", [
             "target" => "testFile",
@@ -93,7 +93,7 @@ class FileGeneratorServiceTest extends KernelTestCase {
             "testFile" => "somecontent",
         ]);
         self::bootKernel();
-        $container = self::$container;
+        $container = static::getContainer();
         $service = $container->get(FileGeneratorService::class);
         $service->writeFile("test.twig", [
             "target" => "testFile",
@@ -117,7 +117,7 @@ class FileGeneratorServiceTest extends KernelTestCase {
     public function testFileGenerateIfFalse() {
         $this->setupFS();
         self::bootKernel();
-        $container = self::$container;
+        $container = static::getContainer();
         $service = $container->get(FileGeneratorService::class);
         $service->writeFile("test.twig", [
             "target" => "testFile",
@@ -141,7 +141,7 @@ class FileGeneratorServiceTest extends KernelTestCase {
             "testFile" => "somecontent",
         ]);
         self::bootKernel();
-        $container = self::$container;
+        $container = static::getContainer();
         $service = $container->get(FileGeneratorService::class);
         $service->writeFile("test.twig", [
             "target" => "testFile",
@@ -162,7 +162,7 @@ class FileGeneratorServiceTest extends KernelTestCase {
     public function testFileGenerateDeleteExistingIfFalseError() {
         $this->setupFS();
         self::bootKernel();
-        $container = self::$container;
+        $container = static::getContainer();
         $service = $container->get(FileGeneratorService::class);
         VfsStream::newDirectory("folder", 0000)->at($this->vfsRoot);
         VfsStream::newFile("folder/testFile")->setContent("somecontent")->at($this->vfsRoot);
@@ -181,7 +181,7 @@ class FileGeneratorServiceTest extends KernelTestCase {
     public function testFileGenerateIfTrue() {
         $this->setupFS();
         self::bootKernel();
-        $container = self::$container;
+        $container = static::getContainer();
         $service = $container->get(FileGeneratorService::class);
         $service->writeFile("test.twig", [
             "target" => "testFile",
@@ -206,7 +206,7 @@ class FileGeneratorServiceTest extends KernelTestCase {
     public function testFileGenerateWithDirectory() {
         $this->setupFS();
         self::bootKernel();
-        $container = self::$container;
+        $container = static::getContainer();
         $service = $container->get(FileGeneratorService::class);
         $service->writeFile("test.twig", [
             "target" => "folder/testFile",
@@ -235,7 +235,7 @@ class FileGeneratorServiceTest extends KernelTestCase {
         $this->setupFS();
         VfsStream::newDirectory("folder")->at($this->vfsRoot);
         self::bootKernel();
-        $container = self::$container;
+        $container = static::getContainer();
         $service = $container->get(FileGeneratorService::class);
         $service->writeFile("test.twig", [
             "target" => "folder/testFile",
@@ -263,7 +263,7 @@ class FileGeneratorServiceTest extends KernelTestCase {
     public function testFileGenerateWithTwoLevelDirectory() {
         $this->setupFS();
         self::bootKernel();
-        $container = self::$container;
+        $container = static::getContainer();
         $service = $container->get(FileGeneratorService::class);
         $service->writeFile("test.twig", [
             "target" => "first/second/testFile",
@@ -299,7 +299,7 @@ class FileGeneratorServiceTest extends KernelTestCase {
             ]
         ]);
         self::bootKernel();
-        $container = self::$container;
+        $container = static::getContainer();
         $service = $container->get(FileGeneratorService::class);
         $service->writeFile("test.twig", [
             "target" => "first/second/testFile",
@@ -333,7 +333,7 @@ class FileGeneratorServiceTest extends KernelTestCase {
             "folder" => "somecontent"
         ]);
         self::bootKernel();
-        $container = self::$container;
+        $container = static::getContainer();
         $service = $container->get(FileGeneratorService::class);
         $this->expectException(\RuntimeException::class);
         $service->writeFile("test.twig", [
@@ -349,7 +349,7 @@ class FileGeneratorServiceTest extends KernelTestCase {
     public function testFileGenerateWithDirectoryMkdirErrorPermission() {
         $this->setupFS();
         self::bootKernel();
-        $container = self::$container;
+        $container = static::getContainer();
         $service = $container->get(FileGeneratorService::class);
         VfsStream::newDirectory("first", 0000)->at($this->vfsRoot);
         $this->expectException(\RuntimeException::class);
