@@ -104,12 +104,6 @@ parameters:
       inContainer: true
       containerUser: root
       if: 'in_array(''symfony/webpack-encore-bundle'', #symfony.modules#)'
-    # Clean up package-generated docker-compose files
-    - command:
-        - rm
-        - '-f'
-        - docker-compose.yml
-        - docker-compose.override.yml
     # configure the database and mailer transport
     - command:
         - sed
