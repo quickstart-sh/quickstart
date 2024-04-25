@@ -34,6 +34,7 @@ parameters:
         - composer
         - config
         - extra.symfony.allow-contrib
+        - --json
         - 'true'
       inContainer: true
     - command:
@@ -54,6 +55,7 @@ parameters:
         - composer
         - config
         - extra.symfony.docker
+        - --json
         - 'false'
       inContainer: true
     # Now, install the packages
