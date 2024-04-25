@@ -21,7 +21,7 @@ services:
 {% if config.get("externalServices.enabled") %}
 {% if "mariadb" in config.get("externalServices.types") %}
     mariadb:
-        image: mariadb:{{ config.get("externalServices.mariadb.version") }}
+        image: "mariadb:{{ config.get("externalServices.mariadb.version") }}"
         volumes:
             -   mariadb-data:/var/lib/mysql
         environment:
