@@ -34,9 +34,10 @@ class StopCommand extends Command {
         $config = $this->configFileService->load($cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE);
 
         $command = [
-            "docker-compose",
+            "docker",
+            "compose",
             "-f",
-            "docker/docker-compose.yml",
+            "docker-compose.yml",
             "-p",
             $config->get("project.name"),
             "stop",

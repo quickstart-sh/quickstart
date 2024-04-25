@@ -7,7 +7,6 @@ services:
     app:
         build:
             target: tooling
-            context: ../
             dockerfile: docker/Dockerfile
 {% if exposedPorts|length > 0 %}
         ports:
@@ -17,7 +16,7 @@ services:
 {% endif %}
         volumes:
             # :delegated is used on Windows and OS X to at least get *some* performance
-            - ../:{{ config.get("os.workDirectory") }}:delegated
+            - ./:{{ config.get("os.workDirectory") }}:delegated
 
 {% if config.get("externalServices.enabled") %}
 {% if "mariadb" in config.get("externalServices.types") %}

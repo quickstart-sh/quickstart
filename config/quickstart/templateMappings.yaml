@@ -25,4 +25,4 @@ parameters:
       target: "docker/supervisord/03_symfony_logcat.conf"
       if: "#project.type# === 'symfony'"
     "docker-compose/docker-compose.yml.twig":
-      target: "docker/docker-compose.yml"
+      target: "docker-compose.yml"
