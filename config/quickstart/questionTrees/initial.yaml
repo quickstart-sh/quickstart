@@ -421,9 +421,10 @@ parameters:
         '11.1': 'MariaDB 11.1'
         '11.2': 'MariaDB 11.2'
         '11.3': 'MariaDB 11.3'
-        '11.4': 'MariaDB 11.4'
-        '11.5': 'MariaDB 11.5'
-      default: '10.8'
+# Not released yet
+#        '11.4': 'MariaDB 11.4'
+#        '11.5': 'MariaDB 11.5'
+      default: '11.3'
       mandatory: true
 
     nodejs.version:
