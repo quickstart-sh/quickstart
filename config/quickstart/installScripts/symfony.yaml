@@ -74,6 +74,12 @@ parameters:
         - require
         - '§symfony.modules§'
       inContainer: true
+    - command:
+        - composer
+        - require
+        - '--dev'
+        - '§symfony.devModules§'
+      inContainer: true
     # Install nodejs packages, if we are running with the webpack bundle
     - command:
         - supervisorctl

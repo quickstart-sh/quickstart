@@ -290,7 +290,6 @@ parameters:
         symfony/ldap: LDAP
         symfony/form: Forms
         symfony/twig-pack: Twig
-        symfony/maker-bundle: 'Maker bundle'
         doctrine/doctrine-bundle: 'Doctrine Base'
         orm-fixtures: 'Doctrine Fixtures'
         doctrine/doctrine-migrations-bundle: 'Doctrine Migrations'
@@ -299,7 +298,6 @@ parameters:
         symfony/cache: Cache
         symfony/profiler-pack: 'Profiler pack'
         symfony/mailer: Mailer
-        symfony/phpunit-bridge: 'PHPUnit bridge'
         symfony/security-bundle: Security
         symfony/serializer: Serializer
         symfony/translation: Translation
@@ -317,6 +315,13 @@ parameters:
         symfony/mailer:
           set:
             'externalServices.types.[]': mail
+    symfony.devModules:
+      type: select_multi
+      description: 'Symfony development bundles and packs'
+      if: '#project.type# == ''symfony'''
+      options:
+        symfony/maker-bundle: 'Maker bundle'
+        symfony/phpunit-bridge: 'PHPUnit bridge'
 
     php.extensions.base:
       type: select_multi
