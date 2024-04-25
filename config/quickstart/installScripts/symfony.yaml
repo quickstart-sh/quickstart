@@ -12,17 +12,10 @@ parameters:
     - command:
         - composer
         - create-project
-        - 'symfony/skeleton:"7.0.*"'
+        - 'symfony/skeleton:7.0.*'
         - '/tmp/scaffold'
         - '--no-install'
       inContainer: true
-    - command:
-        - composer
-        - require
-        - 'symfony/webapp-pack:"7.0.*"'
-        - '--no-install'
-      inContainer: true
-      if: '#symfony.type# == ''web'''
     # Move the content to the target directory
     - command:
         - mv
@@ -68,6 +61,14 @@ parameters:
         - composer
         - install
       inContainer: true
+    - command:
+        - composer
+        - require
+        # The current Symfony setup command doesn't pin versions here either
+        - 'symfony/webapp-pack'
+        - '--no-install'
+      inContainer: true
+      if: '#symfony.type# == ''web'''
     # And now, install the packs
     - command:
         - composer
