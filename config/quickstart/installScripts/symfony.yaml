@@ -12,16 +12,14 @@ parameters:
     - command:
         - composer
         - create-project
-        - symfony/skeleton
+        - 'symfony/skeleton:"7.0.*"'
         - '/tmp/scaffold'
         - '--no-install'
       inContainer: true
-      if: '#symfony.type# == ''cli'''
     - command:
         - composer
-        - create-project
-        - symfony/website-skeleton
-        - '/tmp/scaffold'
+        - require
+        - 'symfony/webapp-pack:"7.0.*"'
         - '--no-install'
       inContainer: true
       if: '#symfony.type# == ''web'''
@@ -59,6 +57,12 @@ parameters:
         - '#php.composer.vendorDir#'
       inContainer: true
       if: '#php.composer.vendorDir# !== ''vendor'''
+    - command:
+        - composer
+        - config
+        - extra.symfony.docker
+        - 'false'
+      inContainer: true
     # Now, install the packages
     - command:
         - composer
