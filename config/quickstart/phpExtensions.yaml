@@ -6,333 +6,445 @@ parameters:
         'ubuntu-all-7.4': 'php7.4-amqp'
         'ubuntu-all-8.0': 'php8.0-amqp'
         'ubuntu-all-8.1': 'php8.1-amqp'
+        'ubuntu-all-8.2': 'php8.2-amqp'
+        'ubuntu-all-8.3': 'php8.3-amqp'
     apcu:
       name: APCu
       package:
         'ubuntu-all-7.4': 'php7.4-apcu'
         'ubuntu-all-8.0': 'php8.0-apcu'
         'ubuntu-all-8.1': 'php8.1-apcu'
+        'ubuntu-all-8.2': 'php8.2-apcu'
+        'ubuntu-all-8.3': 'php8.3-apcu'
     bcmath:
       name: bcmath
       package:
         'ubuntu-all-7.4': 'php7.4-bcmath'
         'ubuntu-all-8.0': 'php8.0-bcmath'
         'ubuntu-all-8.1': 'php8.1-bcmath'
+        'ubuntu-all-8.2': 'php8.2-bcmath'
+        'ubuntu-all-8.3': 'php8.3-bcmath'
     bzip2:
       name: bzip2
       package:
         'ubuntu-all-7.4': 'php7.4-bz2'
         'ubuntu-all-8.0': 'php8.0-bz2'
         'ubuntu-all-8.1': 'php8.1-bz2'
+        'ubuntu-all-8.2': 'php8.2-bz2'
+        'ubuntu-all-8.3': 'php8.3-bz2'
     ctype:
       name: ctype
       package:
         'ubuntu-all-7.4': 'php7.4-common'
         'ubuntu-all-8.0': 'php8.0-common'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     exif:
       name: EXIF
       package:
         'ubuntu-all-7.4': 'php7.4-common'
         'ubuntu-all-8.0': 'php8.0-common'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     fileinfo:
       name: Fileinfo
       package:
         'ubuntu-all-7.4': 'php7.4-common'
         'ubuntu-all-8.0': 'php8.0-common'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     ffi:
       name: FFI
       package:
         'ubuntu-all-7.4': 'php7.4-common'
         'ubuntu-all-8.0': 'php8.0-common'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     ftp:
       name: FTP
       package:
         'ubuntu-all-7.4': 'php7.4-common'
         'ubuntu-all-8.0': 'php8.0-common'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     calendar:
       name: Calendar
       package:
         'ubuntu-all-7.4': 'php7.4-common'
         'ubuntu-all-8.0': 'php8.0-common'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     curl:
       name: cURL
       package:
         'ubuntu-all-7.4': 'php7.4-curl'
         'ubuntu-all-8.0': 'php8.0-curl'
         'ubuntu-all-8.1': 'php8.1-curl'
+        'ubuntu-all-8.2': 'php8.2-curl'
+        'ubuntu-all-8.3': 'php8.3-curl'
     gmagick:
       name: GraphicsMagick
       package:
         'ubuntu-all-7.4': 'php7.4-gmagick'
         'ubuntu-all-8.0': 'php8.0-gmagick'
         'ubuntu-all-8.1': 'php8.1-gmagick'
+        'ubuntu-all-8.2': 'php8.2-gmagick'
+        'ubuntu-all-8.3': 'php8.3-gmagick'
     gnupg:
       name: GnuPG
       package:
         'ubuntu-all-7.4': 'php7.4-gnupg'
         'ubuntu-all-8.0': 'php8.0-gnupg'
         'ubuntu-all-8.1': 'php8.1-gnupg'
+        'ubuntu-all-8.2': 'php8.2-gnupg'
+        'ubuntu-all-8.3': 'php8.3-gnupg'
     imagick:
       name: ImageMagick
       package:
         'ubuntu-all-7.4': 'php7.4-imagick'
         'ubuntu-all-8.0': 'php8.0-imagick'
         'ubuntu-all-8.1': 'php8.1-imagick'
+        'ubuntu-all-8.2': 'php8.2-imagick'
+        'ubuntu-all-8.3': 'php8.3-imagick'
     memcache:
       name: memcache
       package:
         'ubuntu-all-7.4': 'php7.4-memcache'
         'ubuntu-all-8.0': 'php8.0-memcache'
         'ubuntu-all-8.1': 'php8.1-memcache'
+        'ubuntu-all-8.2': 'php8.2-memcache'
+        'ubuntu-all-8.3': 'php8.3-memcache'
     memcached:
       name: 'memcached (using libmemcached)'
       package:
         'ubuntu-all-7.4': 'php7.4-memcached'
         'ubuntu-all-8.0': 'php8.0-memcached'
         'ubuntu-all-8.1': 'php8.1-memcached'
+        'ubuntu-all-8.2': 'php8.2-memcached'
+        'ubuntu-all-8.3': 'php8.3-memcached'
     mongodb:
       name: MongoDB
       package:
         'ubuntu-all-7.4': 'php7.4-mongodb'
         'ubuntu-all-8.0': 'php8.0-mongodb'
         'ubuntu-all-8.1': 'php8.1-mongodb'
+        'ubuntu-all-8.2': 'php8.2-mongodb'
+        'ubuntu-all-8.3': 'php8.3-mongodb'
     ssh2:
       name: SSH
       package:
         'ubuntu-all-7.4': 'php7.4-ssh2'
         'ubuntu-all-8.0': 'php8.0-ssh2'
         'ubuntu-all-8.1': 'php8.1-ssh2'
+        'ubuntu-all-8.2': 'php8.2-ssh2'
+        'ubuntu-all-8.3': 'php8.3-ssh2'
     uploadprogress:
       name: 'upload progress'
       package:
         'ubuntu-all-7.4': 'php7.4-uploadprogress'
         'ubuntu-all-8.0': 'php8.0-uploadprogress'
         'ubuntu-all-8.1': 'php8.1-uploadprogress'
+        'ubuntu-all-8.2': 'php8.2-uploadprogress'
+        'ubuntu-all-8.3': 'php8.3-uploadprogress'
     uuid:
       name: UUID
       package:
         'ubuntu-all-7.4': 'php7.4-uuid'
         'ubuntu-all-8.0': 'php8.0-uuid'
         'ubuntu-all-8.1': 'php8.1-uuid'
+        'ubuntu-all-8.2': 'php8.2-uuid'
+        'ubuntu-all-8.3': 'php8.3-uuid'
     xdebug:
       name: XDebug
       package:
         'ubuntu-all-7.4': 'php7.4-xdebug'
         'ubuntu-all-8.0': 'php8.0-xdebug'
         'ubuntu-all-8.1': 'php8.1-xdebug'
+        'ubuntu-all-8.2': 'php8.2-xdebug'
+        'ubuntu-all-8.3': 'php8.3-xdebug'
     grpc:
       name: gRPC
       package:
         'ubuntu-all-7.4': 'php7.4-grpc'
         'ubuntu-all-8.0': 'php8.0-grpc'
         'ubuntu-all-8.1': 'php8.1-grpc'
+        'ubuntu-all-8.2': 'php8.2-grpc'
+        'ubuntu-all-8.3': 'php8.3-grpc'
     imap:
       name: IMAP
       package:
         'ubuntu-all-7.4': 'php7.4-imap'
         'ubuntu-all-8.0': 'php8.0-imap'
         'ubuntu-all-8.1': 'php8.1-imap'
+        'ubuntu-all-8.2': 'php8.2-imap'
+        'ubuntu-all-8.3': 'php8.3-imap'
     inotify:
       name: inotify
       package:
         'ubuntu-all-7.4': 'php7.4-inotify'
         'ubuntu-all-8.0': 'php8.0-inotify'
         'ubuntu-all-8.1': 'php8.1-inotify'
+        'ubuntu-all-8.2': 'php8.2-inotify'
+        'ubuntu-all-8.3': 'php8.3-inotify'
     intl:
       name: Internationalization
       package:
         'ubuntu-all-7.4': 'php7.4-intl'
         'ubuntu-all-8.0': 'php8.0-intl'
         'ubuntu-all-8.1': 'php8.1-intl'
+        'ubuntu-all-8.2': 'php8.2-intl'
+        'ubuntu-all-8.3': 'php8.3-intl'
     ldap:
       name: ldap
       package:
         'ubuntu-all-7.4': 'php7.4-ldap'
         'ubuntu-all-8.0': 'php8.0-ldap'
         'ubuntu-all-8.1': 'php8.1-ldap'
+        'ubuntu-all-8.2': 'php8.2-ldap'
+        'ubuntu-all-8.3': 'php8.3-ldap'
     mbstring:
       name: mbstring
       package:
         'ubuntu-all-7.4': 'php7.4-mbstring'
         'ubuntu-all-8.0': 'php8.0-mbstring'
         'ubuntu-all-8.1': 'php8.1-mbstring'
+        'ubuntu-all-8.2': 'php8.2-mbstring'
+        'ubuntu-all-8.3': 'php8.3-mbstring'
     mcrypt:
       name: libmcrypt
       package:
         'ubuntu-all-7.4': 'php7.4-mcrypt'
         'ubuntu-all-8.0': 'php8.0-mcrypt'
         'ubuntu-all-8.1': 'php8.1-mcrypt'
+        'ubuntu-all-8.2': 'php8.2-mcrypt'
+        'ubuntu-all-8.3': 'php8.3-mcrypt'
     mysql:
       name: MySQL
       package:
         'ubuntu-all-7.4': 'php7.4-mysql'
         'ubuntu-all-8.0': 'php8.0-mysql'
         'ubuntu-all-8.1': 'php8.1-mysql'
+        'ubuntu-all-8.2': 'php8.2-mysql'
+        'ubuntu-all-8.3': 'php8.3-mysql'
     odbc:
       name: ODBC
       package:
         'ubuntu-all-7.4': 'php7.4-odbc'
         'ubuntu-all-8.0': 'php8.0-odbc'
         'ubuntu-all-8.1': 'php8.1-odbc'
+        'ubuntu-all-8.2': 'php8.2-odbc'
+        'ubuntu-all-8.3': 'php8.3-odbc'
     protobuf:
       name: protobuf
       package:
         'ubuntu-all-7.4': 'php7.4-protobuf'
         'ubuntu-all-8.0': 'php8.0-protobuf'
         'ubuntu-all-8.1': 'php8.1-protobuf'
+        'ubuntu-all-8.2': 'php8.2-protobuf'
+        'ubuntu-all-8.3': 'php8.3-protobuf'
     radius:
       name: RADIUS
       package:
         'ubuntu-all-7.4': 'php7.4-radius'
         'ubuntu-all-8.0': 'php8.0-radius'
         'ubuntu-all-8.1': 'php8.1-radius'
+        'ubuntu-all-8.2': 'php8.2-radius'
+        'ubuntu-all-8.3': 'php8.3-radius'
     redis:
       name: Redis
       package:
         'ubuntu-all-7.4': 'php7.4-redis'
         'ubuntu-all-8.0': 'php8.0-redis'
         'ubuntu-all-8.1': 'php8.1-redis'
+        'ubuntu-all-8.2': 'php8.2-redis'
+        'ubuntu-all-8.3': 'php8.3-redis'
     snmp:
       name: SNMP
       package:
         'ubuntu-all-7.4': 'php7.4-snmp'
         'ubuntu-all-8.0': 'php8.0-snmp'
         'ubuntu-all-8.1': 'php8.1-snmp'
+        'ubuntu-all-8.2': 'php8.2-snmp'
+        'ubuntu-all-8.3': 'php8.3-snmp'
     soap:
       name: XML-SOAP
       package:
         'ubuntu-all-7.4': 'php7.4-soap'
         'ubuntu-all-8.0': 'php8.0-soap'
         'ubuntu-all-8.1': 'php8.1-soap'
+        'ubuntu-all-8.2': 'php8.2-soap'
+        'ubuntu-all-8.3': 'php8.3-soap'
     xml:
       name: XML
       package:
         'ubuntu-all-7.4': 'php7.4-xml'
         'ubuntu-all-8.0': 'php8.0-xml'
         'ubuntu-all-8.1': 'php8.1-xml'
+        'ubuntu-all-8.2': 'php8.2-xml'
+        'ubuntu-all-8.3': 'php8.3-xml'
     gd:
       name: 'GD graphics library'
       package:
         'ubuntu-all-7.4': 'php7.4-gd'
         'ubuntu-all-8.0': 'php8.0-gd'
         'ubuntu-all-8.1': 'php8.1-gd'
+        'ubuntu-all-8.2': 'php8.2-gd'
+        'ubuntu-all-8.3': 'php8.3-gd'
     gettext:
       name: 'GNU gettext'
       package:
         'ubuntu-all-7.4': 'php7.4-common'
         'ubuntu-all-8.0': 'php8.0-common'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     gmp:
       name: 'gmp'
       package:
         'ubuntu-all-7.4': 'php7.4-gmp'
         'ubuntu-all-8.0': 'php8.0-gmp'
         'ubuntu-all-8.1': 'php8.1-gmp'
+        'ubuntu-all-8.2': 'php8.2-gmp'
+        'ubuntu-all-8.3': 'php8.3-gmp'
     json:
       name: JSON
       package:
         'ubuntu-all-7.4': 'php7.4-json'
         'ubuntu-all-8.0': 'php8.0-cli'
         'ubuntu-all-8.1': 'php8.1-cli'
+        'ubuntu-all-8.2': 'php8.2-cli'
+        'ubuntu-all-8.3': 'php8.3-cli'
     pgsql:
       name: pgSQL
       package:
         'ubuntu-all-7.4': 'php7.4-pgsql'
         'ubuntu-all-8.0': 'php8.0-pgsql'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     readline:
       name: Readline
       package:
         'ubuntu-all-7.4': 'php7.4-readline'
         'ubuntu-all-8.0': 'php8.0-readline'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     sqlite3:
       name: SQLite 3
       package:
         'ubuntu-all-7.4': 'php7.4-sqlite3'
         'ubuntu-all-8.0': 'php8.0-sqlite3'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     zip:
       name: ZIP
       package:
         'ubuntu-all-7.4': 'php7.4-zip'
         'ubuntu-all-8.0': 'php8.0-zip'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     lz4:
       name: LZ4
       package:
         'ubuntu-all-7.4': 'php7.4-lz4'
         'ubuntu-all-8.0': 'php8.0-lz4'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     solr:
       name: Solr
       package:
         'ubuntu-all-7.4': 'php7.4-solr'
         'ubuntu-all-8.0': 'php8.0-solr'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     iconv:
       name: iconv
       package:
         'ubuntu-all-7.4': 'php7.4-common'
         'ubuntu-all-8.0': 'php8.0-common'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     pdo:
       name: PDO
       package:
         'ubuntu-all-7.4': 'php7.4-common'
         'ubuntu-all-8.0': 'php8.0-common'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     phar:
       name: PHAR
       package:
         'ubuntu-all-7.4': 'php7.4-common'
         'ubuntu-all-8.0': 'php8.0-common'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     posix:
       name: POSIX
       package:
         'ubuntu-all-7.4': 'php7.4-common'
         'ubuntu-all-8.0': 'php8.0-common'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     shmop:
       name: shmop
       package:
         'ubuntu-all-7.4': 'php7.4-common'
         'ubuntu-all-8.0': 'php8.0-common'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     sockets:
       name: Sockets
       package:
         'ubuntu-all-7.4': 'php7.4-common'
         'ubuntu-all-8.0': 'php8.0-common'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     sysvmsg:
       name: sysvmsg
       package:
         'ubuntu-all-7.4': 'php7.4-common'
         'ubuntu-all-8.0': 'php8.0-common'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     sysvsem:
       name: sysvsem
       package:
         'ubuntu-all-7.4': 'php7.4-common'
         'ubuntu-all-8.0': 'php8.0-common'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     sysvshm:
       name: sysvshm
       package:
         'ubuntu-all-7.4': 'php7.4-common'
         'ubuntu-all-8.0': 'php8.0-common'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
     tokenizer:
       name: Tokenizer
       package:
         'ubuntu-all-7.4': 'php7.4-common'
         'ubuntu-all-8.0': 'php8.0-common'
         'ubuntu-all-8.1': 'php8.1-common'
+        'ubuntu-all-8.2': 'php8.2-common'
+        'ubuntu-all-8.3': 'php8.3-common'
