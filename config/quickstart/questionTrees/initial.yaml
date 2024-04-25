@@ -306,6 +306,9 @@ parameters:
         symfony/apache-pack:
           if: '#webserver.software# === ''apache'''
           default_if: '#webserver.software# === ''apache'''
+        symfony/ldap:
+          set:
+            'php.extensions.base.[]': ldap
         symfony/webpack-encore-bundle:
           set:
             nodejs.enabled: true
