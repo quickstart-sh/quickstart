@@ -311,8 +311,8 @@ parameters:
         symfony/webpack-encore-bundle:
           set:
             nodejs.enabled: true
-            nodejs.packageManager: yarn
-            nodejs.version: lts/fermium
+            nodejs.packageManager: npm
+            nodejs.version: lts/iron
             nodejs.target: tooling
         symfony/mailer:
           set:
