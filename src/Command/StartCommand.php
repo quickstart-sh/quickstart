@@ -54,6 +54,8 @@ class StartCommand extends Command implements LoggerAwareInterface {
         if ($input->getOption("rebuild"))
             $command[] = "--build";
 
+        $this->logger->notice("Launching process", ["command" => $command]);
+
         $process = new Process($command);
         $process->setTimeout(null);
         $process->mustRun(function ($type, $buffer) use ($output) {

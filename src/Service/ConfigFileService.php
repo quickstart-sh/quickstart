@@ -20,10 +20,6 @@ class ConfigFileService implements LoggerAwareInterface {
     public const CONFIG_FILE = ".quickstart.yml";
 
     /**
-     * Development aid - turn on echo on all major code paths
-     */
-    private const DEBUG_ME = false;
-    /**
      * @var ParameterBagInterface
      */
     private ParameterBagInterface $params;
@@ -42,57 +38,54 @@ class ConfigFileService implements LoggerAwareInterface {
     }
 
     public function ask(Config $config, string $path, array $optionConfig) {
+        $this->logger->info("Asking question", ["path" => $path, "config" => $optionConfig]);
         $helper = new QuestionHelper();
         //Check if we are allowed to ask the question
         if (array_key_exists("if", $optionConfig) && ConditionEvaluatorService::evaluate($optionConfig["if"], $config) === false) {
-            //@codeCoverageIgnoreStart
-            if (self::DEBUG_ME) echo("Question $path, passing as condition " . $optionConfig["if"] . " returned false\n");
-            //@codeCoverageIgnoreEnd
+            $this->logger->debug("Passing over as condition " . $optionConfig["if"] . " returned false\n");
             return;
         }
         //Is an answer to this question mandatory?
         $mandatory = (array_key_exists("mandatory", $optionConfig) && $optionConfig["mandatory"] === true);
-        //@codeCoverageIgnoreStart
-        if (self::DEBUG_ME) echo("Question $path, mandatory: " . ($mandatory ? "true" : "false") . "\n");
-        //@codeCoverageIgnoreEnd
+        $this->logger->debug("Mandatory: " . ($mandatory ? "true" : "false") . "\n");
+
         //Check if the path has an override set (e.g. OS versions)
         if (array_key_exists("pathOverride", $optionConfig)) {
-            //@codeCoverageIgnoreStart
-            if (self::DEBUG_ME) echo("Question $path, overriding path with " . $optionConfig["pathOverride"]);
-            //@codeCoverageIgnoreEnd
+            $this->logger->debug("Overriding path with " . $optionConfig["pathOverride"]);
             $path = $optionConfig["pathOverride"];
         }
         //Get the current value in the config (null, if the key is not present)
         $currentValue = $config->get($path);
-        //@codeCoverageIgnoreStart
-        if (self::DEBUG_ME) {
-            if ($currentValue == null)
-                echo "Question $path, current value is null\n";
-            elseif (is_string($currentValue))
-                echo "Question $path, current value is " . $currentValue . "\n";
-            elseif (is_array($currentValue))
-                echo "Question $path, current value is [" . implode(", ", $currentValue) . "]\n";
-        }
-        //@codeCoverageIgnoreEnd
+
+        if ($currentValue == null)
+            $this->logger->debug("current value is null\n");
+        elseif (is_string($currentValue))
+            $this->logger->debug("Current value is " . $currentValue . "\n");
+        elseif (is_array($currentValue))
+            $this->logger->debug("Current value is [" . implode(", ", $currentValue) . "]\n");
+
+
         //Is this question final (if a value already exists, it can not be modified again)?
         $final = (array_key_exists("final", $optionConfig) && $optionConfig["final"] === true);
+        $this->logger->debug("Final is " . ($final ? "true" : "false") . "\n");
         if ($final === true && $currentValue !== null) {
-            //@codeCoverageIgnoreStart
-            if (self::DEBUG_ME) echo("Question $path, passing as it's final and a value");
-            //@codeCoverageIgnoreEnd
+            $this->logger->debug("Passing over as it's final and already has a value");
             return;
         }
+
         //Get the default value(s)
         $default = array_key_exists("default", $optionConfig) ? $optionConfig["default"] : null;
+        $this->logger->debug("Default: " . $default);
         //Support dynamic evaluation of default parameters
         if ($default != null && array_key_exists("defaultEval", $optionConfig) && $optionConfig["defaultEval"]) {
+            $this->logger->debug("Passing default through evaluator");
             $default = eval("return ($default);");
+            $this->logger->debug("Default after evaluation pass: " . $default);
         }
 
         switch ($optionConfig["type"]) {
             case "banner":
                 $io = new SymfonyStyle($this->input, $this->output);
-
                 $io->title($optionConfig["description"]);
                 return;
             case "string":
@@ -120,9 +113,9 @@ class ConfigFileService implements LoggerAwareInterface {
                          *
                          * As a result, even an empty input will result in newValue being non-null
                          */
-                        //@codeCoverageIgnoreStart
+
                         return;
-                        //@codeCoverageIgnoreEnd
+
                     } elseif (
                         ($currentValue !== null && $newValue !== null) ||
                         ($currentValue === null && $newValue !== null)
@@ -133,9 +126,6 @@ class ConfigFileService implements LoggerAwareInterface {
                 }
                 break;
             case "select_single":
-                //@codeCoverageIgnoreStart
-                if (self::DEBUG_ME) echo "\n";
-                //@codeCoverageIgnoreEnd
                 $options = $optionConfig["options"];
                 //Check if options is a string - which means this is a dynamic list from a shared yaml (php modules)
                 if (is_string($options)) {
@@ -145,25 +135,21 @@ class ConfigFileService implements LoggerAwareInterface {
                 }
                 //Check if we have configurations for individual options (e.g. hide depending on config)
                 if (array_key_exists("optionsConfiguration", $optionConfig) && is_array($optionConfig["optionsConfiguration"])) {
-                    //@codeCoverageIgnoreStart
-                    if (self::DEBUG_ME) echo "Have option-specific configurations\n";
-                    //@codeCoverageIgnoreEnd
+
+                    $this->logger->debug("Have option-specific configurations");
+
                     foreach ($optionConfig["optionsConfiguration"] as $specificOption => $specificConfiguration) {
                         if (is_array($specificConfiguration) && array_key_exists("if", $specificConfiguration)) {
-                            $evaluatorResult = ConditionEvaluatorService::evaluate($specificConfiguration["if"], $config);
+                            $evaluatorResult = $this->conditionEvaluatorService->evaluate($specificConfiguration["if"], $config);
                             if ($evaluatorResult === false && array_key_exists($specificOption, $options)) {
-                                //@codeCoverageIgnoreStart
-                                if (self::DEBUG_ME) echo "Removing option $specificOption due to failed condition\n";
-                                //@codeCoverageIgnoreEnd
+                                $this->logger->debug("Removing option $specificOption due to failed condition");
                                 unset($options[$specificOption]);
                             }
                         }
                         if (is_array($specificConfiguration) && array_key_exists("default_if", $specificConfiguration)) {
-                            $evaluatorResult = ConditionEvaluatorService::evaluate($specificConfiguration["default_if"], $config);
+                            $evaluatorResult = $this->conditionEvaluatorService->evaluate($specificConfiguration["default_if"], $config);
                             if ($evaluatorResult === true) {
-                                //@codeCoverageIgnoreStart
-                                if (self::DEBUG_ME) echo "Setting option $specificOption as new default\n";
-                                //@codeCoverageIgnoreEnd
+                                $this->logger->debug("Setting option $specificOption as new default");
                                 $default = $specificOption;
                                 $optionConfig["default"] = $default;
                             }
@@ -175,26 +161,20 @@ class ConfigFileService implements LoggerAwareInterface {
                     //Check if the current value is still present in the set of options
                     //A case that might happen is e.g. an OS version being dropped
                     if (!array_key_exists($currentValue, $options)) {
-                        //@codeCoverageIgnoreStart
-                        if (self::DEBUG_ME) echo("Old value " . $currentValue . " does not exist any more, replace with null\n");
-                        //@codeCoverageIgnoreEnd
+                        $this->logger->debug("Old value " . $currentValue . " does not exist any more, replace with null");
                         $currentValue = null;
                     }
                 }
                 if ($currentValue === null && array_key_exists("default", $optionConfig)) {
                     $currentValue = $optionConfig["default"];
-                    //@codeCoverageIgnoreStart
-                    if (self::DEBUG_ME) echo("Replaced empty value with " . $currentValue . "\n");
-                    //@codeCoverageIgnoreEnd
+                    $this->logger->debug("Replaced empty value with " . $currentValue . "\n");
                 }
                 if ($currentValue != null && $currentValue != "" && $currentValue != "_none" && array_key_exists($currentValue, $options)) {
                     $prompt .= " (current: " . $options[$currentValue] . ")";
                 }
                 $prompt .= ": ";
                 if ($mandatory === false) {
-                    //@codeCoverageIgnoreStart
-                    if (self::DEBUG_ME) echo("Add none option");
-                    //@codeCoverageIgnoreEnd
+                    $this->logger->debug("Add none option");
                     if ($currentValue === null) {
                         $options["_none"] = "None (default)";
                         $currentValue = "_none";
@@ -211,16 +191,9 @@ class ConfigFileService implements LoggerAwareInterface {
 
                 $questionDefault = $currentValue == "" ? null : array_search($currentValue, array_keys($options));
                 $questionOptions = array_values($options);
-                //@codeCoverageIgnoreStart
-                if (self::DEBUG_ME) {
-                    echo "default is " . $questionDefault . "\n";
-                    echo "options are [";
-                    foreach ($questionOptions as $k => $v) {
-                        echo "$k => $v,";
-                    }
-                    echo "]\n";
-                }
-                //@codeCoverageIgnoreEnd
+
+                $this->logger->debug("Asking question", ["question" => $prompt, "options" => $questionOptions, "default" => $questionDefault]);
+
                 $answer = $helper->ask(
                     $this->input,
                     $this->output,
@@ -239,24 +212,20 @@ class ConfigFileService implements LoggerAwareInterface {
                     $newValue = null;
                 //Check if we have configurations for individual options (e.g. set other config keys)
                 if (array_key_exists("optionsConfiguration", $optionConfig) && is_array($optionConfig["optionsConfiguration"])) {
-                    //@codeCoverageIgnoreStart
-                    if (self::DEBUG_ME) echo "Have option-specific configurations\n";
-                    //@codeCoverageIgnoreEnd
+
+                    $this->logger->debug("Have option-specific configurations");
+
                     foreach ($optionConfig["optionsConfiguration"] as $specificOption => $specificConfiguration) {
                         if ($specificOption !== $newValue)
                             continue;
                         if (is_array($specificConfiguration) && array_key_exists("set", $specificConfiguration)) {
                             foreach ($specificConfiguration["set"] as $key => $effect) {
                                 if ($effect === null) {
-                                    //@codeCoverageIgnoreStart
-                                    if (self::DEBUG_ME) echo "Unsetting config key $key due to side effect of $specificOption\n";
-                                    //@codeCoverageIgnoreEnd
+                                    $this->logger->debug("Unsetting config key $key due to side effect of $specificOption");
                                     if ($config->has($key))
                                         $config->unset($key);
                                 } else {
-                                    //@codeCoverageIgnoreStart
-                                    if (self::DEBUG_ME) echo "Setting config key $key due to side effect of $specificOption\n";
-                                    //@codeCoverageIgnoreEnd
+                                    $this->logger->debug("Setting config key $key due to side effect of $specificOption");
                                     $config->set($key, $effect);
                                 }
                             }
@@ -265,9 +234,6 @@ class ConfigFileService implements LoggerAwareInterface {
                 }
                 break;
             case "select_multi":
-                //@codeCoverageIgnoreStart
-                if (self::DEBUG_ME) echo "\n";
-                //@codeCoverageIgnoreEnd
                 $options = $optionConfig["options"];
                 //Check if options is a string - which means this is a dynamic list from a shared yaml (php modules)
                 if (is_string($options)) {
@@ -279,25 +245,19 @@ class ConfigFileService implements LoggerAwareInterface {
                     $currentValue = [];
                 //Check if we have configurations for individual options (e.g. hide depending on config)
                 if (array_key_exists("optionsConfiguration", $optionConfig) && is_array($optionConfig["optionsConfiguration"])) {
-                    //@codeCoverageIgnoreStart
-                    if (self::DEBUG_ME) echo "Have option-specific configurations\n";
-                    //@codeCoverageIgnoreEnd
+                    $this->logger->debug("Have option-specific configurations");
                     foreach ($optionConfig["optionsConfiguration"] as $specificOption => $specificConfiguration) {
                         if (is_array($specificConfiguration) && array_key_exists("if", $specificConfiguration)) {
                             $evaluatorResult = ConditionEvaluatorService::evaluate($specificConfiguration["if"], $config);
                             if ($evaluatorResult === false && array_key_exists($specificOption, $options)) {
-                                //@codeCoverageIgnoreStart
-                                if (self::DEBUG_ME) echo "Removing option $specificOption due to failed condition\n";
-                                //@codeCoverageIgnoreEnd
+                                $this->logger->debug("Removing option $specificOption due to failed condition");
                                 unset($options[$specificOption]);
                             }
                         }
                         if (is_array($specificConfiguration) && array_key_exists("default_if", $specificConfiguration)) {
                             $evaluatorResult = ConditionEvaluatorService::evaluate($specificConfiguration["default_if"], $config);
                             if ($evaluatorResult === true) {
-                                //@codeCoverageIgnoreStart
-                                if (self::DEBUG_ME) echo "Adding option $specificOption as current value\n";
-                                //@codeCoverageIgnoreEnd
+                                $this->logger->debug("Adding option $specificOption as current value");
                                 if (!in_array($specificOption, $currentValue))
                                     $currentValue[] = $specificOption;
                             }
@@ -310,9 +270,7 @@ class ConfigFileService implements LoggerAwareInterface {
                     //A case that might happen is e.g. PHP modules being dropped
                     foreach ($currentValue as $i => $currentKey) {
                         if (!array_key_exists($currentKey, $options)) {
-                            //@codeCoverageIgnoreStart
-                            if (self::DEBUG_ME) echo("Old value " . $currentKey . " does not exist any more, removing it\n");
-                            //@codeCoverageIgnoreEnd
+                            $this->logger->debug("Old value " . $currentKey . " does not exist any more, removing it");
                             unset($currentValue[$i]);
                         }
                     }
@@ -330,30 +288,19 @@ class ConfigFileService implements LoggerAwareInterface {
                 //Remove all currently set options from offer
                 foreach ($options as $k => $v) {
                     if (is_array($currentValue) && in_array($k, $currentValue)) {
-                        //@codeCoverageIgnoreStart
-                        if (self::DEBUG_ME) echo "discarding $k as it is currently set\n";
-                        //@codeCoverageIgnoreEnd
+                        $this->logger->debug("discarding $k as it is currently set");
                         unset($options[$k]);
                     }
                 }
                 if ($mandatory === false || (is_array($currentValue) && sizeof($currentValue) > 0)) {
-                    //@codeCoverageIgnoreStart
-                    if (self::DEBUG_ME) echo("Add none option\n");
-                    //@codeCoverageIgnoreEnd
+                    $this->logger->debug("Add none option");
                     $options["_none"] = "None (default)";
                 }
                 $questionOptions = array_values($options);
                 $questionDefaultString = $mandatory ? "" : (sizeof($questionOptions) - 1);
-                //@codeCoverageIgnoreStart
-                if (self::DEBUG_ME) {
-                    echo "options are [";
-                    foreach ($questionOptions as $k => $v) {
-                        echo "$k => $v,";
-                    }
-                    echo "]\n";
-                    echo "default is $questionDefaultString\n";
-                }
-                //@codeCoverageIgnoreEnd
+
+                $this->logger->debug("Asking question", ["question" => $prompt, "options" => $questionOptions, "default" => $questionDefaultString]);
+
                 $answer = $helper->ask(
                     $this->input,
                     $this->output,
@@ -371,21 +318,16 @@ class ConfigFileService implements LoggerAwareInterface {
                     $newValue[] = $key;
                     //Check if we have configurations for individual options (e.g. set other config keys)
                     if (array_key_exists("optionsConfiguration", $optionConfig) && is_array($optionConfig["optionsConfiguration"]) && array_key_exists($key, $optionConfig["optionsConfiguration"])) {
-                        //@codeCoverageIgnoreStart
-                        if (self::DEBUG_ME) echo "Have option-specific configurations\n";
-                        //@codeCoverageIgnoreEnd
+                        $this->logger->debug("Have option-specific configurations\n");
+
                         $specificConfiguration = $optionConfig["optionsConfiguration"][$key];
                         if (is_array($specificConfiguration) && array_key_exists("set", $specificConfiguration)) {
                             foreach ($specificConfiguration["set"] as $effectKey => $effect) {
                                 if ($effect === null) {
-                                    //@codeCoverageIgnoreStart
-                                    if (self::DEBUG_ME) echo "Unsetting config key $effectKey due to side effect of $key\n";
-                                    //@codeCoverageIgnoreEnd
+                                    $this->logger->debug("Unsetting config key $effectKey due to side effect of $key");
                                     $config->unset($effectKey);
                                 } else {
-                                    //@codeCoverageIgnoreStart
-                                    if (self::DEBUG_ME) echo "Setting config key $effectKey due to side effect of $key\n";
-                                    //@codeCoverageIgnoreEnd
+                                    $this->logger->debug("Setting config key $effectKey due to side effect of $key");
                                     $config->set($effectKey, $effect);
                                 }
                             }
@@ -398,9 +340,6 @@ class ConfigFileService implements LoggerAwareInterface {
                     $newValue = null;
                 break;
             case "boolean":
-                //@codeCoverageIgnoreStart
-                if (self::DEBUG_ME) echo "\n";
-                //@codeCoverageIgnoreEnd
                 $options = [
                     "true" => "Yes",
                     "false" => "No",
@@ -408,9 +347,9 @@ class ConfigFileService implements LoggerAwareInterface {
                 $prompt = "Please select " . $optionConfig["description"];
                 if ($currentValue === null && array_key_exists("default", $optionConfig)) {
                     $currentValue = $optionConfig["default"];
-                    //@codeCoverageIgnoreStart
-                    if (self::DEBUG_ME) echo("Replaced empty value with " . $currentValue . "\n");
-                    //@codeCoverageIgnoreEnd
+
+                    $this->logger->debug("Replaced empty value with " . $currentValue);
+
                 }
                 if (is_bool($currentValue)) {
                     $prompt .= " (current: " . ($currentValue ? "yes" : "no") . ")";
@@ -424,16 +363,9 @@ class ConfigFileService implements LoggerAwareInterface {
 
                 $questionDefault = $currentValue === null ? null : array_search($currentValue ? "true" : "false", array_keys($options));
                 $questionOptions = array_values($options);
-                //@codeCoverageIgnoreStart
-                if (self::DEBUG_ME) {
-                    echo "default is " . $questionDefault . "\n";
-                    echo "options are [";
-                    foreach ($questionOptions as $k => $v) {
-                        echo "$k => $v,";
-                    }
-                    echo "]\n";
-                }
-                //@codeCoverageIgnoreEnd
+
+                $this->logger->debug("Asking question", ["question" => $prompt, "options" => $questionOptions, "default" => $questionDefault]);
+
                 $answer = $helper->ask(
                     $this->input,
                     $this->output,
@@ -445,7 +377,7 @@ class ConfigFileService implements LoggerAwareInterface {
                 );
                 $answerKey = array_keys($options)[array_search($answer, $questionOptions)];
                 $newValue = ($answerKey === "true");
-                if (self::DEBUG_ME) echo "Setting value: " . ($newValue ? "true" : "false") . "\n";
+                $this->logger->debug("Setting value: " . ($newValue ? "true" : "false"));
                 break;
             default:
                 throw new \Exception("Type undefined");
@@ -462,6 +394,7 @@ class ConfigFileService implements LoggerAwareInterface {
     }
 
     public function load(string $fileName): Config {
+        $this->logger->notice("Loading configuration", ["path" => $fileName]);
         if (!is_file($fileName))
             throw new \Exception($fileName . " does not exist here.");
         $config = Yaml::parseFile($fileName);

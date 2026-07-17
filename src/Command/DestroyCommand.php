@@ -50,6 +50,8 @@ class DestroyCommand extends Command implements LoggerAwareInterface {
             "--remove-orphans",
         ];
 
+        $this->logger->notice("Launching process", ["command" => $command]);
+
         $process = new Process($command);
         $process->setTimeout(null);
         $process->mustRun(function ($type, $buffer) use ($output) {

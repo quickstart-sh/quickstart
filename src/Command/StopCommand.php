@@ -48,6 +48,8 @@ class StopCommand extends Command implements LoggerAwareInterface {
             "stop",
         ];
 
+        $this->logger->notice("Launching process", ["command" => $command]);
+
         $process = new Process($command);
         $process->setTimeout(null);
         $process->mustRun(function ($type, $buffer) use ($output) {

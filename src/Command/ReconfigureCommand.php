@@ -59,9 +59,9 @@ class ReconfigureCommand extends Command implements LoggerAwareInterface {
         $this->configFileService->setOutput($output);
         for ($i = array_search($startStage, $stages); $i < sizeof($stages); $i++) {
             $stage = $stages[$i];
-            //$output->writeln("At stage $stage");
+            $this->logger->notice("Stage $stage");
             foreach ($this->params->get("app.tree.$stage") as $path => $optionConfig) {
-                //$output->writeln("Asking $path");
+                $this->logger->debug("Asking question", ["path" => $path, "optionConfig" => $optionConfig]);
                 $this->configFileService->ask($config, $path, $optionConfig);
             }
         }

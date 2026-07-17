@@ -45,6 +45,7 @@ class InitCommand extends Command implements LoggerAwareInterface {
         $cwd = getcwd();
         if (is_file($cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE))
             throw new \Exception(ConfigFileService::CONFIG_FILE . " already exists here. Use " . ReconfigureCommand::getDefaultName() . " to re-configure.");
+        $this->logger->debug("Initializing config file", ["path" => $cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE]);
         $this->configFileService->initialize($cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE);
         return self::SUCCESS;
     }

@@ -24,10 +24,20 @@ class ConditionEvaluatorService implements LoggerAwareInterface {
      * @return bool
      */
     public static function evaluate(string $condition, Config $config): bool {
+        $this->logger->debug("Evaluating condition", ["condition" => $condition]);
         $condition = preg_replace('/#(.*?)#/m', '\\$config->get("$1")', $condition);
-        //echo "evaluating $condition\n";
-        $ret = eval("return ($condition);");
-        //var_dump($ret);
+        $this->logger->debug("Condition after placeholder replacement", ["condition" => $condition]);
+        try {
+            $ret = eval("return ($condition);");
+        } catch (Exception $e) {
+            $this->logger->error("Error evaluating condition", [
+                "condition" => $condition,
+                "message" => $e->getMessage(),
+                "trace" => $e->getTraceAsString(),
+            ]);
+            throw $e;
+        }
+        $this->logger->debug("Evaluation result", ["result" => $ret]);
         return $ret;
     }
 }
