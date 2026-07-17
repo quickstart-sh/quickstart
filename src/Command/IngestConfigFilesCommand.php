@@ -4,15 +4,20 @@ namespace App\Command;
 
 use App\Service\ConfigFileService;
 use App\Service\IngesterService;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+
 #[AsCommand(
     name: 'quickstart:ingest-config-files'
 )]
-class IngestConfigFilesCommand extends Command {
+class IngestConfigFilesCommand extends Command implements LoggerAwareInterface {
+    use LoggerAwareTrait;
+
     /**
      * @var ConfigFileService
      */

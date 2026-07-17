@@ -4,14 +4,19 @@ namespace App\Command;
 
 use App\Service\ConfigFileService;
 use App\Service\InstallService;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+
 #[AsCommand(
     name: 'quickstart:install'
 )]
-class InstallCommand extends Command {
+class InstallCommand extends Command implements LoggerAwareInterface {
+    use LoggerAwareTrait;
+
     /**
      * @var ConfigFileService
      */

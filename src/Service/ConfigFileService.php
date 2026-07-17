@@ -3,6 +3,8 @@
 namespace App\Service;
 
 use App\Entity\Config;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -12,7 +14,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Yaml\Yaml;
 
-class ConfigFileService {
+class ConfigFileService implements LoggerAwareInterface {
+    use LoggerAwareTrait;
+
     public const CONFIG_FILE = ".quickstart.yml";
 
     /**

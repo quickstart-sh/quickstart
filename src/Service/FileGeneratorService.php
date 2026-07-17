@@ -3,9 +3,14 @@
 namespace App\Service;
 
 use App\Entity\Config;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Twig\Environment;
 
-class FileGeneratorService {
+class FileGeneratorService implements LoggerAwareInterface {
+    use LoggerAwareTrait;
+
+    #
 
     /**
      * Development aid - turn on echo on all major code paths

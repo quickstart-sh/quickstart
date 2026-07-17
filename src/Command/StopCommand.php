@@ -3,15 +3,20 @@
 namespace App\Command;
 
 use App\Service\ConfigFileService;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
+
 #[AsCommand(
     name: 'quickstart:stop'
 )]
-class StopCommand extends Command {
+class StopCommand extends Command implements LoggerAwareInterface {
+    use LoggerAwareTrait;
+
     /**
      * @var ConfigFileService
      */

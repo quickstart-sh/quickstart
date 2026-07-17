@@ -3,6 +3,8 @@
 namespace App\Service;
 
 use App\Entity\Config;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 
 /**
  * Class ConditionEvaluatorService
@@ -10,7 +12,9 @@ use App\Entity\Config;
  * Provide a wrapper for evaluating conditions against a Config object
  * @package App\Service
  */
-class ConditionEvaluatorService {
+class ConditionEvaluatorService implements LoggerAwareInterface {
+    use LoggerAwareTrait;
+
     /**
      * Evaluate a condition against the specified configuration
      *

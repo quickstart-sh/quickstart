@@ -3,29 +3,26 @@
 namespace App\Service;
 
 use App\Entity\Config;
-use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Process\Process;
 
-class InstallService {
+class InstallService implements LoggerAwareInterface {
+    use LoggerAwareTrait;
 
     /**
      * @var ParameterBagInterface
      */
     private ParameterBagInterface $params;
     /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
-    /**
      * @var OutputInterface
      */
     private OutputInterface $output;
 
-    public function __construct(ParameterBagInterface $params, LoggerInterface $logger) {
+    public function __construct(ParameterBagInterface $params) {
         $this->params = $params;
-        $this->logger = $logger;
     }
 
     /**
