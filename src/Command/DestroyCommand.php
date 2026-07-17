@@ -41,6 +41,8 @@ class DestroyCommand extends Command {
             "-p",
             $config->get("project.name"),
             "down",
+            "--volumes",
+            "--remove-orphans",
         ];
 
         $process = new Process($command);
