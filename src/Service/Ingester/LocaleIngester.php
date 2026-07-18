@@ -32,7 +32,7 @@ class LocaleIngester implements IngesterInterface {
                     // LANGUAGE may contain multiple values, with the most specific being the first one
                     // See https://www.gnu.org/software/gettext/manual/html_node/The-LANGUAGE-variable.html
                     $languages = explode(":", $language);
-                    $locale = $language[0];
+                    $locale = $languages[0];
                     $this->logger->debug("Set locale to $locale from LANGUAGE environment variable");
                 } else {
                     $this->logger->debug("Failed to determine value of LANGUAGE environment variable");
