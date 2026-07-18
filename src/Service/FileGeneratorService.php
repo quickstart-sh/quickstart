@@ -21,13 +21,16 @@ class FileGeneratorService implements LoggerAwareInterface {
      */
     private Environment $twig;
 
+    private ConditionEvaluatorService $conditionEvaluatorService;
+
     /**
      * FileGeneratorService constructor.
      * @param Environment $twig
      * @codeCoverageIgnore
      */
-    public function __construct(Environment $twig) {
+    public function __construct(Environment $twig, ConditionEvaluatorService $conditionEvaluatorService) {
         $this->twig = $twig;
+        $this->conditionEvaluatorService = $conditionEvaluatorService;
     }
 
     /**
@@ -40,7 +43,7 @@ class FileGeneratorService implements LoggerAwareInterface {
     public function writeFile(string $sourcePath, array $templateConfig, Config $config, string $baseDir) {
         $targetPath = $baseDir . DIRECTORY_SEPARATOR . $templateConfig["target"];
         //Check if we are allowed to write the file
-        if (array_key_exists("if", $templateConfig) && ConditionEvaluatorService::evaluate($templateConfig["if"], $config) === false) {
+        if (array_key_exists("if", $templateConfig) && $this->conditionEvaluatorService->evaluate($templateConfig["if"], $config) === false) {
             //@codeCoverageIgnoreStart
             if (self::DEBUG_ME) echo("File $sourcePath, passing as condition " . $templateConfig["if"] . " returned false\n");
             //@codeCoverageIgnoreEnd

@@ -32,16 +32,19 @@ class ConfigFileService implements LoggerAwareInterface {
      */
     private OutputInterface $output;
 
+    private ConditionEvaluatorService $conditionEvaluatorService;
 
-    public function __construct(ParameterBagInterface $params) {
+
+    public function __construct(ParameterBagInterface $params, ConditionEvaluatorService $conditionEvaluatorService) {
         $this->params = $params;
+        $this->conditionEvaluatorService = $conditionEvaluatorService;
     }
 
     public function ask(Config $config, string $path, array $optionConfig) {
         $this->logger->info("Asking question", ["path" => $path, "config" => $optionConfig]);
         $helper = new QuestionHelper();
         //Check if we are allowed to ask the question
-        if (array_key_exists("if", $optionConfig) && ConditionEvaluatorService::evaluate($optionConfig["if"], $config) === false) {
+        if (array_key_exists("if", $optionConfig) && $this->conditionEvaluatorService->evaluate($optionConfig["if"], $config) === false) {
             $this->logger->debug("Passing over as condition " . $optionConfig["if"] . " returned false\n");
             return;
         }
@@ -248,14 +251,14 @@ class ConfigFileService implements LoggerAwareInterface {
                     $this->logger->debug("Have option-specific configurations");
                     foreach ($optionConfig["optionsConfiguration"] as $specificOption => $specificConfiguration) {
                         if (is_array($specificConfiguration) && array_key_exists("if", $specificConfiguration)) {
-                            $evaluatorResult = ConditionEvaluatorService::evaluate($specificConfiguration["if"], $config);
+                            $evaluatorResult = $this->conditionEvaluatorService->evaluate($specificConfiguration["if"], $config);
                             if ($evaluatorResult === false && array_key_exists($specificOption, $options)) {
                                 $this->logger->debug("Removing option $specificOption due to failed condition");
                                 unset($options[$specificOption]);
                             }
                         }
                         if (is_array($specificConfiguration) && array_key_exists("default_if", $specificConfiguration)) {
-                            $evaluatorResult = ConditionEvaluatorService::evaluate($specificConfiguration["default_if"], $config);
+                            $evaluatorResult = $this->conditionEvaluatorService->evaluate($specificConfiguration["default_if"], $config);
                             if ($evaluatorResult === true) {
                                 $this->logger->debug("Adding option $specificOption as current value");
                                 if (!in_array($specificOption, $currentValue))

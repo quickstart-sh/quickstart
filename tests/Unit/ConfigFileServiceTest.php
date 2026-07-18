@@ -7,14 +7,15 @@ use App\Service\ConfigFileService;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
+use ReflectionObject;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Tester\TesterTrait;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
-class ConfigFileServiceTest extends TestCase {
+class ConfigFileServiceTest extends KernelTestCase {
     /**
      * @var Input
      */
@@ -94,7 +95,8 @@ class ConfigFileServiceTest extends TestCase {
      */
     public function testInitialize() {
         $this->setupFS();
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->initialize($this->vfsRoot->url() . "/" . ConfigFileService::CONFIG_FILE);
         $this->assertTrue($this->vfsRoot->hasChild(ConfigFileService::CONFIG_FILE));
         $this->assertEquals(
@@ -114,7 +116,8 @@ class ConfigFileServiceTest extends TestCase {
             ->withContent('notoverwritten')
             ->at($this->vfsRoot);
         $config = new Config();
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $this->expectException(\Exception::class);
         $service->persist($this->vfsRoot->url() . "/" . ConfigFileService::CONFIG_FILE, $config);
     }
@@ -131,7 +134,8 @@ class ConfigFileServiceTest extends TestCase {
                 "quux",
             ]
         ]);
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->persist($this->vfsRoot->url() . "/" . ConfigFileService::CONFIG_FILE, $config);
         //If this breaks, always check for indentation... Symfony at this time uses four whitespaces
         $this->assertEquals(
@@ -147,7 +151,8 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupFS([
             ConfigFileService::CONFIG_FILE => "version: 1\nfoo: bar\nbaz:\n  - qux\n  - quux\n"
         ]);
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $config = $service->load($this->vfsRoot->url() . "/" . ConfigFileService::CONFIG_FILE);
         $this->assertEquals([
             "version" => Config::DEFAULT_VERSION,
@@ -166,7 +171,8 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupFS([
             ConfigFileService::CONFIG_FILE => "version: 1\nfoo: bar\nbaz:\n  - qux\n  - quux\n"
         ]);
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $this->expectException(\Exception::class);
         $service->load($this->vfsRoot->url() . "/THISWILLBARF");
     }
@@ -178,7 +184,8 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupFS([
             ConfigFileService::CONFIG_FILE => "THISWILLBARF"
         ]);
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $this->expectException(\Exception::class);
         $service->load($this->vfsRoot->url() . "/" . ConfigFileService::CONFIG_FILE);
     }
@@ -190,7 +197,8 @@ class ConfigFileServiceTest extends TestCase {
     public function testIfFalse() {
         $this->setupIO([]);
         $config = new Config();
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $service->ask($config, "test", [
@@ -212,7 +220,8 @@ class ConfigFileServiceTest extends TestCase {
         $config = new Config([
             "foo" => "bar",
         ]);
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $service->ask($config, "foo", [
@@ -233,7 +242,8 @@ class ConfigFileServiceTest extends TestCase {
     public function testUnknownTypeError() {
         $this->setupIO([]);
         $config = new Config();
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $this->expectException(\Exception::class);
@@ -251,7 +261,8 @@ class ConfigFileServiceTest extends TestCase {
     public function testString1() {
         $this->setupIO([""]);
         $config = new Config();
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $service->ask($config, "test", [
@@ -276,7 +287,8 @@ class ConfigFileServiceTest extends TestCase {
         $config = new Config([
             "test" => "foo",
         ]);
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $service->ask($config, "test", [
@@ -301,7 +313,8 @@ class ConfigFileServiceTest extends TestCase {
         $config = new Config([
             "test" => "foo",
         ]);
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $service->ask($config, "test", [
@@ -326,7 +339,8 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupIO([""]);
         $config = new Config([
         ]);
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $service->ask($config, "test", [
@@ -351,7 +365,8 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupIO([""]);
         $config = new Config([
         ]);
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $service->ask($config, "test", [
@@ -381,7 +396,8 @@ class ConfigFileServiceTest extends TestCase {
         $config = new Config([
             "test" => "foo",
         ]);
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $service->ask($config, "test", [
@@ -407,7 +423,8 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupIO(["", "foo"]);
         $config = new Config([
         ]);
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $service->ask($config, "test", [
@@ -435,7 +452,8 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupIO([""]);
         $config = new Config([
         ]);
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $service->ask($config, "test", [
@@ -464,7 +482,8 @@ class ConfigFileServiceTest extends TestCase {
         $config = new Config([
             "test" => "foo",
         ]);
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $service->ask($config, "test", [
@@ -490,7 +509,8 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupIO([""]);
         $config = new Config([
         ]);
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $service->ask($config, "test", [
@@ -519,7 +539,8 @@ class ConfigFileServiceTest extends TestCase {
     public function testSingleSelect(array $startConfig, array $expectedConfig, array $question, array $input, string $expectedOutput) {
         $this->setupIO($input);
         $config = new Config($startConfig);
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $service->ask($config, "test", $question);
@@ -947,7 +968,8 @@ class ConfigFileServiceTest extends TestCase {
     public function testMultiSelect(array $startConfig, array $expectedConfig, array $question, array $input, string $expectedOutput) {
         $this->setupIO($input);
         $config = new Config($startConfig);
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $service->ask($config, "test", $question);
@@ -1367,13 +1389,20 @@ class ConfigFileServiceTest extends TestCase {
         //mandatory, no current value, valid input, no default, expect: choice persisted
         $this->setupIO(["1"]);
         $config = new Config([]);
-        $service = new ConfigFileService(new ParameterBag([
-            "app.test" => [
-                "foo" => ["name" => "bar"],
-                "baz" => ["name" => "qux"],
-                "quux" => ["name" => "quux"],
-            ],
-        ]));
+        $kernel = self::bootKernel();
+        // as ConfigFileService is a SF service it is (much) more difficult to override DI choices now, so use reflection instead
+        $container = $kernel->getContainer();
+        $refObject = new ReflectionObject($container);
+        $refProperty = $refObject->getProperty('parameters');
+        $parameters = $refProperty->getValue($container);
+        $parameters["app.test"] = [
+            "foo" => ["name" => "bar"],
+            "baz" => ["name" => "qux"],
+            "quux" => ["name" => "quux"],
+        ];
+        $refProperty->setValue($container, $parameters);
+
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $service->ask($config, "test", [
@@ -1398,13 +1427,22 @@ class ConfigFileServiceTest extends TestCase {
         //mandatory, no current value, valid input, no default, expect: choice persisted
         $this->setupIO(["1"]);
         $config = new Config([]);
-        $service = new ConfigFileService(new ParameterBag([
-            "app.test" => [
-                "foo" => ["name" => "bar"],
-                "baz" => ["name" => "qux"],
-                "quux" => ["name" => "quux"],
-            ],
-        ]));
+
+        $kernel = self::bootKernel();
+        // as ConfigFileService is a SF service it is (much) more difficult to override DI choices now, so use reflection instead
+        $container = $kernel->getContainer();
+        $refObject = new ReflectionObject($container);
+        $refProperty = $refObject->getProperty('parameters');
+        $parameters = $refProperty->getValue($container);
+        $parameters["app.test"] = [
+            "foo" => ["name" => "bar"],
+            "baz" => ["name" => "qux"],
+            "quux" => ["name" => "quux"],
+        ];
+        $refProperty->setValue($container, $parameters);
+
+        $service = static::getContainer()->get(ConfigFileService::class);
+
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $service->ask($config, "test", [
@@ -1431,7 +1469,8 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupIO(["foo"]);
         $config = new Config([
         ]);
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $service->ask($config, "test", [
@@ -1458,7 +1497,8 @@ class ConfigFileServiceTest extends TestCase {
         $this->setupIO(["foo"]);
         $config = new Config([
         ]);
-        $service = new ConfigFileService(new ParameterBag());
+        self::bootKernel();
+        $service = static::getContainer()->get(ConfigFileService::class);
         $service->setInput($this->input);
         $service->setOutput($this->output);
         $service->ask($config, "test", [

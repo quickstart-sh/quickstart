@@ -23,7 +23,7 @@ class ConditionEvaluatorService implements LoggerAwareInterface {
      * @param Config $config
      * @return bool
      */
-    public static function evaluate(string $condition, Config $config): bool {
+    public function evaluate(string $condition, Config $config): bool {
         $this->logger->debug("Evaluating condition", ["condition" => $condition]);
         $condition = preg_replace('/#(.*?)#/m', '\\$config->get("$1")', $condition);
         $this->logger->debug("Condition after placeholder replacement", ["condition" => $condition]);

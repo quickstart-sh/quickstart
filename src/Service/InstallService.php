@@ -16,13 +16,17 @@ class InstallService implements LoggerAwareInterface {
      * @var ParameterBagInterface
      */
     private ParameterBagInterface $params;
+
+    private ConditionEvaluatorService $conditionEvaluatorService;
+
     /**
      * @var OutputInterface
      */
     private OutputInterface $output;
 
-    public function __construct(ParameterBagInterface $params) {
+    public function __construct(ParameterBagInterface $params, ConditionEvaluatorService $conditionEvaluatorService) {
         $this->params = $params;
+        $this->conditionEvaluatorService = $conditionEvaluatorService;
     }
 
     /**
@@ -79,7 +83,7 @@ class InstallService implements LoggerAwareInterface {
     public function run(Config $config) {
         $commands = $this->params->get("app.installScripts." . $config->get("project.type"));
         foreach ($commands as $command) {
-            if (array_key_exists("if", $command) && ConditionEvaluatorService::evaluate($command["if"], $config) === false) {
+            if (array_key_exists("if", $command) && $this->conditionEvaluatorService->evaluate($command["if"], $config) === false) {
                 $this->logger->debug("Skipping " . implode(" ", $command["command"]) . " due to failed condition " . $command["if"]);
                 continue;
             }
