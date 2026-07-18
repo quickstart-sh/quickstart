@@ -23,6 +23,7 @@ class ConditionEvaluatorService implements LoggerAwareInterface {
      * @param string $condition
      * @param Config $config
      * @return bool
+     * @throws Exception
      */
     public function evaluate(string $condition, Config $config): bool {
         $this->logger->debug("Evaluating condition", ["condition" => $condition]);

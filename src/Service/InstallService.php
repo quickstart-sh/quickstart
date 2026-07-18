@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Config;
+use Exception;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,9 +21,9 @@ class InstallService implements LoggerAwareInterface {
     private ConditionEvaluatorService $conditionEvaluatorService;
 
     /**
-     * @var OutputInterface
+     * @var OutputInterface|null
      */
-    private OutputInterface $output;
+    private ?OutputInterface $output = null;
 
     public function __construct(ParameterBagInterface $params, ConditionEvaluatorService $conditionEvaluatorService) {
         $this->params = $params;
@@ -33,15 +34,16 @@ class InstallService implements LoggerAwareInterface {
      * Set an output to dump the progress of the installation command to
      * @param OutputInterface $output
      */
-    public function setOutput(OutputInterface $output) {
+    public function setOutput(OutputInterface $output): void {
         $this->output = $output;
     }
 
     /**
      * Run the installation commands as wanted by the project
      * @param Config $config
+     * @throws Exception
      */
-    public function run(Config $config) {
+    public function run(Config $config): void {
         $commands = $this->params->get("app.installScripts." . $config->get("project.type"));
         foreach ($commands as $command) {
             if (array_key_exists("if", $command) && $this->conditionEvaluatorService->evaluate($command["if"], $config) === false) {
@@ -78,8 +80,9 @@ class InstallService implements LoggerAwareInterface {
      * Execute a command
      * @param array $command
      * @param Config $config
+     * @param bool $ignoreErrors
      */
-    public function executeCommand(array $command, Config $config, bool $ignoreErrors) {
+    public function executeCommand(array $command, Config $config, bool $ignoreErrors): void {
         $this->logger->notice("Executing " . implode(" ", $command));
         foreach ($command as $index => $arg) {
             //Replace dynamic parameters (e.g. project name)

@@ -27,7 +27,7 @@ class IngesterService {
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    public function ingest(Config $config, string $baseDir, InputInterface $input, OutputInterface $output) {
+    public function ingest(Config $config, string $baseDir, InputInterface $input, OutputInterface $output): void {
         foreach ($this->ingesters as $ingester) {
             if (method_exists($ingester, "setInput"))
                 $ingester->setInput($input);

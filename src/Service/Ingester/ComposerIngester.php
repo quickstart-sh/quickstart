@@ -122,7 +122,7 @@ class ComposerIngester implements IngesterInterface {
             $prodDependencies = $json->get("$.require");
             if (is_array($prodDependencies)) {
                 foreach (array_keys($prodDependencies) as $depName) {
-                    if (substr($depName, 0, 4) !== "ext-")
+                    if (!str_starts_with($depName, "ext-"))
                         continue;
                     $extName = substr($depName, 4);
                     if (in_array($extName, $availableExtensions)) {
@@ -136,7 +136,7 @@ class ComposerIngester implements IngesterInterface {
             $devDependencies = $json->get("$.require-dev");
             if (is_array($devDependencies)) {
                 foreach (array_keys($devDependencies) as $depName) {
-                    if (substr($depName, 0, 4) !== "ext-")
+                    if (!str_starts_with($depName, "ext-"))
                         continue;
                     $extName = substr($depName, 4);
                     if (in_array($extName, $availableExtensions)) {

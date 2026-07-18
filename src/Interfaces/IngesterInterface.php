@@ -12,6 +12,7 @@ interface IngesterInterface {
     /**
      * Ingest a file (or OS configuration) into the project configuration
      * @param Config $config
+     * @param string $baseDir
      */
     public function ingest(Config $config, string $baseDir): void;
 }

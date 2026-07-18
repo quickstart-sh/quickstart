@@ -18,7 +18,7 @@ use Symfony\Component\Yaml\Yaml;
 class ConfigFileService implements LoggerAwareInterface {
     use LoggerAwareTrait;
 
-    public const CONFIG_FILE = ".quickstart.yml";
+    public const string CONFIG_FILE = ".quickstart.yml";
 
     /**
      * @var ParameterBagInterface
@@ -41,7 +41,7 @@ class ConfigFileService implements LoggerAwareInterface {
         $this->conditionEvaluatorService = $conditionEvaluatorService;
     }
 
-    public function ask(Config $config, string $path, array $optionConfig) {
+    public function ask(Config $config, string $path, array $optionConfig): void {
         $this->logger->info("Asking question", ["path" => $path, "config" => $optionConfig]);
         $helper = new QuestionHelper();
         //Check if we are allowed to ask the question
@@ -93,7 +93,7 @@ class ConfigFileService implements LoggerAwareInterface {
                 $io->title($optionConfig["description"]);
                 return;
             case "string":
-                $prompt = "Please enter " . $optionConfig["description"] . "";
+                $prompt = "Please enter " . $optionConfig["description"];
                 $promptAdditions = [];
                 if (array_key_exists("defaultDescription", $optionConfig))
                     $promptAdditions[] = "default: " . $optionConfig["defaultDescription"];
@@ -117,8 +117,9 @@ class ConfigFileService implements LoggerAwareInterface {
                          *
                          * As a result, even an empty input will result in newValue being non-null
                          */
-
+                        //@codeCoverageIgnoreStart
                         return;
+                        //@codeCoverageIgnoreEnd
 
                     } elseif (
                         ($currentValue !== null && $newValue !== null) ||
@@ -400,7 +401,7 @@ class ConfigFileService implements LoggerAwareInterface {
         $this->persist($fileName, new Config());
     }
 
-    public function persist(string $fileName, Config $config) {
+    public function persist(string $fileName, Config $config): void {
         $configData = $config->getAll();
         $payload = Yaml::dump($configData) . "\n";
         $this->logger->notice("Persisting configuration", ["config" => $configData, "path" => $fileName]);

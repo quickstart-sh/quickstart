@@ -30,7 +30,7 @@ class TimezoneIngester implements IngesterInterface {
                     // /etc/localtime should be a symlink to the zone under /usr/share/zoneinfo
                     $tzpath = readlink("/etc/localtime");
                     $basepath = "/usr/share/zoneinfo/";
-                    if (substr($tzpath, 0, strlen($basepath)) !== $basepath) {
+                    if (!str_starts_with($tzpath, $basepath)) {
                         $this->logger->warning("Your OS has /etc/localtime pointing to something other than $basepath. Please fix your setup according to 'man localtime'.");
                     } else {
                         $tz = substr($tzpath, strlen($basepath));
@@ -71,7 +71,7 @@ class TimezoneIngester implements IngesterInterface {
                     // /etc/localtime should be a symlink to the zone under /var/db/timezone/zoneinfo
                     $tzpath = readlink("/etc/localtime");
                     $basepath = "/var/db/timezone/zoneinfo/";
-                    if (substr($tzpath, 0, strlen($basepath)) !== $basepath) {
+                    if (!str_starts_with($tzpath, $basepath)) {
                         $this->logger->warning("Your OS has /etc/localtime pointing to something other than $basepath. Please fix your setup according to 'man tzset'.");
                     } else {
                         $tz = substr($tzpath, strlen($basepath));

@@ -3,10 +3,14 @@
 namespace App\Service;
 
 use App\Entity\Config;
+use Exception;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use RuntimeException;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class FileGeneratorService implements LoggerAwareInterface {
     use LoggerAwareTrait;
@@ -36,8 +40,12 @@ class FileGeneratorService implements LoggerAwareInterface {
      * @param array $templateConfig
      * @param Config $config
      * @param string $baseDir
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     * @throws Exception
      */
-    public function writeFile(string $sourcePath, array $templateConfig, Config $config, string $baseDir) {
+    public function writeFile(string $sourcePath, array $templateConfig, Config $config, string $baseDir): void {
         $targetPath = $baseDir . DIRECTORY_SEPARATOR . $templateConfig["target"];
         //Check if we are allowed to write the file
         if (array_key_exists("if", $templateConfig) && $this->conditionEvaluatorService->evaluate($templateConfig["if"], $config) === false) {
@@ -63,7 +71,7 @@ class FileGeneratorService implements LoggerAwareInterface {
             "config" => $config,
         ]);
 
-        $content = preg_replace('/[\n]{3,}/', "\n", $content);
+        $content = preg_replace('/\n{3,}/', "\n", $content);
 
         if (@file_put_contents($targetPath, $content) === false)
             throw new RuntimeException("Failed to persist " . $targetPath);

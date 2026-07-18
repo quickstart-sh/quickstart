@@ -10,12 +10,12 @@ class Config {
      *
      * TODO: implement upgrade strategy...
      */
-    public const DEFAULT_VERSION = 1;
+    public const int DEFAULT_VERSION = 1;
 
     /**
      * @var array Configuration data
      */
-    private $config = [];
+    private array $config = [];
 
     /**
      * Config constructor.
@@ -29,7 +29,7 @@ class Config {
      * Replace the whole config
      * @param array $config
      */
-    public function setAll(array $config) {
+    public function setAll(array $config): void {
         //Ensure the version key is always, no matter the source, present and set
         if (!array_key_exists("version", $config))
             $config = array_merge_recursive(["version" => self::DEFAULT_VERSION], $config);
@@ -47,7 +47,7 @@ class Config {
      * @param $value
      * @throws Exception
      */
-    public function set(string $path, $value) {
+    public function set(string $path, $value): void {
         //echo "\n";
         //echo "setting $path to ".(is_array($value)?print_r($value,true):$value)."\n";
         $parts = explode(".", $path);
@@ -105,7 +105,7 @@ class Config {
      * @return array|mixed|null
      * @see Config::set() for syntax
      */
-    public function get(string $path) {
+    public function get(string $path): mixed {
         $parts = explode(".", $path);
         $current =& $this->config;
         //echo "requested: $path\n";
@@ -145,10 +145,9 @@ class Config {
                 $part = intval($part);
             if (!array_key_exists($part, $current)) {
                 //check if we are searching for a value - has("path[value]")
-                if ($index == sizeof($parts) - 1 && substr($part, 0, 1) === "[" && substr($part, -1, 1) === "]") {
+                if ($index == sizeof($parts) - 1 && str_starts_with($part, "[") && str_ends_with($part, "]")) {
                     $value = substr($part, 1, -1);
-                    $key = array_search($value, $current);
-                    if ($key !== false) {
+                    if (in_array($value, $current) !== false) {
                         return true;
                     }
                 }
@@ -169,7 +168,7 @@ class Config {
      * @throws Exception
      * @see Config::set() for syntax
      */
-    public function unset(string $path) {
+    public function unset(string $path): void {
         $parts = explode(".", $path);
         $current =& $this->config;
         //echo "before:\n";
@@ -180,7 +179,7 @@ class Config {
                 $part = intval($part);
             if (!array_key_exists($part, $current)) {
                 //check if we are searching for a value - unset("path[value]")
-                if (substr($part, 0, 1) === "[" && substr($part, -1, 1) === "]") {
+                if (str_starts_with($part, "[") && str_ends_with($part, "]")) {
                     $value = substr($part, 1, -1);
                     $key = array_search($value, $current);
                     if ($key !== false) {
@@ -208,7 +207,7 @@ class Config {
      * Get the whole config
      * @return array
      */
-    public function getAll() {
+    public function getAll(): array {
         return $this->config;
     }
 
