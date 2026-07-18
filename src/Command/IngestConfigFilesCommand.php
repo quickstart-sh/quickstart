@@ -13,7 +13,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 #[AsCommand(
-    name: 'quickstart:ingest-config-files'
+    name: 'quickstart:ingest-config-files',
+    description: "Ingest existing third-party configuration into the Quickstart project",
+    help: "This command updates the " . ConfigFileService::CONFIG_FILE . " configuration file based on existing configuration files",
 )]
 class IngestConfigFilesCommand extends Command implements LoggerAwareInterface {
     use LoggerAwareTrait;
@@ -21,12 +23,6 @@ class IngestConfigFilesCommand extends Command implements LoggerAwareInterface {
 
     public function __construct(private readonly ConfigFileService $configFileService, private readonly ParameterBagInterface $params, private readonly IngesterService $ingesterService, string $name = null) {
         parent::__construct($name);
-    }
-
-    protected function configure(): void {
-        $this
-            ->setDescription("Ingest existing third-party configuration into the Quickstart project")
-            ->setHelp("This command updates the " . ConfigFileService::CONFIG_FILE . " configuration file based on existing configuration files");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int {

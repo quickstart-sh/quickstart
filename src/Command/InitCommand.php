@@ -13,11 +13,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'quickstart:init'
+    name: 'quickstart:init',
+    description: "Initializes a new Quickstart project",
+    help: "This command creates and populates the " . ConfigFileService::CONFIG_FILE . " configuration file",
 )]
 class InitCommand extends Command implements LoggerAwareInterface {
     use LoggerAwareTrait;
-
 
     /**
      * InitCommand constructor.
@@ -27,15 +28,6 @@ class InitCommand extends Command implements LoggerAwareInterface {
      */
     public function __construct(private readonly ConfigFileService $configFileService, string $name = null) {
         parent::__construct($name);
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function configure(): void {
-        $this
-            ->setDescription("Initializes a new Quickstart project")
-            ->setHelp("This command creates and populates the " . ConfigFileService::CONFIG_FILE . " configuration file");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int {

@@ -13,19 +13,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 #[AsCommand(
-    name: 'quickstart:regenerate'
+    name: 'quickstart:regenerate',
+    description: "Regenerates all files created by Quickstart",
+    help: "This command creates or updates all files under the control of Quickstart.",
 )]
 class RegenerateCommand extends Command implements LoggerAwareInterface {
     use LoggerAwareTrait;
 
     public function __construct(private readonly ConfigFileService $configFileService, private readonly FileGeneratorService $fileGeneratorService, private readonly ParameterBagInterface $params, string $name = null) {
         parent::__construct($name);
-    }
-
-    protected function configure(): void {
-        $this
-            ->setDescription("Regenerates all files created by Quickstart")
-            ->setHelp("This command creates or updates all files under the control of Quickstart.");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int {

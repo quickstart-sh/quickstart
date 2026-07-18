@@ -13,7 +13,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
 #[AsCommand(
-    name: 'quickstart:start'
+    name: 'quickstart:start',
+    description: "Starts all containers required by the project",
+    help: "This command creates and starts the containers.",
 )]
 class StartCommand extends Command implements LoggerAwareInterface {
     use LoggerAwareTrait;
@@ -24,8 +26,6 @@ class StartCommand extends Command implements LoggerAwareInterface {
 
     protected function configure(): void {
         $this
-            ->setDescription("Starts all containers required by the project")
-            ->setHelp("This command creates and starts the containers.")
             ->addOption("rebuild", "r", InputOption::VALUE_NONE, "Rebuild application image");
     }
 

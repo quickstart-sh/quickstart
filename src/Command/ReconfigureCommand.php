@@ -14,7 +14,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 #[AsCommand(
-    name: 'quickstart:reconfigure'
+    name: 'quickstart:reconfigure',
+    description: "Reconfigures Quickstart project",
+    help: "This command updates the " . ConfigFileService::CONFIG_FILE . " configuration file",
 )]
 class ReconfigureCommand extends Command implements LoggerAwareInterface {
     use LoggerAwareTrait;
@@ -25,8 +27,6 @@ class ReconfigureCommand extends Command implements LoggerAwareInterface {
 
     protected function configure(): void {
         $this
-            ->setDescription("Reconfigures Quickstart project")
-            ->setHelp("This command updates the " . ConfigFileService::CONFIG_FILE . " configuration file")
             ->addArgument("stage", InputArgument::OPTIONAL, "Stage to start at", "initial");
     }
 

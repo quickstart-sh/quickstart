@@ -12,19 +12,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
 #[AsCommand(
-    name: 'quickstart:stop'
+    name: 'quickstart:stop',
+    description: "Stop all containers required by the project",
+    help: "This command stops all containers.",
 )]
 class StopCommand extends Command implements LoggerAwareInterface {
     use LoggerAwareTrait;
 
     public function __construct(private readonly ConfigFileService $configFileService, string $name = null) {
         parent::__construct($name);
-    }
-
-    protected function configure(): void {
-        $this
-            ->setDescription("Stop all containers required by the project")
-            ->setHelp("This command stops all containers.");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int {

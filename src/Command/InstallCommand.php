@@ -13,19 +13,15 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'quickstart:install'
+    name: 'quickstart:install',
+    description: "Creates the project by installing the project scaffold",
+    help: "This command creates the project and configures as much as possible.",
 )]
 class InstallCommand extends Command implements LoggerAwareInterface {
     use LoggerAwareTrait;
 
     public function __construct(private readonly ConfigFileService $configFileService, private readonly InstallService $installService, string $name = null) {
         parent::__construct($name);
-    }
-
-    protected function configure(): void {
-        $this
-            ->setDescription("Creates the project by installing the project scaffold")
-            ->setHelp("This command creates the project and configures as much as possible.");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int {
