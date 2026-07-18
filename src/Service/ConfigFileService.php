@@ -389,7 +389,9 @@ class ConfigFileService implements LoggerAwareInterface {
     }
 
     public function initialize($fileName): void {
-        $this->persist($fileName, new Config());
+        $config = new Config();
+        $config->setLogger($this->logger);
+        $this->persist($fileName, $config);
     }
 
     public function persist(string $fileName, Config $config): void {
@@ -408,6 +410,7 @@ class ConfigFileService implements LoggerAwareInterface {
         if (!is_array($config))
             throw new Exception("Configuration file broken");
         $ret = new Config(array_replace_recursive((new Config())->getAll(), $config));
+        $ret->setLogger($this->logger);
         $this->logger->notice("Loaded configuration", ["path" => $fileName, "config" => $ret->getAll()]);
         return $ret;
     }

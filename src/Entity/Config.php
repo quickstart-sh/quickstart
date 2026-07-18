@@ -3,8 +3,12 @@
 namespace App\Entity;
 
 use Exception;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 
-class Config {
+class Config implements LoggerAwareInterface {
+    use LoggerAwareTrait;
+
     /**
      * Default version of new Config objects.
      *
@@ -31,8 +35,10 @@ class Config {
      */
     public function setAll(array $config): void {
         //Ensure the version key is always, no matter the source, present and set
-        if (!array_key_exists("version", $config))
+        if (!array_key_exists("version", $config)) {
+            $this->logger?->notice("Configuration seems to be blank as it lacks a version attribute");
             $config = array_merge_recursive(["version" => self::DEFAULT_VERSION], $config);
+        }
         $this->config = $config;
     }
 
@@ -48,18 +54,20 @@ class Config {
      * @throws Exception
      */
     public function set(string $path, $value): void {
-        //echo "\n";
-        //echo "setting $path to ".(is_array($value)?print_r($value,true):$value)."\n";
+        $this->logger?->debug("Config set called", ["path" => $path, "value" => $value, "config" => $this->config]);
         $parts = explode(".", $path);
+        if (sizeof($parts) < 1)
+            throw new \RuntimeException("Path is too short");
+        $this->logger?->debug("Got " . sizeof($parts) . " parts for iteration");
         $current =& $this->config;
-        //echo "before:\n";
-        //var_dump($this->config);
         //This is set to true in case the .[] syntax is used to force an array.
         $append = false;
         //Back reference for adding multiple things to array
         $parent = null;
+        //Store the last iterated-over part for later (in case we end up discarding continuation of the loop)
+        $lastPart = $parts[0];
         foreach ($parts as $index => $part) {
-            //echo "at $part, index $index, size ".sizeof($parts)."\n";
+            $this->logger?->debug("iterating through parts", ["index" => $index, "part" => $part]);
             if (is_numeric($part))
                 $part = intval($part);
             if (!is_array($current)) {
@@ -94,8 +102,7 @@ class Config {
         } else {
             $current = $value;
         }
-        //echo "after:\n";
-        //var_dump($this->config);
+        $this->logger?->debug("Config set finished", ["config" => $this->config]);
     }
 
     /**
@@ -106,13 +113,14 @@ class Config {
      * @see Config::set() for syntax
      */
     public function get(string $path): mixed {
+        $this->logger?->debug("Config get called", ["path" => $path, "config" => $this->config]);
         $parts = explode(".", $path);
+        if (sizeof($parts) < 1)
+            throw new \RuntimeException("Path is too short");
+        $this->logger?->debug("Got " . sizeof($parts) . " parts for iteration");
         $current =& $this->config;
-        //echo "requested: $path\n";
-        //echo "before:\n";
-        //var_dump($this->config);
         foreach ($parts as $index => $part) {
-            //echo "at $part, index $index, size ".sizeof($parts)."\n";
+            $this->logger?->debug("iterating through parts", ["index" => $index, "part" => $part]);
             if (is_numeric($part))
                 $part = intval($part);
             if (!array_key_exists($part, $current)) {
@@ -120,7 +128,7 @@ class Config {
             }
             $current =& $current[$part];
         }
-        //var_dump($current);
+        $this->logger?->debug("Config get finished", ["ret" => $current]);
         return $current;
     }
 
@@ -135,12 +143,14 @@ class Config {
      * @see Config::set() for syntax
      */
     public function has(string $path): bool {
+        $this->logger?->debug("Config has called", ["path" => $path, "config" => $this->config]);
         $parts = explode(".", $path);
+        if (sizeof($parts) < 1)
+            throw new \RuntimeException("Path is too short");
+        $this->logger?->debug("Got " . sizeof($parts) . " parts for iteration");
         $current =& $this->config;
-        //echo "before:\n";
-        //var_dump($this->config);
         foreach ($parts as $index => $part) {
-            //echo "at $part, index $index, size ".sizeof($parts)."\n";
+            $this->logger?->debug("iterating through parts", ["index" => $index, "part" => $part]);
             if (is_numeric($part))
                 $part = intval($part);
             if (!array_key_exists($part, $current)) {
@@ -169,12 +179,14 @@ class Config {
      * @see Config::set() for syntax
      */
     public function unset(string $path): void {
+        $this->logger?->debug("Config unset called", ["path" => $path, "config" => $this->config]);
         $parts = explode(".", $path);
+        if (sizeof($parts) < 1)
+            throw new \RuntimeException("Path is too short");
+        $this->logger?->debug("Got " . sizeof($parts) . " parts for iteration");
         $current =& $this->config;
-        //echo "before:\n";
-        //var_dump($this->config);
         foreach ($parts as $index => $part) {
-            //echo "at $part, index $index, size ".sizeof($parts)."\n";
+            $this->logger?->debug("iterating through parts", ["index" => $index, "part" => $part]);
             if (is_numeric($part))
                 $part = intval($part);
             if (!array_key_exists($part, $current)) {
