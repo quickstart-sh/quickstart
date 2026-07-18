@@ -5,6 +5,7 @@ namespace App\Service\Ingester;
 use App\Entity\Config;
 use App\Interfaces\IngesterInterface;
 use Composer\Semver\Semver;
+use Exception;
 use JsonPath\JsonObject;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -30,6 +31,14 @@ class ComposerIngester implements IngesterInterface {
     public function __construct(LoggerInterface $logger, ParameterBagInterface $params) {
         $this->logger = $logger;
         $this->params = $params;
+    }
+
+    /**
+     * Composer ingestion must happen after NodeJS to allow for projects with NodeJS frontends
+     * @return int
+     */
+    public static function getDefaultPriority(): int {
+        return 5;
     }
 
     public function ingest(Config $config, string $baseDir): void {
@@ -138,17 +147,9 @@ class ComposerIngester implements IngesterInterface {
                     }
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error("Failed ingesting composer.json", ["exception" => $e]);
         }
-    }
-
-    /**
-     * Composer ingestion must happen after NodeJS to allow for projects with NodeJS frontends
-     * @return int
-     */
-    public static function getDefaultPriority(): int {
-        return 5;
     }
 
     /**

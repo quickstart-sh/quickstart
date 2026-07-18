@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Service\ConfigFileService;
+use Exception;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -44,7 +45,7 @@ class InitCommand extends Command implements LoggerAwareInterface {
     protected function execute(InputInterface $input, OutputInterface $output): int {
         $cwd = getcwd();
         if (is_file($cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE))
-            throw new \Exception(ConfigFileService::CONFIG_FILE . " already exists here. Use " . ReconfigureCommand::getDefaultName() . " to re-configure.");
+            throw new Exception(ConfigFileService::CONFIG_FILE . " already exists here. Use " . ReconfigureCommand::getDefaultName() . " to re-configure.");
         $this->logger->debug("Initializing config file", ["path" => $cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE]);
         $this->configFileService->initialize($cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE);
         return self::SUCCESS;

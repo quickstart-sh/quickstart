@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Service\ConfigFileService;
+use InvalidArgumentException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -53,7 +54,7 @@ class ReconfigureCommand extends Command implements LoggerAwareInterface {
         ];
         $startStage = $input->getArgument("stage");
         if (!in_array($startStage, $stages))
-            throw new \InvalidArgumentException("Invalid stage");
+            throw new InvalidArgumentException("Invalid stage");
 
         $this->configFileService->setInput($input);
         $this->configFileService->setOutput($output);

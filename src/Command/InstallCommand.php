@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Service\ConfigFileService;
 use App\Service\InstallService;
+use InvalidArgumentException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -45,7 +46,7 @@ class InstallCommand extends Command implements LoggerAwareInterface {
         $config = $this->configFileService->load($cwd . DIRECTORY_SEPARATOR . ConfigFileService::CONFIG_FILE);
 
         if ($config->get("project.installed") === true)
-            throw new \InvalidArgumentException("This project is already installed.");
+            throw new InvalidArgumentException("This project is already installed.");
 
         $this->installService->setOutput($output);
         $this->installService->run($config);

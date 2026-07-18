@@ -15,13 +15,6 @@ class FileGeneratorServiceTest extends KernelTestCase {
     private vfsStreamDirectory $vfsRoot;
 
     /**
-     * Setup a vfs
-     */
-    public function setupFS(array $existingContent = []) {
-        $this->vfsRoot = vfsStream::setup('root', null, $existingContent);
-    }
-
-    /**
      * Test generation of a simple file
      */
     public function testFileGenerate() {
@@ -43,6 +36,13 @@ class FileGeneratorServiceTest extends KernelTestCase {
             "value",
             $this->vfsRoot->getChild("testFile")->getContent()
         );
+    }
+
+    /**
+     * Setup a vfs
+     */
+    public function setupFS(array $existingContent = []) {
+        $this->vfsRoot = vfsStream::setup('root', null, $existingContent);
     }
 
     /**

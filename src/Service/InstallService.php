@@ -38,45 +38,6 @@ class InstallService implements LoggerAwareInterface {
     }
 
     /**
-     * Execute a command
-     * @param array $command
-     * @param Config $config
-     */
-    public function executeCommand(array $command, Config $config, bool $ignoreErrors) {
-        $this->logger->notice("Executing " . implode(" ", $command));
-        foreach ($command as $index => $arg) {
-            //Replace dynamic parameters (e.g. project name)
-            $command[$index] = preg_replace_callback('/#(.*?)#/m', function ($matches) use ($config) {
-                $replacement = $config->get($matches[1]);
-                $this->logger->debug("Replacing " . $matches[0] . " with " . $replacement);
-                return $replacement;
-            }, $arg);
-            //Replace array parameters (e.g. a list of Composer packages)
-            if(preg_match("/^§(.*)§$/", $command[$index], $matches)===1) {
-                $replacement = $config->get($matches[1]);
-                $this->logger->debug("Replacing " . $matches[0] . " with [" . implode(",",$replacement)."]");
-                $command[$index]=$replacement;
-            }
-        }
-        //Flatten the parameter array, as some config parameters may return arrays
-        $finalCommand = [];
-        foreach ($command as $arg) {
-            if (is_array($arg))
-                $finalCommand = array_merge($finalCommand, $arg);
-            else
-                $finalCommand[] = $arg;
-        }
-        $this->logger->notice("Final command: " . implode(" ", $finalCommand));
-
-        $process = new Process($finalCommand);
-        $process->setTimeout(null);
-        $process->mustRun(function ($type, $buffer) {
-            if ($this->output instanceof OutputInterface)
-                $this->output->write($buffer);
-        });
-    }
-
-    /**
      * Run the installation commands as wanted by the project
      * @param Config $config
      */
@@ -111,5 +72,44 @@ class InstallService implements LoggerAwareInterface {
 
             $this->executeCommand($command["command"], $config, (array_key_exists("ignoreErrors", $command) && $command["ignoreErrors"] === true));
         }
+    }
+
+    /**
+     * Execute a command
+     * @param array $command
+     * @param Config $config
+     */
+    public function executeCommand(array $command, Config $config, bool $ignoreErrors) {
+        $this->logger->notice("Executing " . implode(" ", $command));
+        foreach ($command as $index => $arg) {
+            //Replace dynamic parameters (e.g. project name)
+            $command[$index] = preg_replace_callback('/#(.*?)#/m', function ($matches) use ($config) {
+                $replacement = $config->get($matches[1]);
+                $this->logger->debug("Replacing " . $matches[0] . " with " . $replacement);
+                return $replacement;
+            }, $arg);
+            //Replace array parameters (e.g. a list of Composer packages)
+            if (preg_match("/^§(.*)§$/", $command[$index], $matches) === 1) {
+                $replacement = $config->get($matches[1]);
+                $this->logger->debug("Replacing " . $matches[0] . " with [" . implode(",", $replacement) . "]");
+                $command[$index] = $replacement;
+            }
+        }
+        //Flatten the parameter array, as some config parameters may return arrays
+        $finalCommand = [];
+        foreach ($command as $arg) {
+            if (is_array($arg))
+                $finalCommand = array_merge($finalCommand, $arg);
+            else
+                $finalCommand[] = $arg;
+        }
+        $this->logger->notice("Final command: " . implode(" ", $finalCommand));
+
+        $process = new Process($finalCommand);
+        $process->setTimeout(null);
+        $process->mustRun(function ($type, $buffer) {
+            if ($this->output instanceof OutputInterface)
+                $this->output->write($buffer);
+        });
     }
 }

@@ -31,47 +31,6 @@ class ConfigFileServiceTest extends KernelTestCase {
     private vfsStreamDirectory $vfsRoot;
 
     /**
-     * Set up memory input and output streams
-     * @param $inputs
-     */
-    private function setupIO($inputs) {
-        $this->input = new ArrayInput([]);
-        /**
-         * @see TesterTrait::createStream()
-         */
-        $stream = fopen('php://memory', 'r+', false);
-        foreach ($inputs as $input) {
-            fwrite($stream, $input . \PHP_EOL);
-        }
-        rewind($stream);
-        $this->input->setStream($stream);
-        //$this->input->setInteractive(true);
-        /**
-         * @see TesterTrait::initOutput()
-         */
-        $this->output = new StreamOutput(fopen('php://memory', 'w', false));
-    }
-
-    /**
-     * Get the captured output
-     * @return string
-     * @see TesterTrait::getDisplay()
-     */
-    private function getOutput(): string {
-        rewind($this->output->getStream());
-        $display = stream_get_contents($this->output->getStream());
-        $display = str_replace(\PHP_EOL, "\n", $display);
-        return $display;
-    }
-
-    /**
-     * Setup a vfs
-     */
-    public function setupFS(array $existingContent = []) {
-        $this->vfsRoot = vfsStream::setup('root', null, $existingContent);
-    }
-
-    /**
      * Close down the IO streams to avoid leaks
      */
     public function tearDown(): void {
@@ -103,6 +62,13 @@ class ConfigFileServiceTest extends KernelTestCase {
             "version: 1\n\n",
             $this->vfsRoot->getChild(ConfigFileService::CONFIG_FILE)->getContent()
         );
+    }
+
+    /**
+     * Setup a vfs
+     */
+    public function setupFS(array $existingContent = []) {
+        $this->vfsRoot = vfsStream::setup('root', null, $existingContent);
     }
 
     /**
@@ -209,6 +175,40 @@ class ConfigFileServiceTest extends KernelTestCase {
         $this->assertEquals([
             "version" => Config::DEFAULT_VERSION,
         ], $config->getAll());
+    }
+
+    /**
+     * Set up memory input and output streams
+     * @param $inputs
+     */
+    private function setupIO($inputs) {
+        $this->input = new ArrayInput([]);
+        /**
+         * @see TesterTrait::createStream()
+         */
+        $stream = fopen('php://memory', 'r+', false);
+        foreach ($inputs as $input) {
+            fwrite($stream, $input . \PHP_EOL);
+        }
+        rewind($stream);
+        $this->input->setStream($stream);
+        //$this->input->setInteractive(true);
+        /**
+         * @see TesterTrait::initOutput()
+         */
+        $this->output = new StreamOutput(fopen('php://memory', 'w', false));
+    }
+
+    /**
+     * Get the captured output
+     * @return string
+     * @see TesterTrait::getDisplay()
+     */
+    private function getOutput(): string {
+        rewind($this->output->getStream());
+        $display = stream_get_contents($this->output->getStream());
+        $display = str_replace(\PHP_EOL, "\n", $display);
+        return $display;
     }
 
     /**
@@ -1360,7 +1360,7 @@ class ConfigFileServiceTest extends KernelTestCase {
         //not mandatory, current value one that doesn't exist (anymore) and one that does, none input, expect: not existing option gets dropped, other kept
         $cases[9] = [
             [
-                "test" => ["banana","foo"]
+                "test" => ["banana", "foo"]
             ],
             [
                 "version" => Config::DEFAULT_VERSION,

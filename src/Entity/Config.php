@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Entity;
+
+use Exception;
+
 class Config {
     /**
      * Default version of new Config objects.
@@ -23,6 +26,17 @@ class Config {
     }
 
     /**
+     * Replace the whole config
+     * @param array $config
+     */
+    public function setAll(array $config) {
+        //Ensure the version key is always, no matter the source, present and set
+        if (!array_key_exists("version", $config))
+            $config = array_merge_recursive(["version" => self::DEFAULT_VERSION], $config);
+        $this->config = $config;
+    }
+
+    /**
      * Set a config key to value
      *
      * path follows loosely the jq syntax. A dot descends into the array at the specified key. [] can be given
@@ -31,7 +45,7 @@ class Config {
      * Missing array keys are created on demand.
      * @param string $path
      * @param $value
-     * @throws \Exception
+     * @throws Exception
      */
     public function set(string $path, $value) {
         //echo "\n";
@@ -49,7 +63,7 @@ class Config {
             if (is_numeric($part))
                 $part = intval($part);
             if (!is_array($current)) {
-                throw new \Exception("Trying to access $part as array, while it is a " . gettype($current));
+                throw new Exception("Trying to access $part as array, while it is a " . gettype($current));
             }
             if (!array_key_exists($part, $current)) {
                 if ($index == sizeof($parts) - 1) { //last element in path, create it (with default null)
@@ -61,7 +75,7 @@ class Config {
                     }
                 } else {
                     if ($part == "[]") {
-                        throw new \Exception("[] must only be the last element of the path");
+                        throw new Exception("[] must only be the last element of the path");
                     }
                     $current[$part] = [];
                 }
@@ -152,7 +166,7 @@ class Config {
      *
      * Note: this will barf if *any* part of the chain is missing.
      * @param string $path
-     * @throws \Exception
+     * @throws Exception
      * @see Config::set() for syntax
      */
     public function unset(string $path) {
@@ -174,7 +188,7 @@ class Config {
                         return;
                     }
                 }
-                throw new \Exception("Could not find part $part");
+                throw new Exception("Could not find part $part");
             }
             if ($index == sizeof($parts) - 1) {
                 //Check if the array is sequential. If it is, need to re-order it, so use splice instead of unset.
@@ -188,19 +202,6 @@ class Config {
             }
             $current =& $current[$part];
         }
-// @codeCoverageIgnoreStart
-    }
-// @codeCoverageIgnoreEnd
-
-    /**
-     * Replace the whole config
-     * @param array $config
-     */
-    public function setAll(array $config) {
-        //Ensure the version key is always, no matter the source, present and set
-        if (!array_key_exists("version", $config))
-            $config = array_merge_recursive(["version" => self::DEFAULT_VERSION], $config);
-        $this->config = $config;
     }
 
     /**

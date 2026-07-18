@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Config;
+use Exception;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -383,7 +384,7 @@ class ConfigFileService implements LoggerAwareInterface {
                 $this->logger->debug("Setting value: " . ($newValue ? "true" : "false"));
                 break;
             default:
-                throw new \Exception("Type undefined");
+                throw new Exception("Type undefined");
         }
         if ($newValue !== null) {
             $config->set($path, $newValue);
@@ -392,24 +393,28 @@ class ConfigFileService implements LoggerAwareInterface {
         }
     }
 
-    public function initialize($fileName) {
+    public function initialize($fileName): void {
         $this->persist($fileName, new Config());
+    }
+
+    public function persist(string $fileName, Config $config) {
+        $configData = $config->getAll();
+        $payload = Yaml::dump($configData) . "\n";
+        $this->logger->notice("Persisting configuration", ["config" => $configData, "path" => $fileName]);
+        if (@file_put_contents($fileName, $payload) === false)
+            throw new Exception("Failed to persist config to " . $fileName);
     }
 
     public function load(string $fileName): Config {
         $this->logger->notice("Loading configuration", ["path" => $fileName]);
         if (!is_file($fileName))
-            throw new \Exception($fileName . " does not exist here.");
+            throw new Exception($fileName . " does not exist here.");
         $config = Yaml::parseFile($fileName);
         if (!is_array($config))
-            throw new \Exception("Configuration file broken");
-        return new Config(array_replace_recursive((new Config())->getAll(), $config));
-    }
-
-    public function persist(string $fileName, Config $config) {
-        $payload = Yaml::dump($config->getAll()) . "\n";
-        if (@file_put_contents($fileName, $payload) === false)
-            throw new \Exception("Failed to persist config to " . $fileName);
+            throw new Exception("Configuration file broken");
+        $ret = new Config(array_replace_recursive((new Config())->getAll(), $config));
+        $this->logger->notice("Loaded configuration", ["path" => $fileName, "config" => $ret->getAll()]);
+        return $ret;
     }
 
     /**

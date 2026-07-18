@@ -4,6 +4,7 @@ namespace App\Service\Ingester;
 
 use App\Entity\Config;
 use App\Interfaces\IngesterInterface;
+use Exception;
 use JsonPath\JsonObject;
 use Psr\Log\LoggerInterface;
 
@@ -18,6 +19,14 @@ class SymfonyIngester implements IngesterInterface {
 
     public function __construct(LoggerInterface $logger) {
         $this->logger = $logger;
+    }
+
+    /**
+     * Symfony ingestion must happen after Composer to allow for detection of composer.json
+     * @return int
+     */
+    public static function getDefaultPriority(): int {
+        return 4;
     }
 
     public function ingest(Config $config, string $baseDir): void {
@@ -41,20 +50,12 @@ class SymfonyIngester implements IngesterInterface {
                         //Unfortunately there is nothing *specifically* indicating a Web project... except this one clear-cut package.
                         $config->set("project.type", "symfony");
                         $config->set("symfony.type", "web");
-                        $config->set("symfony.modules.[]","symfony/webpack-encore-bundle");
+                        $config->set("symfony.modules.[]", "symfony/webpack-encore-bundle");
                     }
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error("Failed ingesting composer.json", ["exception" => $e]);
         }
-    }
-
-    /**
-     * Symfony ingestion must happen after Composer to allow for detection of composer.json
-     * @return int
-     */
-    public static function getDefaultPriority(): int {
-        return 4;
     }
 }

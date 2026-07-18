@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Config;
+use Exception;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 

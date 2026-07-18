@@ -52,7 +52,7 @@ class FileGeneratorService implements LoggerAwareInterface {
                 if (self::DEBUG_ME) echo("File $sourcePath, removing existing file\n");
                 //@codeCoverageIgnoreEnd
                 if (@unlink($targetPath) === false) {
-                    throw new \RuntimeException("Failed to delete $targetPath");
+                    throw new RuntimeException("Failed to delete $targetPath");
                 }
             }
             return;
@@ -64,7 +64,7 @@ class FileGeneratorService implements LoggerAwareInterface {
             if (self::DEBUG_ME) echo("File $sourcePath, creating parent directory $parentDirectory\n");
             //@codeCoverageIgnoreEnd
             if (@mkdir($parentDirectory, 0775, true) === false) {
-                throw new \RuntimeException("Failed to create $parentDirectory");
+                throw new RuntimeException("Failed to create $parentDirectory");
             }
         }
 
@@ -75,7 +75,7 @@ class FileGeneratorService implements LoggerAwareInterface {
         $content = preg_replace('/[\n]{3,}/', "\n", $content);
 
         if (@file_put_contents($targetPath, $content) === false)
-            throw new \RuntimeException("Failed to persist " . $targetPath);
+            throw new RuntimeException("Failed to persist " . $targetPath);
 
         if (array_key_exists("chmod", $templateConfig)) {
             //@codeCoverageIgnoreStart
@@ -84,10 +84,9 @@ class FileGeneratorService implements LoggerAwareInterface {
             //Note: vfsStreamAbstractContent's chmod() can't be provoked to error out...
             if (@chmod($targetPath, $templateConfig["chmod"]) === false) {
                 //@codeCoverageIgnoreStart
-                throw new \RuntimeException("Failed to chmod $targetPath");
+                throw new RuntimeException("Failed to chmod $targetPath");
                 //@codeCoverageIgnoreEnd
             }
-
         }
     }
 }
