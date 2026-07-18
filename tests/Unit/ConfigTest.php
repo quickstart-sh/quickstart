@@ -364,4 +364,44 @@ class ConfigTest extends TestCase {
         $config->set("foo.baz", "qux");
     }
 
+    /**
+     * Test to see if set("") fails
+     * @return void
+     */
+    public function testSetEmptyPathError() {
+        $config = new Config();
+        $this->expectException(\Exception::class);
+        $config->set("", "bar");
+    }
+
+    /**
+     * Test to see if get("") fails
+     * @return void
+     */
+    public function testGetEmptyPathError() {
+        $config = new Config();
+        $this->expectException(\Exception::class);
+        $config->get("");
+    }
+
+    /**
+     * Test to see if has("") fails
+     * @return void
+     */
+    public function testHasEmptyPathError() {
+        $config = new Config();
+        $this->expectException(\Exception::class);
+        $config->has("");
+    }
+
+    /**
+     * Test to see if unset("") fails
+     * @return void
+     */
+    public function testUnsetEmptyPathError() {
+        $config = new Config();
+        $this->expectException(\Exception::class);
+        $config->unset("");
+    }
+
 }

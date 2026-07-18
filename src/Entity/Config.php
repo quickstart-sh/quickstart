@@ -57,7 +57,7 @@ class Config implements LoggerAwareInterface {
     public function set(string $path, $value): void {
         $this->logger?->debug("Config set called", ["path" => $path, "value" => $value, "config" => $this->config]);
         $parts = explode(".", $path);
-        if (sizeof($parts) < 1)
+        if ($path == "")
             throw new RuntimeException("Path is too short");
         $this->logger?->debug("Got " . sizeof($parts) . " parts for iteration");
         $current =& $this->config;
@@ -66,6 +66,7 @@ class Config implements LoggerAwareInterface {
         //Back reference for adding multiple things to array
         $parent = null;
         //Store the last iterated-over part for later (in case we end up discarding continuation of the loop)
+        //Note that - even for an empty string - parts[0] will always exist!
         $lastPart = $parts[0];
         foreach ($parts as $index => $part) {
             $this->logger?->debug("iterating through parts", ["index" => $index, "part" => $part]);
@@ -118,7 +119,7 @@ class Config implements LoggerAwareInterface {
     public function get(string $path): mixed {
         $this->logger?->debug("Config get called", ["path" => $path, "config" => $this->config]);
         $parts = explode(".", $path);
-        if (sizeof($parts) < 1)
+        if ($path == "")
             throw new RuntimeException("Path is too short");
         $this->logger?->debug("Got " . sizeof($parts) . " parts for iteration");
         $current =& $this->config;
@@ -148,7 +149,7 @@ class Config implements LoggerAwareInterface {
     public function has(string $path): bool {
         $this->logger?->debug("Config has called", ["path" => $path, "config" => $this->config]);
         $parts = explode(".", $path);
-        if (sizeof($parts) < 1)
+        if ($path == "")
             throw new RuntimeException("Path is too short");
         $this->logger?->debug("Got " . sizeof($parts) . " parts for iteration");
         $current =& $this->config;
@@ -184,7 +185,7 @@ class Config implements LoggerAwareInterface {
     public function unset(string $path): void {
         $this->logger?->debug("Config unset called", ["path" => $path, "config" => $this->config]);
         $parts = explode(".", $path);
-        if (sizeof($parts) < 1)
+        if ($path == "")
             throw new RuntimeException("Path is too short");
         $this->logger?->debug("Got " . sizeof($parts) . " parts for iteration");
         $current =& $this->config;
