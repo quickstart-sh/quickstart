@@ -5,6 +5,7 @@ namespace App\Entity;
 use Exception;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use RuntimeException;
 
 class Config implements LoggerAwareInterface {
     use LoggerAwareTrait;
@@ -57,7 +58,7 @@ class Config implements LoggerAwareInterface {
         $this->logger?->debug("Config set called", ["path" => $path, "value" => $value, "config" => $this->config]);
         $parts = explode(".", $path);
         if (sizeof($parts) < 1)
-            throw new \RuntimeException("Path is too short");
+            throw new RuntimeException("Path is too short");
         $this->logger?->debug("Got " . sizeof($parts) . " parts for iteration");
         $current =& $this->config;
         //This is set to true in case the .[] syntax is used to force an array.
@@ -99,6 +100,7 @@ class Config implements LoggerAwareInterface {
             $parent = array_values(array_unique(array_merge($parent, $value)));
         } else if ($append && !is_array($value)) {
             $current = $value;
+            /** @noinspection PhpParamsInspection - $parent is modified by reference above */
             $parent = array_values(array_unique($parent));
         } else {
             $current = $value;
@@ -117,7 +119,7 @@ class Config implements LoggerAwareInterface {
         $this->logger?->debug("Config get called", ["path" => $path, "config" => $this->config]);
         $parts = explode(".", $path);
         if (sizeof($parts) < 1)
-            throw new \RuntimeException("Path is too short");
+            throw new RuntimeException("Path is too short");
         $this->logger?->debug("Got " . sizeof($parts) . " parts for iteration");
         $current =& $this->config;
         foreach ($parts as $index => $part) {
@@ -147,7 +149,7 @@ class Config implements LoggerAwareInterface {
         $this->logger?->debug("Config has called", ["path" => $path, "config" => $this->config]);
         $parts = explode(".", $path);
         if (sizeof($parts) < 1)
-            throw new \RuntimeException("Path is too short");
+            throw new RuntimeException("Path is too short");
         $this->logger?->debug("Got " . sizeof($parts) . " parts for iteration");
         $current =& $this->config;
         foreach ($parts as $index => $part) {
@@ -183,7 +185,7 @@ class Config implements LoggerAwareInterface {
         $this->logger?->debug("Config unset called", ["path" => $path, "config" => $this->config]);
         $parts = explode(".", $path);
         if (sizeof($parts) < 1)
-            throw new \RuntimeException("Path is too short");
+            throw new RuntimeException("Path is too short");
         $this->logger?->debug("Got " . sizeof($parts) . " parts for iteration");
         $current =& $this->config;
         foreach ($parts as $index => $part) {
