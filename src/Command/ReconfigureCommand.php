@@ -22,7 +22,7 @@ class ReconfigureCommand extends Command implements LoggerAwareInterface {
     /**
      * @var ConfigFileService
      */
-    private $configFileService = null;
+    private ConfigFileService $configFileService;
     /**
      * @var ParameterBagInterface
      */

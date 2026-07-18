@@ -20,7 +20,7 @@ class InitCommand extends Command implements LoggerAwareInterface {
     /**
      * @var ConfigFileService
      */
-    private $configFileService = null;
+    private ConfigFileService $configFileService;
 
     /**
      * InitCommand constructor.
