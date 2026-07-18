@@ -4,7 +4,7 @@ namespace App\Tests\Unit;
 
 use App\Entity\Config;
 use App\Service\ConditionEvaluatorService;
-use PHPUnit\Framework\TestCase;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ConditionEvaluatorServiceTest extends KernelTestCase {
@@ -35,5 +35,7 @@ class ConditionEvaluatorServiceTest extends KernelTestCase {
         $this->assertTrue($conditionEvaluatorService->evaluate("#guide.galaxy# === 42", $config));
         $this->assertTrue($conditionEvaluatorService->evaluate("in_array('qux', #baz#)", $config));
         $this->assertFalse($conditionEvaluatorService->evaluate("in_array('quuux', #baz#)", $config));
+        $this->expectException(Exception::class);
+        $conditionEvaluatorService->evaluate("## === 0", $config);
     }
 }
