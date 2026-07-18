@@ -18,24 +18,8 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 class RegenerateCommand extends Command implements LoggerAwareInterface {
     use LoggerAwareTrait;
 
-    /**
-     * @var ConfigFileService
-     */
-    private ConfigFileService $configFileService;
-    /**
-     * @var ParameterBagInterface
-     */
-    private ParameterBagInterface $params;
-    /**
-     * @var FileGeneratorService
-     */
-    private FileGeneratorService $fileGeneratorService;
-
-    public function __construct(ConfigFileService $configFileService, FileGeneratorService $fileGeneratorService, ParameterBagInterface $params, string $name = null) {
+    public function __construct(private readonly ConfigFileService $configFileService, private readonly FileGeneratorService $fileGeneratorService, private readonly ParameterBagInterface $params, string $name = null) {
         parent::__construct($name);
-        $this->configFileService = $configFileService;
-        $this->fileGeneratorService = $fileGeneratorService;
-        $this->params = $params;
     }
 
     protected function configure(): void {

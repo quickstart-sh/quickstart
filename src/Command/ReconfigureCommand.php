@@ -19,19 +19,8 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 class ReconfigureCommand extends Command implements LoggerAwareInterface {
     use LoggerAwareTrait;
 
-    /**
-     * @var ConfigFileService
-     */
-    private ConfigFileService $configFileService;
-    /**
-     * @var ParameterBagInterface
-     */
-    private ParameterBagInterface $params;
-
-    public function __construct(ConfigFileService $configFileService, ParameterBagInterface $params, string $name = null) {
+    public function __construct(private readonly ConfigFileService $configFileService, private readonly ParameterBagInterface $params, string $name = null) {
         parent::__construct($name);
-        $this->configFileService = $configFileService;
-        $this->params = $params;
     }
 
     protected function configure(): void {

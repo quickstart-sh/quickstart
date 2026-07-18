@@ -18,10 +18,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class InitCommand extends Command implements LoggerAwareInterface {
     use LoggerAwareTrait;
 
-    /**
-     * @var ConfigFileService
-     */
-    private ConfigFileService $configFileService;
 
     /**
      * InitCommand constructor.
@@ -29,9 +25,8 @@ class InitCommand extends Command implements LoggerAwareInterface {
      * @param string|null $name
      * @codeCoverageIgnore
      */
-    public function __construct(ConfigFileService $configFileService, string $name = null) {
+    public function __construct(private readonly ConfigFileService $configFileService, string $name = null) {
         parent::__construct($name);
-        $this->configFileService = $configFileService;
     }
 
     /**

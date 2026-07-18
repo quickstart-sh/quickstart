@@ -18,20 +18,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 class InstallCommand extends Command implements LoggerAwareInterface {
     use LoggerAwareTrait;
 
-    /**
-     * @var ConfigFileService
-     */
-    private ConfigFileService $configFileService;
-
-    /**
-     * @var InstallService
-     */
-    private InstallService $installService;
-
-    public function __construct(ConfigFileService $configFileService, InstallService $installService, string $name = null) {
+    public function __construct(private readonly ConfigFileService $configFileService, private readonly InstallService $installService, string $name = null) {
         parent::__construct($name);
-        $this->configFileService = $configFileService;
-        $this->installService = $installService;
     }
 
     protected function configure(): void {

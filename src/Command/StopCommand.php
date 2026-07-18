@@ -17,14 +17,8 @@ use Symfony\Component\Process\Process;
 class StopCommand extends Command implements LoggerAwareInterface {
     use LoggerAwareTrait;
 
-    /**
-     * @var ConfigFileService
-     */
-    private ConfigFileService $configFileService;
-
-    public function __construct(ConfigFileService $configFileService, string $name = null) {
+    public function __construct(private readonly ConfigFileService $configFileService, string $name = null) {
         parent::__construct($name);
-        $this->configFileService = $configFileService;
     }
 
     protected function configure(): void {

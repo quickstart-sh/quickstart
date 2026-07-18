@@ -18,21 +18,9 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 class IngestConfigFilesCommand extends Command implements LoggerAwareInterface {
     use LoggerAwareTrait;
 
-    /**
-     * @var ConfigFileService
-     */
-    private ConfigFileService $configFileService;
-    /**
-     * @var ParameterBagInterface
-     */
-    private ParameterBagInterface $params;
-    private IngesterService $ingesterService;
 
-    public function __construct(ConfigFileService $configFileService, ParameterBagInterface $params, IngesterService $ingesterService, string $name = null) {
+    public function __construct(private readonly ConfigFileService $configFileService, private readonly ParameterBagInterface $params, private readonly IngesterService $ingesterService, string $name = null) {
         parent::__construct($name);
-        $this->configFileService = $configFileService;
-        $this->params = $params;
-        $this->ingesterService = $ingesterService;
     }
 
     protected function configure(): void {
