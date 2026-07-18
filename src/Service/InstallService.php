@@ -14,20 +14,11 @@ class InstallService implements LoggerAwareInterface {
     use LoggerAwareTrait;
 
     /**
-     * @var ParameterBagInterface
-     */
-    private ParameterBagInterface $params;
-
-    private ConditionEvaluatorService $conditionEvaluatorService;
-
-    /**
      * @var OutputInterface|null
      */
     private ?OutputInterface $output = null;
 
-    public function __construct(ParameterBagInterface $params, ConditionEvaluatorService $conditionEvaluatorService) {
-        $this->params = $params;
-        $this->conditionEvaluatorService = $conditionEvaluatorService;
+    public function __construct(private readonly ParameterBagInterface $params, private readonly ConditionEvaluatorService $conditionEvaluatorService) {
     }
 
     /**

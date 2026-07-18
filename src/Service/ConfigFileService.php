@@ -21,10 +21,6 @@ class ConfigFileService implements LoggerAwareInterface {
     public const string CONFIG_FILE = ".quickstart.yml";
 
     /**
-     * @var ParameterBagInterface
-     */
-    private ParameterBagInterface $params;
-    /**
      * @var InputInterface
      */
     private InputInterface $input;
@@ -33,12 +29,7 @@ class ConfigFileService implements LoggerAwareInterface {
      */
     private OutputInterface $output;
 
-    private ConditionEvaluatorService $conditionEvaluatorService;
-
-
-    public function __construct(ParameterBagInterface $params, ConditionEvaluatorService $conditionEvaluatorService) {
-        $this->params = $params;
-        $this->conditionEvaluatorService = $conditionEvaluatorService;
+    public function __construct(private readonly ParameterBagInterface $params, private readonly ConditionEvaluatorService $conditionEvaluatorService) {
     }
 
     public function ask(Config $config, string $path, array $optionConfig): void {

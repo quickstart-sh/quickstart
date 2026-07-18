@@ -15,23 +15,13 @@ use Twig\Error\SyntaxError;
 class FileGeneratorService implements LoggerAwareInterface {
     use LoggerAwareTrait;
 
-    /**
-     * @var Environment
-     */
-    private Environment $twig;
-    /**
-     * @var ConditionEvaluatorService
-     */
-    private ConditionEvaluatorService $conditionEvaluatorService;
 
     /**
      * FileGeneratorService constructor.
      * @param Environment $twig
      * @param ConditionEvaluatorService $conditionEvaluatorService
      */
-    public function __construct(Environment $twig, ConditionEvaluatorService $conditionEvaluatorService) {
-        $this->twig = $twig;
-        $this->conditionEvaluatorService = $conditionEvaluatorService;
+    public function __construct(private readonly Environment $twig, private readonly ConditionEvaluatorService $conditionEvaluatorService) {
     }
 
     /**
