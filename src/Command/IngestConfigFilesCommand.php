@@ -35,7 +35,7 @@ class IngestConfigFilesCommand extends Command implements LoggerAwareInterface {
         $this->ingesterService = $ingesterService;
     }
 
-    protected function configure() {
+    protected function configure(): void {
         $this
             ->setDescription("Ingest existing third-party configuration into the Quickstart project")
             ->setHelp("This command updates the " . ConfigFileService::CONFIG_FILE . " configuration file based on existing configuration files");

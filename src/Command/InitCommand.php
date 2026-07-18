@@ -36,7 +36,7 @@ class InitCommand extends Command implements LoggerAwareInterface {
     /**
      * @codeCoverageIgnore
      */
-    protected function configure() {
+    protected function configure(): void {
         $this
             ->setDescription("Initializes a new Quickstart project")
             ->setHelp("This command creates and populates the " . ConfigFileService::CONFIG_FILE . " configuration file");

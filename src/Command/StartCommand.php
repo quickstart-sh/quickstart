@@ -28,7 +28,7 @@ class StartCommand extends Command implements LoggerAwareInterface {
         $this->configFileService = $configFileService;
     }
 
-    protected function configure() {
+    protected function configure(): void {
         $this
             ->setDescription("Starts all containers required by the project")
             ->setHelp("This command creates and starts the containers.")

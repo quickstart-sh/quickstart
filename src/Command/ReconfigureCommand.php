@@ -34,7 +34,7 @@ class ReconfigureCommand extends Command implements LoggerAwareInterface {
         $this->params = $params;
     }
 
-    protected function configure() {
+    protected function configure(): void {
         $this
             ->setDescription("Reconfigures Quickstart project")
             ->setHelp("This command updates the " . ConfigFileService::CONFIG_FILE . " configuration file")

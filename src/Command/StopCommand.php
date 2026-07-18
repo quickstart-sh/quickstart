@@ -27,7 +27,7 @@ class StopCommand extends Command implements LoggerAwareInterface {
         $this->configFileService = $configFileService;
     }
 
-    protected function configure() {
+    protected function configure(): void {
         $this
             ->setDescription("Stop all containers required by the project")
             ->setHelp("This command stops all containers.");

@@ -27,7 +27,7 @@ class DestroyCommand extends Command implements LoggerAwareInterface {
         $this->configFileService = $configFileService;
     }
 
-    protected function configure() {
+    protected function configure(): void {
         $this
             ->setDescription("Destroy all containers required by the project")
             ->setHelp("This command destroys all containers and their data.");

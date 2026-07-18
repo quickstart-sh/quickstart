@@ -38,7 +38,7 @@ class RegenerateCommand extends Command implements LoggerAwareInterface {
         $this->params = $params;
     }
 
-    protected function configure() {
+    protected function configure(): void {
         $this
             ->setDescription("Regenerates all files created by Quickstart")
             ->setHelp("This command creates or updates all files under the control of Quickstart.");

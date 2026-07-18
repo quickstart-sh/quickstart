@@ -34,7 +34,7 @@ class InstallCommand extends Command implements LoggerAwareInterface {
         $this->installService = $installService;
     }
 
-    protected function configure() {
+    protected function configure(): void {
         $this
             ->setDescription("Creates the project by installing the project scaffold")
             ->setHelp("This command creates the project and configures as much as possible.");
