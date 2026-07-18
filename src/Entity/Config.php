@@ -90,11 +90,12 @@ class Config implements LoggerAwareInterface {
             }
             $parent =& $current;
             $current =& $current[$part];
+            $lastPart = $part;
         }
         //Now, if there is an array, we can supply either a single thing or an array
         //if it's an array, merge it (=ensure that there is one and exactly one member of that value)
         if ($append && is_array($value)) {
-            unset($parent[$part]); //undo the set-to-null from before
+            unset($parent[$lastPart]); //undo the set-to-null from before
             $parent = array_values(array_unique(array_merge($parent, $value)));
         } else if ($append && !is_array($value)) {
             $current = $value;
