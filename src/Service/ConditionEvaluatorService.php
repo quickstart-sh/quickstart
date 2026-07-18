@@ -24,6 +24,7 @@ class ConditionEvaluatorService implements LoggerAwareInterface {
      * @param Config $config
      * @return bool
      * @throws Exception
+     * @noinspection PhpUnusedParameterInspection as $config is referenced in the eval() statement under certain conditions
      */
     public function evaluate(string $condition, Config $config): bool {
         $this->logger->debug("Evaluating condition", ["condition" => $condition]);
