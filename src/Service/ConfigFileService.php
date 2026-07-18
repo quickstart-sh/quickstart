@@ -314,6 +314,9 @@ class ConfigFileService implements LoggerAwareInterface {
                         $questionDefaultString
                     ))->setMultiselect(true)
                 );
+
+                $this->logger->debug("Got answer", ["answer" => $answer]);
+
                 $newValue = $currentValue;
                 foreach ($answer as $answerLabel) {
                     $key = array_search($answerLabel, $options);

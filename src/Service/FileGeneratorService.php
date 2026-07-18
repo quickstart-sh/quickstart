@@ -5,28 +5,25 @@ namespace App\Service;
 use App\Entity\Config;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use RuntimeException;
 use Twig\Environment;
 
 class FileGeneratorService implements LoggerAwareInterface {
     use LoggerAwareTrait;
 
-    #
-
-    /**
-     * Development aid - turn on echo on all major code paths
-     */
-    private const DEBUG_ME = false;
     /**
      * @var Environment
      */
     private Environment $twig;
-
+    /**
+     * @var ConditionEvaluatorService
+     */
     private ConditionEvaluatorService $conditionEvaluatorService;
 
     /**
      * FileGeneratorService constructor.
      * @param Environment $twig
-     * @codeCoverageIgnore
+     * @param ConditionEvaluatorService $conditionEvaluatorService
      */
     public function __construct(Environment $twig, ConditionEvaluatorService $conditionEvaluatorService) {
         $this->twig = $twig;
@@ -44,13 +41,9 @@ class FileGeneratorService implements LoggerAwareInterface {
         $targetPath = $baseDir . DIRECTORY_SEPARATOR . $templateConfig["target"];
         //Check if we are allowed to write the file
         if (array_key_exists("if", $templateConfig) && $this->conditionEvaluatorService->evaluate($templateConfig["if"], $config) === false) {
-            //@codeCoverageIgnoreStart
-            if (self::DEBUG_ME) echo("File $sourcePath, passing as condition " . $templateConfig["if"] . " returned false\n");
-            //@codeCoverageIgnoreEnd
+            $this->logger->debug("File $sourcePath, passing as condition " . $templateConfig["if"] . " returned false\n");
             if (is_file($targetPath)) {
-                //@codeCoverageIgnoreStart
-                if (self::DEBUG_ME) echo("File $sourcePath, removing existing file\n");
-                //@codeCoverageIgnoreEnd
+                $this->logger->debug("File $sourcePath, removing existing file\n");
                 if (@unlink($targetPath) === false) {
                     throw new RuntimeException("Failed to delete $targetPath");
                 }
@@ -60,9 +53,7 @@ class FileGeneratorService implements LoggerAwareInterface {
         //Check and create directories if needed
         $parentDirectory = dirname($targetPath);
         if (!file_exists($parentDirectory)) {
-            //@codeCoverageIgnoreStart
-            if (self::DEBUG_ME) echo("File $sourcePath, creating parent directory $parentDirectory\n");
-            //@codeCoverageIgnoreEnd
+            $this->logger->debug("File $sourcePath, creating parent directory $parentDirectory\n");
             if (@mkdir($parentDirectory, 0775, true) === false) {
                 throw new RuntimeException("Failed to create $parentDirectory");
             }
@@ -78,11 +69,9 @@ class FileGeneratorService implements LoggerAwareInterface {
             throw new RuntimeException("Failed to persist " . $targetPath);
 
         if (array_key_exists("chmod", $templateConfig)) {
-            //@codeCoverageIgnoreStart
-            if (self::DEBUG_ME) echo("File $sourcePath, setting chmod to " . decoct($templateConfig["chmod"]) . "\n");
-            //@codeCoverageIgnoreEnd
-            //Note: vfsStreamAbstractContent's chmod() can't be provoked to error out...
+            $this->logger->debug("File $sourcePath, setting chmod to " . decoct($templateConfig["chmod"]) . "\n");
             if (@chmod($targetPath, $templateConfig["chmod"]) === false) {
+                //Note: vfsStreamAbstractContent's chmod() can't be provoked to error out, thus exclude from CC metrics
                 //@codeCoverageIgnoreStart
                 throw new RuntimeException("Failed to chmod $targetPath");
                 //@codeCoverageIgnoreEnd
