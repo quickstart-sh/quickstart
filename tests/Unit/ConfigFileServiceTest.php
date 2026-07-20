@@ -6,7 +6,6 @@ use App\Entity\Config;
 use App\Service\ConfigFileService;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
-use PHPUnit\Framework\TestCase;
 use ReflectionObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -951,6 +950,239 @@ class ConfigFileServiceTest extends KernelTestCase {
             ],
             ["1"],
             "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n > 1[K\n",
+        ];
+        //not mandatory, no current value, valid input (=none). expect: baz is not shown as default, and nothing is persisted
+        $cases[17] = [
+            [],
+            [
+                "version" => Config::DEFAULT_VERSION,
+            ],
+            [
+                "type" => "select_single",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "optionsConfiguration" => [
+                    "baz" => [
+                        "default_if" => "false",
+                    ]
+                ]
+            ],
+            [""],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n  [3] None (default)\n > \n",
+        ];
+        //not mandatory, no current value, valid input. expect: default value chosen
+        $cases[18] = [
+            [
+                "version" => Config::DEFAULT_VERSION,
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test" => "baz",
+            ],
+            [
+                "type" => "select_single",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "optionsConfiguration" => [
+                    "baz" => [
+                        "default_if" => "true",
+                    ]
+                ]
+            ],
+            [""],
+            "Please select DESCRIPTION (current: qux): \n  [0] bar\n  [1] qux (default)\n  [2] quux\n  [3] None\n > \n",
+        ];
+        //not mandatory, no current value, valid input (explicit: default value). expect: default value chosen
+        $cases[19] = [
+            [
+                "version" => Config::DEFAULT_VERSION,
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test" => "baz",
+            ],
+            [
+                "type" => "select_single",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "optionsConfiguration" => [
+                    "baz" => [
+                        "default_if" => "true",
+                    ]
+                ]
+            ],
+            ["1"],
+            "Please select DESCRIPTION (current: qux): \n  [0] bar\n  [1] qux (default)\n  [2] quux\n  [3] None\n > 1[K\n",
+        ];
+        //not mandatory, no current value, valid input (explicit: some other value). expect: that value chosen
+        $cases[20] = [
+            [
+                "version" => Config::DEFAULT_VERSION,
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test" => "quux",
+            ],
+            [
+                "type" => "select_single",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "optionsConfiguration" => [
+                    "baz" => [
+                        "default_if" => "true",
+                    ]
+                ]
+            ],
+            ["2"],
+            "Please select DESCRIPTION (current: qux): \n  [0] bar\n  [1] qux (default)\n  [2] quux\n  [3] None\n > 2[K\n",
+        ];
+        //not mandatory, no current value, valid input (explicit: none). expect: nothing changes
+        $cases[21] = [
+            [
+                "version" => Config::DEFAULT_VERSION,
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+            ],
+            [
+                "type" => "select_single",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "optionsConfiguration" => [
+                    "baz" => [
+                        "default_if" => "true",
+                    ]
+                ]
+            ],
+            ["3"],
+            "Please select DESCRIPTION (current: qux): \n  [0] bar\n  [1] qux (default)\n  [2] quux\n  [3] None\n > 3[K\n",
+        ];
+        //TODO => barfs, check that it barfs
+        //mandatory, no current value, invalid input (=empty). expect: barf
+        $cases[22] = [
+            [],
+            [
+                "version" => Config::DEFAULT_VERSION,
+            ],
+            [
+                "type" => "select_single",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "mandatory" => true,
+                "optionsConfiguration" => [
+                    "baz" => [
+                        "default_if" => "false",
+                    ]
+                ]
+            ],
+            [""],
+            "Please select DESCRIPTION: \n  [0] bar\n  [1] qux\n  [2] quux\n > \n",
+        ];
+        // todo, barfs but it shouldn't barf
+        //mandatory, no current value, valid input. expect: default value chosen
+        $cases[23] = [
+            [
+                "version" => Config::DEFAULT_VERSION,
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test" => "baz",
+            ],
+            [
+                "type" => "select_single",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "mandatory" => true,
+                "optionsConfiguration" => [
+                    "baz" => [
+                        "default_if" => "true",
+                    ]
+                ]
+            ],
+            [""],
+            "Please select DESCRIPTION (current: qux): \n  [0] bar\n  [1] qux (default)\n  [2] quux\n > \n",
+        ];
+        //mandatory, no current value, valid input (explicit: default value). expect: default value chosen
+        $cases[24] = [
+            [
+                "version" => Config::DEFAULT_VERSION,
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test" => "baz",
+            ],
+            [
+                "type" => "select_single",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "mandatory" => true,
+                "optionsConfiguration" => [
+                    "baz" => [
+                        "default_if" => "true",
+                    ]
+                ]
+            ],
+            ["1"],
+            "Please select DESCRIPTION (current: qux): \n  [0] bar\n  [1] qux (default)\n  [2] quux\n > 1[K\n",
+        ];
+        //mandatory, no current value, valid input (explicit: some other value). expect: that value chosen
+        $cases[25] = [
+            [
+                "version" => Config::DEFAULT_VERSION,
+            ],
+            [
+                "version" => Config::DEFAULT_VERSION,
+                "test" => "quux",
+            ],
+            [
+                "type" => "select_single",
+                "description" => "DESCRIPTION",
+                "options" => [
+                    "foo" => "bar",
+                    "baz" => "qux",
+                    "quux" => "quux",
+                ],
+                "mandatory" => true,
+                "optionsConfiguration" => [
+                    "baz" => [
+                        "default_if" => "true",
+                    ]
+                ]
+            ],
+            ["2"],
+            "Please select DESCRIPTION (current: qux): \n  [0] bar\n  [1] qux (default)\n  [2] quux\n > 2[K\n",
         ];
         return $cases;
     }
