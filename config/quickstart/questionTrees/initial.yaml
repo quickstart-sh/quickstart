@@ -141,7 +141,9 @@ parameters:
         '18.04': '18.04 LTS'
         '20.04': '20.04 LTS'
         '22.04': '22.04 LTS'
-      default: '22.04'
+        '24.04': '24.04 LTS'
+        '26.04': '26.04 LTS'
+      default: '26.04'
       mandatory: true
 
     os.debian_version:
@@ -151,11 +153,12 @@ parameters:
       pathOverride: 'os.version'
       description: 'the Debian version for the Docker images'
       options:
-        buster: 'buster / oldoldstable'
-        bullseye: 'bullseye / oldstable'
-        bookworm: 'bookworm / stable'
-        trixie: 'trixie / testing'
-      default: buster
+        buster: 'buster'
+        bullseye: 'bullseye / oldoldstable'
+        bookworm: 'bookworm / oldstable'
+        trixie: 'trixie / stable'
+        forky: 'forky / testing'
+      default: trixie
       mandatory: true
 
     os.alpine_version:
@@ -172,7 +175,12 @@ parameters:
         '3.17': '3.17 (2022-11)'
         '3.18': '3.18 (2023-05)'
         '3.19': '3.19 (2023-11)'
-      default: '3.19'
+        '3.20': '3.20 (2024-05)'
+        '3.21': '3.21 (2024-12)'
+        '3.22': '3.22 (2025-05)'
+        '3.23': '3.23 (2025-12)'
+        '3.24': '3.24 (2026-06)'
+      default: '3.24'
       mandatory: true
 
     os.locale:
@@ -213,7 +221,10 @@ parameters:
         '8.1': 'PHP 8.1'
         '8.2': 'PHP 8.2'
         '8.3': 'PHP 8.3'
-      default: '8.3'
+        '8.4': 'PHP 8.4'
+        '8.5': 'PHP 8.5'
+        #'8.6': 'PHP 8.6' => release probably 2026-11
+      default: '8.5'
       mandatory: true
 
     webserver.software:
@@ -429,10 +440,17 @@ parameters:
         '11.1': 'MariaDB 11.1'
         '11.2': 'MariaDB 11.2'
         '11.3': 'MariaDB 11.3'
-# Not released yet
-#        '11.4': 'MariaDB 11.4'
-#        '11.5': 'MariaDB 11.5'
-      default: '11.3'
+        '11.4': 'MariaDB 11.4'
+        '11.5': 'MariaDB 11.5'
+        '11.6': 'MariaDB 11.6'
+        '11.7': 'MariaDB 11.7'
+        '11.8': 'MariaDB 11.8'
+        '12.0': 'MariaDB 12.0'
+        '12.1': 'MariaDB 12.1'
+        '12.2': 'MariaDB 12.2'
+        '12.3': 'MariaDB 12.3' # current LTS
+        '13.0': 'MariaDB 13.0'
+      default: '12.3'
       mandatory: true
 
     nodejs.version:
@@ -446,7 +464,10 @@ parameters:
         'lts/gallium': 'v16 LTS (gallium)'
         'lts/hydrogen': 'v18 LTS (hydrogen)'
         'lts/iron': 'v20 LTS (iron)'
-      default: 'lts/hydrogen'
+        'lts/jod': 'v22 LTS (jod)'
+        'lts/krypton': 'v24 LTS (krypton)'
+        'lts/lithium': 'v26 LTS (lithium)'
+      default: 'lts/lithium'
       mandatory: true
 
     nodejs.packageManager:
@@ -456,7 +477,8 @@ parameters:
       options:
         npm: 'npm'
         yarn: 'yarn'
-      default: yarn
+        pnpm: 'pnpm'
+      default: npm
       mandatory: true
 
     os.workDirectory:
