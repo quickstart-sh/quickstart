@@ -414,7 +414,7 @@ parameters:
       # Support matrix at https://mariadb.com/kb/en/mariadb-server-release-dates/
       type: select_single
       description: 'the MariaDB version'
-      if: '#externalServices.enabled# === true && in_array(''mariadb'', #externalServices.types#)'
+      if: '#externalServices.enabled# === true && is_array(#externalServices.types#) && in_array(''mariadb'', #externalServices.types#)'
       options:
         '10.3': 'MariaDB 10.3'
         '10.4': 'MariaDB 10.4'
