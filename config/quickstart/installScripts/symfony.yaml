@@ -118,4 +118,4 @@ parameters:
         - 's;^# MAILER_DSN.*$;MAILER_DSN=smtp://mail:1025;'
         - .env
       inContainer: true
-      if: 'in_array(''mariadb'', #externalServices.types#)'
+      if: 'in_array(''mail'', #externalServices.types#)'
