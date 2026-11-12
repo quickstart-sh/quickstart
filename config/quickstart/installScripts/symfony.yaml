@@ -91,19 +91,19 @@ parameters:
       inContainer: true
       ignoreErrors: true
       containerUser: root
-      if: 'in_array(''symfony/webpack-encore-bundle'', #symfony.modules#)'
+      if: 'is_array(#symfony.modules#) && in_array(''symfony/webpack-encore-bundle'', #symfony.modules#)'
     - command:
         - npm
         - install
       inContainer: true
-      if: 'in_array(''symfony/webpack-encore-bundle'', #symfony.modules#)'
+      if: 'is_array(#symfony.modules#) && in_array(''symfony/webpack-encore-bundle'', #symfony.modules#)'
     - command:
         - supervisorctl
         - start
         - nodejs
       inContainer: true
       containerUser: root
-      if: 'in_array(''symfony/webpack-encore-bundle'', #symfony.modules#)'
+      if: 'is_array(#symfony.modules#) && in_array(''symfony/webpack-encore-bundle'', #symfony.modules#)'
     # configure the database and mailer transport
     - command:
         - sed
@@ -111,11 +111,11 @@ parameters:
         - 's;^DATABASE_URL.*;DATABASE_URL=mysql://root:@mariadb:3306/#project.name#;'
         - .env
       inContainer: true
-      if: 'in_array(''mariadb'', #externalServices.types#)'
+      if: 'is_array(#externalServices.types#) && in_array(''mariadb'', #externalServices.types#)'
     - command:
         - sed
         - '-i'
         - 's;^# MAILER_DSN.*$;MAILER_DSN=smtp://mail:1025;'
         - .env
       inContainer: true
-      if: 'in_array(''mail'', #externalServices.types#)'
+      if: 'is_array(#externalServices.types#) && in_array(''mail'', #externalServices.types#)'
